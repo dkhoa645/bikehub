@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: bikehub
+  config:
+    import: optional:application-secret.yml
+  datasource:
+    url: jdbc:mysql://crossover.proxy.rlwy.net:36525/railway
+    username: root
+    password: ArUHrWJsaZXDghwQNPwQbcTmhcnUXvhD
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+jwt:
+  signerKey: "a4aec8aa399e085aa2c40ae8106d7bb6c55c825a6149916bfcc9920e441d05c2"
+  valid-duration: 3600
+  refreshable-duration: 36000
+
+#com:
+#  bikehub:
+#    sendgrid:
+#      api-key:  ${sendgrid.api-key}
+#      from-email: ${sendgrid.from.email}
+#      from-name: ${sendgrid.from.name}
+
