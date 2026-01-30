@@ -5,8 +5,7 @@ import com.group3.bikehub.entity.Kyc;
 import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring",
-    builder = @Builder(disableBuilder = true))
+@Mapper(componentModel = "spring")
 
 public interface KycMapper {
     KycResponse toKycResponse(Kyc kyc);
