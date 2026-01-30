@@ -7,7 +7,6 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
     public class Kyc {
     @Id
         private String idNumber;

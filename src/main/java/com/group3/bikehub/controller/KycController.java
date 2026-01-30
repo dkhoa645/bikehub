@@ -2,6 +2,8 @@ package com.group3.bikehub.controller;
 
 
 import com.group3.bikehub.dto.request.ApiResponse;
+import com.group3.bikehub.dto.request.KycConfirmRequest;
+import com.group3.bikehub.dto.request.KycUploadRequest;
 import com.group3.bikehub.dto.response.KycDraftResponse;
 import com.group3.bikehub.dto.response.KycResponse;
 import com.group3.bikehub.service.KycService;
@@ -9,7 +11,6 @@ import com.group3.bikehub.service.impl.KycDraftStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -23,8 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<KycDraftResponse> upload(
-            @RequestParam("image") MultipartFile image) {
-         KycResponse kycResponse =  kycService.ocr(image);
+            @ModelAttribute KycUploadRequest request) {
+         KycResponse kycResponse =  kycService.ocr(request.getImage());
 
         String draftId = kycDraftStoreService.save(kycResponse);
 
@@ -35,11 +36,10 @@ import org.springframework.web.multipart.MultipartFile;
         return ApiResponse.<KycDraftResponse>builder().result(response).build();
     }
 
-    @PostMapping("/confirm/{draftId}")
-    public ApiResponse<Void> confirm(@PathVariable String draftId) {
-        kycService.save(draftId);
+    @PostMapping("/confirm")
+    public ApiResponse<Void> confirm(@RequestBody KycConfirmRequest request) {
+        kycService.save(request.getDraftId());
         return ApiResponse.<Void>builder()
-                .code(1000)
                 .message("KYC CONFIRMED")
                 .build();
     }
