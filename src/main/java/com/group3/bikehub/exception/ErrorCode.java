@@ -15,6 +15,8 @@ public enum ErrorCode {
     ROLE_NOT_EXISTED(1006,"Role cannot be found", HttpStatus.NOT_FOUND),
     VERIFICATION_TOKEN_EXPIRED(1007,"Verification token expired", HttpStatus.UNAUTHORIZED),
     SEND_EMAIL_FAILED(1008,"Send email failed", HttpStatus.BAD_REQUEST),
+    OCR_IMAGE_FAILED(1009,"OCR image failed", HttpStatus.BAD_REQUEST),
+    DRAFT_NOT_FOUND(1010,"Draft data expired", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
