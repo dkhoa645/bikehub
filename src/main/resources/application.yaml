@@ -2,7 +2,7 @@ spring:
   application:
     name: bikehub
   config:
-    import: optional:application-secret.yml
+    import: optional:classpath:application-secret.properties
   datasource:
     url: jdbc:mysql://crossover.proxy.rlwy.net:36525/railway
     username: root
@@ -17,10 +17,10 @@ jwt:
   valid-duration: 3600
   refreshable-duration: 36000
 
-#com:
-#  bikehub:
-#    sendgrid:
-#      api-key:  ${sendgrid.api-key}
-#      from-email: ${sendgrid.from.email}
-#      from-name: ${sendgrid.from.name}
+com:
+  bikehub:
+    sendgrid:
+      api-key:  ${SENDGRID_API_KEY}
+      from-email: ${SENDGRID_FROM_EMAIL}
+      from-name: ${SENDGRID_FROM_NAME}
 
