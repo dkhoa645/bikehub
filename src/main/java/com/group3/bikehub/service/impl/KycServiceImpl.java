@@ -2,6 +2,7 @@ package com.group3.bikehub.service.impl;
 
 
 import com.group3.bikehub.dto.request.KycRequest;
+import com.group3.bikehub.dto.response.KycDraftResponse;
 import com.group3.bikehub.dto.response.KycResponse;
 import com.group3.bikehub.entity.Kyc;
 import com.group3.bikehub.entity.User;
@@ -46,7 +47,7 @@ public class KycServiceImpl implements KycService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
-    public KycResponse ocr(MultipartFile image) {
+    public KycDraftResponse ocr(MultipartFile image) {
 
         if (image == null || image.isEmpty()) {
             throw new IllegalArgumentException("Image is empty");
@@ -78,8 +79,14 @@ public class KycServiceImpl implements KycService {
                     .getBody();
 
             String ocrText = extractText(googleResponse);
+            KycResponse kycResponse = parseCccd(ocrText);
+            String draftId = kycDraftStoreService.save(kycResponse);
+            KycDraftResponse response = new KycDraftResponse(
+                    draftId,
+                    kycResponse
+            );
 
-            return parseCccd(ocrText);
+            return response;
 
         } catch (Exception e) {
             throw new AppException(ErrorCode.OCR_IMAGE_FAILED);
@@ -193,6 +200,7 @@ public class KycServiceImpl implements KycService {
 
         kycDraftStoreService.remove(draftId);
     }
+
 
 }
 

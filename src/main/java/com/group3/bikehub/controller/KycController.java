@@ -27,22 +27,12 @@ import org.springframework.web.bind.annotation.*;
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<KycDraftResponse> upload(
             @ModelAttribute KycUploadRequest request) {
-         KycResponse kycResponse =  kycService.ocr(request.getImage());
-
-        String draftId = kycDraftStoreService.save(kycResponse);
-
-        KycDraftResponse response = new KycDraftResponse(
-                draftId,
-                kycResponse
-        );
-        return ApiResponse.<KycDraftResponse>builder().result(response).build();
+        return ApiResponse.<KycDraftResponse>builder().result(kycService.ocr(request.getImage())).build();
     }
 
     @PostMapping("/confirm")
     public ApiResponse<Void> confirm(@RequestBody KycConfirmRequest request, @AuthenticationPrincipal Jwt jwt) {
-        String username = jwt.getSubject();
-
-        kycService.confirmKyc(username, request.getDraftId());
+        kycService.confirmKyc(jwt.getSubject(), request.getDraftId());
         return ApiResponse.<Void>builder()
                 .message("KYC CONFIRMED")
                 .build();
