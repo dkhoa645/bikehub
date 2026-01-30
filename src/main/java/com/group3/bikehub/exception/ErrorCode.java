@@ -17,6 +17,7 @@ public enum ErrorCode {
     SEND_EMAIL_FAILED(1008,"Send email failed", HttpStatus.BAD_REQUEST),
     OCR_IMAGE_FAILED(1009,"OCR image failed", HttpStatus.BAD_REQUEST),
     DRAFT_NOT_FOUND(1010,"Draft data expired", HttpStatus.BAD_REQUEST),
+    KYC_NOT_FOUND(1011,"Kyc data expired", HttpStatus.BAD_REQUEST)
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

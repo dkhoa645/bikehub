@@ -10,5 +10,5 @@ public interface KycService {
       KycDraftResponse ocr(MultipartFile image);
       String extractText(String responseJson);
       void confirmKyc(String username, String draftId);
-
+      void verifyKyc(String idNumber, boolean approved);
 }
