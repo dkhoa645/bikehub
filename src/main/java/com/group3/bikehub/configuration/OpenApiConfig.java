@@ -24,6 +24,6 @@ public class OpenApiConfig {
                                 .scheme("bearer")
                                 .bearerFormat("JWT")))
                 .addServersItem(new Server().url("http://localhost:8080").description("Local server"))
-                .addServersItem(new Server().url("https://").description("Production server"));
+                .addServersItem(new Server().url("https://bikehub-production-2468.up.railway.app").description("Production server"));
     }
 }
