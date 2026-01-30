@@ -4,7 +4,6 @@ package com.group3.bikehub.controller;
 import com.group3.bikehub.dto.request.ApiResponse;
 import com.group3.bikehub.dto.response.KycDraftResponse;
 import com.group3.bikehub.dto.response.KycResponse;
-import com.group3.bikehub.mapper.KycMapper;
 import com.group3.bikehub.service.KycService;
 import com.group3.bikehub.service.impl.KycDraftStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
     KycService kycService;
     @Autowired
     KycDraftStoreService kycDraftStoreService;
-    @Autowired
-    KycMapper kycMapper;
+
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<KycDraftResponse> upload(
