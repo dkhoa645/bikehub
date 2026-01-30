@@ -17,10 +17,11 @@ public class KycDraftStoreService {
             store.put(id, response);
             return id;
         }
-
         public KycResponse get(String id) {
+
             return store.get(id);
-        }
+    }
+
 
         public void remove(String id) {
             store.remove(id);
