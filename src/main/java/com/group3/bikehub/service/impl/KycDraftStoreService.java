@@ -18,7 +18,6 @@ public class KycDraftStoreService {
             return id;
         }
         public KycResponse get(String id) {
-
             return store.get(id);
     }
 
