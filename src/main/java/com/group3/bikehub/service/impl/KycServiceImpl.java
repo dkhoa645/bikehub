@@ -4,6 +4,7 @@ package com.group3.bikehub.service.impl;
 import com.group3.bikehub.dto.request.KycRequest;
 import com.group3.bikehub.dto.response.KycDraftResponse;
 import com.group3.bikehub.dto.response.KycResponse;
+import com.group3.bikehub.entity.Enum.KycStatus;
 import com.group3.bikehub.entity.Kyc;
 import com.group3.bikehub.entity.User;
 import com.group3.bikehub.exception.AppException;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -195,12 +197,26 @@ public class KycServiceImpl implements KycService {
 
         Kyc kyc = kycMapper.toKyc(draft);
         kyc.setUser(user); //
+        kyc.setStatus(KycStatus.PENDING);
 
         kycRepository.save(kyc);
 
         kycDraftStoreService.remove(draftId);
     }
 
+
+    public void verifyKyc(String idNumber, boolean approved) {
+        Kyc kyc = kycRepository.findByIdNumber(idNumber)
+                .orElseThrow(() -> new AppException(ErrorCode.KYC_NOT_FOUND));
+        if (approved) {
+            kyc.setStatus(KycStatus.VERIFIED);
+
+        } else {
+            kyc.setStatus(KycStatus.REJECTED);
+        }
+        kyc.setVerifiedAt(LocalDateTime.now());
+        kycRepository.save(kyc);
+    }
 
 }
 
