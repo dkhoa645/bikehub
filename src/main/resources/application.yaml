@@ -20,7 +20,7 @@ jwt:
 com:
   bikehub:
     sendgrid:
-      api-key:  ${SENDGRID_FROM_NAME}
+      api-key:  ${SENDGRID_API_KEY}
       from-email: ${SENDGRID_FROM_EMAIL}
       from-name: ${SENDGRID_FROM_NAME}
 
