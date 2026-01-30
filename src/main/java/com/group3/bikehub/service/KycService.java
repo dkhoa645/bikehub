@@ -8,6 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 public interface KycService {
       KycResponse ocr(MultipartFile image);
       String extractText(String responseJson);
-      void save(String draftId);
+      void confirmKyc(String username, String draftId);
 
 }

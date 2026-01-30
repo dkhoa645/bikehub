@@ -4,10 +4,12 @@ package com.group3.bikehub.service.impl;
 import com.group3.bikehub.dto.request.KycRequest;
 import com.group3.bikehub.dto.response.KycResponse;
 import com.group3.bikehub.entity.Kyc;
+import com.group3.bikehub.entity.User;
 import com.group3.bikehub.exception.AppException;
 import com.group3.bikehub.exception.ErrorCode;
 import com.group3.bikehub.mapper.KycMapper;
 import com.group3.bikehub.repository.KycRepository;
+import com.group3.bikehub.repository.UserRepository;
 import com.group3.bikehub.service.KycService;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,8 @@ public class KycServiceImpl implements KycService {
     KycMapper kycMapper;
     @Autowired
     KycDraftStoreService kycDraftStoreService;
+    @Autowired
+    UserRepository userRepository;
 
     private static final String GOOGLE_VISION_URL =
             "https://vision.googleapis.com/v1/images:annotate?key=AIzaSyDT0HbWymUMTsuBz8TWhG4-o11laOueJmw";
@@ -170,6 +174,24 @@ public class KycServiceImpl implements KycService {
 
         kycDraftStoreService.remove(draftId);
 
+    }
+
+    public void confirmKyc(String username, String draftId) {
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        KycResponse draft = kycDraftStoreService.get(draftId);
+        if (draft == null) {
+            throw new AppException(ErrorCode.DRAFT_NOT_FOUND);
+        }
+
+        Kyc kyc = kycMapper.toKyc(draft);
+        kyc.setUser(user); //
+
+        kycRepository.save(kyc);
+
+        kycDraftStoreService.remove(draftId);
     }
 
 }

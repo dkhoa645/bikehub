@@ -10,6 +10,8 @@ import com.group3.bikehub.service.KycService;
 import com.group3.bikehub.service.impl.KycDraftStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -37,8 +39,10 @@ import org.springframework.web.bind.annotation.*;
     }
 
     @PostMapping("/confirm")
-    public ApiResponse<Void> confirm(@RequestBody KycConfirmRequest request) {
-        kycService.save(request.getDraftId());
+    public ApiResponse<Void> confirm(@RequestBody KycConfirmRequest request, @AuthenticationPrincipal Jwt jwt) {
+        String username = jwt.getSubject();
+
+        kycService.confirmKyc(username, request.getDraftId());
         return ApiResponse.<Void>builder()
                 .message("KYC CONFIRMED")
                 .build();
