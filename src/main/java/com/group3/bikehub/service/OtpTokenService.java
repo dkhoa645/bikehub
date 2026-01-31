@@ -43,7 +43,7 @@ public class OtpTokenService {
 
         User user = userRepository.findByUsername(otpRequest.getEmail())
                 .orElse(null);
-        if (user != null && user.isVerified()) {
+        if (user != null || user.isVerified()) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
