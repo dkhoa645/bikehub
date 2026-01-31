@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class VerifyKycRequest {
-    String idNumber;
+public class KycVerifyRequest {
+    String id;
     Boolean approved;
 }

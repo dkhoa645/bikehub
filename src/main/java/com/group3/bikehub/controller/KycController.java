@@ -1,12 +1,9 @@
 package com.group3.bikehub.controller;
 
 
-import com.group3.bikehub.dto.request.ApiResponse;
-import com.group3.bikehub.dto.request.KycConfirmRequest;
-import com.group3.bikehub.dto.request.KycUploadRequest;
-import com.group3.bikehub.dto.request.VerifyKycRequest;
+import com.group3.bikehub.dto.request.*;
 import com.group3.bikehub.dto.response.KycDraftResponse;
-import com.group3.bikehub.dto.response.KycResponse;
+import com.group3.bikehub.entity.Kyc;
 import com.group3.bikehub.service.KycService;
 import com.group3.bikehub.service.impl.KycDraftStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +12,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -40,10 +39,21 @@ import org.springframework.web.bind.annotation.*;
                 .build();
     }
 
+    @GetMapping("/getall")
+    public ApiResponse<List<Kyc>> getAllKyc(){
+        return ApiResponse.<List<Kyc>>builder().result(kycService.getAllKyc()).build();
+    }
+    @PostMapping("/delete")
+    public ApiResponse<Void> deleteKycById(@RequestBody KycDeleteRequest request){
+        kycService.deleteKycById(request.getId());
+        return ApiResponse.<Void>builder().message("success").build();
+    }
+
+
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/verify")
-    public ApiResponse<Void> verifyKyc(@RequestBody VerifyKycRequest request) {
-        kycService.verifyKyc(request.getIdNumber(), request.getApproved());
+    public ApiResponse<Void> verifyKyc(@RequestBody KycVerifyRequest request) {
+        kycService.verifyKyc(request.getId(), request.getApproved());
         return ApiResponse.<Void>builder()
                 .message("KYC VERIFIED SUCCESSFULLY")
                 .build();
