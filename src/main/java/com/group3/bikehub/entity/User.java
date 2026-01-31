@@ -29,4 +29,7 @@ public class User {
     String verificationToken;
     Date expiration;
     boolean verified;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    Kyc kyc;
 }

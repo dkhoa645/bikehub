@@ -43,9 +43,13 @@ public class OtpTokenService {
 
         User user = userRepository.findByUsername(otpRequest.getEmail())
                 .orElse(null);
-        if (user != null || user.isVerified()) {
-            throw new AppException(ErrorCode.USER_EXISTED);
+
+        if (user != null ) {
+            if (user.isVerified()) {
+                throw new AppException(ErrorCode.USER_EXISTED);
+            }
         }
+
 
         Date exp = new Date(Instant.now().plus(5, ChronoUnit.MINUTES)
                 .toEpochMilli());
