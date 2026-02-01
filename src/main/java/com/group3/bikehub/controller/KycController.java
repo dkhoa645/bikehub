@@ -21,14 +21,11 @@ import java.util.List;
     public class KycController {
     @Autowired
     KycService kycService;
-    @Autowired
-    KycDraftStoreService kycDraftStoreService;
-
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<KycDraftResponse> upload(
             @ModelAttribute KycUploadRequest request) {
-        return ApiResponse.<KycDraftResponse>builder().result(kycService.ocr(request.getImage())).build();
+        return ApiResponse.<KycDraftResponse>builder().result(kycService.upload(request.getImage())).build();
     }
 
     @PostMapping("/confirm")
