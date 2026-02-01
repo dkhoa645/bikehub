@@ -10,5 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @Builder
 public class KycUploadRequest {
-    private MultipartFile image;
+    private MultipartFile front;
+    private MultipartFile back;
 }
