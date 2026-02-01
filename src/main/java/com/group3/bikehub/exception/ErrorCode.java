@@ -19,6 +19,7 @@ public enum ErrorCode {
     DRAFT_NOT_FOUND(1010,"Draft data expired", HttpStatus.BAD_REQUEST),
     KYC_NOT_FOUND(1011,"Kyc data expired", HttpStatus.BAD_REQUEST),
     KYC_ALREADY_EXISTS(1012,"Kyc already exists", HttpStatus.BAD_REQUEST),
+    IMAGE_NOT_FOUND(1013,"Image not found", HttpStatus.NOT_FOUND),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

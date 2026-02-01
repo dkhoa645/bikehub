@@ -24,11 +24,9 @@ public class GoogleVisionService {
 
     public String ocr(MultipartFile image) {
         if (image == null || image.isEmpty()) {
-            throw new IllegalArgumentException("Image is empty");
+            throw new AppException(ErrorCode.IMAGE_NOT_FOUND);
         }
-
         try {
-
             String base64Image = Base64.getEncoder()
                     .encodeToString(image.getBytes());
 

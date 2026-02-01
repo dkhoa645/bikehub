@@ -1,5 +1,6 @@
 package com.group3.bikehub.service.impl;
 
+import com.group3.bikehub.dto.request.KycUploadRequest;
 import com.group3.bikehub.dto.response.KycDraftResponse;
 import com.group3.bikehub.dto.response.KycResponse;
 import com.group3.bikehub.entity.Enum.KycStatus;
@@ -41,9 +42,10 @@ public class KycServiceImpl implements KycService {
 
 
     @Override
-    public KycDraftResponse upload(MultipartFile image) {
-            String ocrText = parseTextService.extractText(googleVisionService.ocr(image));
-            KycResponse kycResponse = parseTextService.parseCccd(ocrText);
+    public KycDraftResponse upload(KycUploadRequest request) {
+            String ocrTextFront = parseTextService.extractText(googleVisionService.ocr(request.getFront()));
+            String ocrTextBack = parseTextService.extractText(googleVisionService.ocr(request.getBack()));
+            KycResponse kycResponse = parseTextService.parseCccd(ocrTextFront);
             String draftId = kycDraftStoreService.save(kycResponse);
             KycDraftResponse response = new KycDraftResponse(
                     draftId,

@@ -5,7 +5,6 @@ import com.group3.bikehub.dto.request.*;
 import com.group3.bikehub.dto.response.KycDraftResponse;
 import com.group3.bikehub.entity.Kyc;
 import com.group3.bikehub.service.KycService;
-import com.group3.bikehub.service.impl.KycDraftStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,7 +24,7 @@ import java.util.List;
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<KycDraftResponse> upload(
             @ModelAttribute KycUploadRequest request) {
-        return ApiResponse.<KycDraftResponse>builder().result(kycService.upload(request.getImage())).build();
+        return ApiResponse.<KycDraftResponse>builder().result(kycService.upload(request)).build();
     }
 
     @PostMapping("/confirm")
