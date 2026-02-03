@@ -1,5 +1,6 @@
 package com.group3.bikehub.entity;
 
+import com.group3.bikehub.entity.Enum.BikeType;
 import com.group3.bikehub.entity.Enum.ListingStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -7,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -32,8 +34,7 @@ public class Listing {
     @JoinColumn(name = "brand_id")
     Brand brand;
 
-    @ManyToOne
-    @JoinColumn(name = "bike_type_id")
+    @Enumerated(EnumType.STRING)
     BikeType bikeType;
 
     String title;

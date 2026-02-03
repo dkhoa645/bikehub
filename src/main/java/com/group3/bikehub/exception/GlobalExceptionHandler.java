@@ -16,6 +16,8 @@ public class GlobalExceptionHandler {
     ResponseEntity<ApiResponse> handleException(Exception ex, WebRequest request) {
         ApiResponse apiResponse = new ApiResponse();
 
+        ex.printStackTrace();
+
         apiResponse.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
         apiResponse.setMessage(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage());
 
