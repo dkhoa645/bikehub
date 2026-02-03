@@ -1,6 +1,6 @@
 package com.group3.bikehub.dto.request;
 
-import com.group3.bikehub.entity.Enum.RegisterRole;
+import com.group3.bikehub.entity.Enum.RegisterRoleEnum;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -13,5 +13,5 @@ public class RegistrationRequest {
     String verificationToken;
     String password;
     String fullName;
-    RegisterRole role;
+    RegisterRoleEnum role;
 }

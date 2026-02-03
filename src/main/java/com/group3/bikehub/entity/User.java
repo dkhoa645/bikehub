@@ -7,19 +7,20 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
+@Table(name = "user")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
-@Data
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
+    UUID id;
     @Column(unique = true, nullable = false)
     String username;
     String password;
@@ -29,7 +30,7 @@ public class User {
     String verificationToken;
     Date expiration;
     boolean verified;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    Kyc kycProfile;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    Kyc kyc;
 }

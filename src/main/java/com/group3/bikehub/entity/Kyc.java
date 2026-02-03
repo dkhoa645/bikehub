@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 public class Kyc {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
     private String idNumber;
     private String fullName;
     private String dateOfBirth;
@@ -22,8 +23,8 @@ public class Kyc {
     private String placeOfOrigin;
     private String placeOfResidence;
     private String expiryDate;
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @OneToOne
+    @JoinColumn(name = "user_id", unique = true, nullable = false)
     private User user;
     private KycStatus status;
     private LocalDateTime verifiedAt;
