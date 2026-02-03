@@ -15,4 +15,5 @@ public class UserResponse {
     String username;
     String name;
     Set<RoleResponse> roles;
+    boolean isKyc;
 }
