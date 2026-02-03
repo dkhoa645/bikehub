@@ -3,6 +3,7 @@ package com.group3.bikehub.service;
 import com.group3.bikehub.dto.request.KycRequest;
 import com.group3.bikehub.exception.AppException;
 import com.group3.bikehub.exception.ErrorCode;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -19,8 +20,11 @@ public class GoogleVisionService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final RestTemplate restTemplate = new RestTemplate();
-    private static final String GOOGLE_VISION_URL =
-            "https://vision.googleapis.com/v1/images:annotate?key=AIzaSyDT0HbWymUMTsuBz8TWhG4-o11laOueJmw";
+    @Value("${com.bikehub.googlevision.base-url}")
+    private String googleVisionBaseUrl;
+
+    @Value("${com.bikehub.googlevision.api-key}")
+    private String googleVisionApiKey;
 
     public String ocr(MultipartFile image) {
         if (image == null || image.isEmpty()) {
@@ -46,8 +50,10 @@ public class GoogleVisionService {
 
             HttpEntity<String> entity = new HttpEntity<>(jsonBody, headers);
 
+            String googleUrl = googleVisionBaseUrl + "?key=" + googleVisionApiKey;
+
             String googleResponse = restTemplate
-                    .postForEntity(GOOGLE_VISION_URL, entity, String.class)
+                    .postForEntity(googleUrl, entity, String.class)
                     .getBody();
             return googleResponse;
 

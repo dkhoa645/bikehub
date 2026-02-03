@@ -39,6 +39,7 @@ import java.util.List;
     public ApiResponse<List<Kyc>> getAllKyc(){
         return ApiResponse.<List<Kyc>>builder().result(kycService.getAllKyc()).build();
     }
+
     @PostMapping("/delete")
     public ApiResponse<Void> deleteKycById(@RequestBody KycDeleteRequest request){
         kycService.deleteKycById(request.getId());

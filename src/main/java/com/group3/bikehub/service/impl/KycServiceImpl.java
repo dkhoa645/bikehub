@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -43,15 +42,15 @@ public class KycServiceImpl implements KycService {
 
     @Override
     public KycDraftResponse upload(KycUploadRequest request) {
-            String ocrTextFront = parseTextService.extractText(googleVisionService.ocr(request.getFront()));
-            String ocrTextBack = parseTextService.extractText(googleVisionService.ocr(request.getBack()));
-            KycResponse kycResponse = parseTextService.parseCccd(ocrTextFront);
-            String draftId = kycDraftStoreService.save(kycResponse);
-            KycDraftResponse response = new KycDraftResponse(
-                    draftId,
-                    kycResponse
-            );
-            return response;
+        String ocrTextFront = parseTextService.extractText(googleVisionService.ocr(request.getFront()));
+        String ocrTextBack = parseTextService.extractText(googleVisionService.ocr(request.getBack()));
+        KycResponse kycResponse = parseTextService.parseCccd(ocrTextFront);
+        String draftId = kycDraftStoreService.save(kycResponse);
+        KycDraftResponse response = new KycDraftResponse(
+                draftId,
+                kycResponse
+        );
+        return response;
 
     }
 
@@ -140,7 +139,3 @@ public class KycServiceImpl implements KycService {
     }
 
 }
-
-
-
-

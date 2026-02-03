@@ -23,4 +23,6 @@ com:
       api-key:  ${SENDGRID_API_KEY}
       from-email: ${SENDGRID_FROM_EMAIL}
       from-name: ${SENDGRID_FROM_NAME}
-
+    googlevision:
+      base-url: https://vision.googleapis.com/v1/images:annotate
+      api-key: ${GOOGLE_VISION_API_KEY}
