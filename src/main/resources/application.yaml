@@ -11,6 +11,12 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 50MB
+      file-size-threshold: 2KB
 
 jwt:
   signerKey: "a4aec8aa399e085aa2c40ae8106d7bb6c55c825a6149916bfcc9920e441d05c2"
@@ -26,3 +32,10 @@ com:
     googlevision:
       base-url: https://vision.googleapis.com/v1/images:annotate
       api-key: ${GOOGLE_VISION_API_KEY}
+
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME}
+  api-key: ${CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_API_SECRET}
+
+

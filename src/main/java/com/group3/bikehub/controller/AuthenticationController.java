@@ -4,13 +4,18 @@ import com.group3.bikehub.dto.request.*;
 import com.group3.bikehub.dto.response.AuthenticationResponse;
 import com.group3.bikehub.dto.response.OtpVerifyResponse;
 import com.group3.bikehub.service.AuthenticationService;
+import com.group3.bikehub.service.CloudinaryService;
 import com.group3.bikehub.service.OtpTokenService;
 import com.nimbusds.jose.JOSEException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.text.ParseException;
 
 @RestController
@@ -21,6 +26,7 @@ public class AuthenticationController {
 
     AuthenticationService authenticationService;
     OtpTokenService otpTokenService;
+    CloudinaryService cloudinaryService;
 
     @PostMapping("/login")
     ApiResponse<AuthenticationResponse> login(@RequestBody AuthenticationRequest request){
@@ -64,6 +70,8 @@ public class AuthenticationController {
                 .message("Registration Successful")
                 .build();
     }
+
+
 
 
 
