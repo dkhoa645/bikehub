@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class CurentUserService {
+public class CurrentUserService {
     private final UserRepository userRepository;
 
     public User getCurrentUser() {

@@ -1,8 +1,10 @@
 package com.group3.bikehub.controller;
 
 import com.group3.bikehub.dto.request.ApiResponse;
+import com.group3.bikehub.dto.request.InspectionCreationRequest;
 import com.group3.bikehub.dto.request.ListingCreationRequest;
 import com.group3.bikehub.dto.response.ListingResponse;
+import com.group3.bikehub.entity.InspectionLocation;
 import com.group3.bikehub.entity.ListingImage;
 import com.group3.bikehub.service.ListingService;
 import lombok.AccessLevel;
@@ -20,10 +22,9 @@ public class ListingController {
 
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ApiResponse<ListingResponse> addListing(
-            @ModelAttribute ListingCreationRequest request){
+    ApiResponse<ListingResponse> addListing(@ModelAttribute ListingCreationRequest listingRequest){
         return ApiResponse.<ListingResponse>builder()
-                .result(listingService.createListing(request))
+                .result(listingService.createListing(listingRequest))
                 .build();
     }
 }

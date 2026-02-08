@@ -30,6 +30,8 @@ public class User {
     String verificationToken;
     Date expiration;
     boolean verified;
+    @OneToOne
+    Address address;
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     Kyc kycProfile;
 

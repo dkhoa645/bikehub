@@ -2,13 +2,12 @@ package com.group3.bikehub.service;
 
 import com.group3.bikehub.dto.request.ListingCreationRequest;
 import com.group3.bikehub.dto.response.ListingResponse;
-import com.group3.bikehub.entity.Brand;
-import com.group3.bikehub.entity.Enum.ListingImageType;
 import com.group3.bikehub.entity.Enum.ListingStatus;
 import com.group3.bikehub.entity.Listing;
 import com.group3.bikehub.entity.ListingImage;
 import com.group3.bikehub.exception.AppException;
 import com.group3.bikehub.exception.ErrorCode;
+import com.group3.bikehub.mapper.InspectionMapper;
 import com.group3.bikehub.mapper.ListingMapper;
 import com.group3.bikehub.repository.BrandRepository;
 import com.group3.bikehub.repository.ListingImagineRepository;
@@ -21,8 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Map;
 
@@ -33,11 +30,10 @@ public class ListingService {
     ListingRepository listingRepository;
     ListingMapper listingMapper;
     BrandRepository brandRepository;
-    CurentUserService curentUserService;
+    CurrentUserService currentUserService;
     CloudinaryService cloudinaryService;
     ListingImagineRepository  listingImagineRepository;
-
-
+    InspectionMapper inspectionMapper;
 
     @Transactional
     public ListingResponse createListing(ListingCreationRequest request) {
@@ -48,9 +44,9 @@ public class ListingService {
                 brandRepository.findByName(request.getBrandName())
                         .orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED)));
 
-        listing.setSeller(curentUserService.getCurrentUser());
+        listing.setSeller(currentUserService.getCurrentUser());
 
-        listing.setStatus(ListingStatus.PENDING);
+        listing.setStatus(ListingStatus.DRAFT);
 
         listing.setCreatedAt(new Date());
 
@@ -69,6 +65,10 @@ public class ListingService {
                 throw new RuntimeException(e);
             }
         }
+
+
+
+
 
 
         return listingMapper.toListingResponse(listingSaved);

@@ -3,6 +3,7 @@ package com.group3.bikehub.controller;
 import com.cloudinary.Api;
 import com.group3.bikehub.dto.request.ApiResponse;
 import com.group3.bikehub.dto.request.BrandCreationRequest;
+import com.group3.bikehub.dto.request.BrandUpdateRequest;
 import com.group3.bikehub.dto.response.BrandResponse;
 import com.group3.bikehub.service.BrandService;
 import lombok.AccessLevel;
@@ -32,6 +33,13 @@ public class BrandController {
     ApiResponse<BrandResponse> addBrands(@RequestBody BrandCreationRequest request){
         return ApiResponse.<BrandResponse>builder()
                 .result(brandService.addBrand(request))
+                .build();
+    }
+
+    @PutMapping()
+    ApiResponse<BrandResponse> updateBrands(@RequestBody BrandUpdateRequest request){
+        return ApiResponse.<BrandResponse>builder()
+                .result(brandService.updateBrand(request))
                 .build();
     }
 }
