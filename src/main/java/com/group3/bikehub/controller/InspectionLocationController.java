@@ -2,6 +2,7 @@ package com.group3.bikehub.controller;
 
 import com.group3.bikehub.dto.request.ApiResponse;
 import com.group3.bikehub.dto.request.LocationCreationRequest;
+import com.group3.bikehub.dto.request.LocationUpdateRequest;
 import com.group3.bikehub.dto.response.InspectionLocationResponse;
 
 import com.group3.bikehub.service.InspectionLocationService;
@@ -46,6 +47,24 @@ public class InspectionLocationController {
     ApiResponse<List<InspectionLocationResponse>> getCompanyLocation() {
         return ApiResponse.<List<InspectionLocationResponse>>builder()
                 .result(inspectionLocationService.findCompanyLocation())
+                .build();
+    }
+
+    @PutMapping("/{id}")
+    ApiResponse<InspectionLocationResponse> updateLocation(
+            @PathVariable UUID id,
+            @RequestBody LocationUpdateRequest request
+    ) {
+        return ApiResponse.<InspectionLocationResponse>builder()
+                .result(inspectionLocationService.updateLocation(request,id))
+                .build();
+    }
+
+    @DeleteMapping("/{id}")
+    ApiResponse<Void> deleteLocation(@PathVariable UUID id) {
+        inspectionLocationService.deleteLocation(id);
+        return ApiResponse.<Void>builder()
+                .message("Location has been deleted")
                 .build();
     }
 

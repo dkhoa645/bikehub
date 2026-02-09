@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 import java.util.UUID;
 
 @Entity
-@Table(name = "brands")
+@Table(name = "addresses")
 @Getter
 @Setter
 @Builder
@@ -25,6 +25,7 @@ public class Address {
     String nameContact;
 
     @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", unique = true)
     User user;
 
 }

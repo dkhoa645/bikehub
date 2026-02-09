@@ -47,7 +47,6 @@ public class Inspection {
     InspectionStatus status;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     InspectionResult inspectionResult;
 
     Integer overallScore;

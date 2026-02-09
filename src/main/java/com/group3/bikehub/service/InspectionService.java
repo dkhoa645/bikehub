@@ -24,6 +24,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -62,4 +63,15 @@ public class InspectionService {
 
         return inspectionMapper.toInspectionResponse(inspectionRepository.save(inspection));
     }
+
+    public InspectionResponse getInspection(UUID listingId) {
+        Listing listing = listingRepository.findById(listingId).orElse(null);
+        Inspection inspection = new Inspection();
+        if (listing != null) {
+            inspection = inspectionRepository.findByListing(listing);
+        }
+        return inspectionMapper.toInspectionResponse(inspection);
+    }
+
+
 }

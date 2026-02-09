@@ -1,11 +1,13 @@
 package com.group3.bikehub.dto.response;
 
 import com.group3.bikehub.entity.Enum.InspectionStatus;
-import com.group3.bikehub.entity.ListingImage;
+import com.group3.bikehub.entity.Enum.ListingStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -15,11 +17,13 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ListingResponse {
     UUID id;
-    BrandResponse brandResponse;
+    BrandResponse brand;
     String title;
     String description;
     Integer usageDuration;
     String frameNumber;
-    InspectionStatus inspectionStatus;
+    ListingStatus status;
     BigDecimal price;
+    Date createdAt;
+    List<ListingImageResponse> images;
 }

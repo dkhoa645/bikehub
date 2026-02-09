@@ -6,5 +6,6 @@ public enum ListingStatus {
     RESERVED,
     REJECTED,
     APPROVED,
-    LIVE
+    LIVE,
+    SOLD
 }

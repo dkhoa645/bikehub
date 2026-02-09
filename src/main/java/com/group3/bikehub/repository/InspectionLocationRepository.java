@@ -12,4 +12,10 @@ import java.util.UUID;
 @Repository
 public interface InspectionLocationRepository extends JpaRepository<InspectionLocation, UUID> {
     List<InspectionLocation> findByType(InspectionLocationType inspectionLocationType);
+
+    boolean existsByAddressLine(String addressLine);
+
+    boolean existsByContactName(String contactName);
+
+    boolean existsByAddressLineAndContactName(String addressLine, String contactName);
 }

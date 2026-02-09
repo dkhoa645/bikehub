@@ -17,6 +17,5 @@ public class InspectionCreationRequest {
     InspectionType inspectionType;
     UUID inspectionLocationId;
     UUID listingId;
-    Long locationId;
     Date scheduledAt;
 }

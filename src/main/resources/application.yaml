@@ -4,12 +4,12 @@ spring:
   config:
     import: optional:classpath:application-secret.properties
   datasource:
-    url: jdbc:mysql://crossover.proxy.rlwy.net:36525/railway
+    url: jdbc:mysql://switchyard.proxy.rlwy.net:56471/railway
     username: root
-    password: ArUHrWJsaZXDghwQNPwQbcTmhcnUXvhD
+    password: QRLOZzwzDpJxowZgdfOycaFDuVzYXtmz
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
   servlet:
     multipart:

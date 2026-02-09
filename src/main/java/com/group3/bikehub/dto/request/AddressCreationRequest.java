@@ -1,19 +1,14 @@
-package com.group3.bikehub.dto.response;
+package com.group3.bikehub.dto.request;
 
-import com.group3.bikehub.entity.Enum.InspectionLocationType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class InspectionLocationResponse {
-    UUID id;
-    InspectionLocationType type;
+public class AddressCreationRequest {
     String contactName;
     String contactPhone;
     String addressLine;

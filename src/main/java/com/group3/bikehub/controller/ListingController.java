@@ -13,6 +13,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/listing")
 @RequiredArgsConstructor
@@ -25,6 +27,13 @@ public class ListingController {
     ApiResponse<ListingResponse> addListing(@ModelAttribute ListingCreationRequest listingRequest){
         return ApiResponse.<ListingResponse>builder()
                 .result(listingService.createListing(listingRequest))
+                .build();
+    }
+
+    @GetMapping("/my-list")
+    ApiResponse<List<ListingResponse>> getListing(){
+        return ApiResponse.<List<ListingResponse>>builder()
+                .result(listingService.getMyListing())
                 .build();
     }
 }

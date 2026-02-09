@@ -30,7 +30,7 @@ public class Listing {
     @JoinColumn(name = "seller_id", nullable = false)
     User seller;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "brand_id")
     Brand brand;
 

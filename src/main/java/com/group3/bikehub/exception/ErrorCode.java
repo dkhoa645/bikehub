@@ -21,6 +21,10 @@ public enum ErrorCode {
     KYC_ALREADY_EXISTS(1012,"Kyc already exists", HttpStatus.BAD_REQUEST),
     IMAGE_NOT_FOUND(1013,"Image not found", HttpStatus.NOT_FOUND),
     LOCATION_NOT_FOUND(1014,"Location not found", HttpStatus.NOT_FOUND),
+    ADDRESS_EXIST(1015,"Address already exists", HttpStatus.BAD_REQUEST),
+    LISTING_STATUS(1016,"Available for sold status", HttpStatus.BAD_REQUEST),
+    LOCATION_EXISTS(1017,"Location already exists", HttpStatus.BAD_REQUEST),
+    INSPECTION_NOT_FOUND(1018,"Inspection not found", HttpStatus.NOT_FOUND),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
