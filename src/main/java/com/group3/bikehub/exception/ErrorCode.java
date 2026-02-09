@@ -21,7 +21,7 @@ public enum ErrorCode {
     KYC_ALREADY_EXISTS(1012,"Kyc already exists", HttpStatus.BAD_REQUEST),
     IMAGE_NOT_FOUND(1013,"Image not found", HttpStatus.NOT_FOUND),
     LISTING_NOT_FOUND(1014,"Listing not found", HttpStatus.NOT_FOUND),
-    ;
+    ORDER_CANCELED(1015,"Order canceled", HttpStatus.BAD_REQUEST),;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
         this.code = code;

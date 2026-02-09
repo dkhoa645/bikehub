@@ -1,6 +1,7 @@
 package com.group3.bikehub.entity;
 
 import com.group3.bikehub.entity.Enum.OrderStatus;
+import com.group3.bikehub.entity.Enum.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,11 +17,12 @@ import java.util.UUID;
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    UUID id;
+    private UUID id;
     @ManyToOne
     @JoinColumn(name = "buyer_id", nullable = false)
-    User user;
-    OrderStatus status;
-    BigDecimal total_ammount;
-    LocalDateTime created_at;
+    private User user;
+    private OrderStatus orderStatus;
+    private PaymentStatus paymentStatus;
+    private BigDecimal total_ammount;
+    private LocalDateTime created_at;
 }

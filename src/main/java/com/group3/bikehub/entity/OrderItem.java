@@ -1,5 +1,6 @@
 package com.group3.bikehub.entity;
 
+import com.group3.bikehub.entity.Enum.SellerStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,8 +18,9 @@ public class OrderItem {
     private UUID id;
     @ManyToOne
     @JoinColumn(name = "listing_id", nullable = false)
-    Listing listing;
-    String description;
+    private Listing listing;
+    SellerStatus status;
+    private String description;
     @ManyToOne
-    Order order;
+    private Order order;
 }

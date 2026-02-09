@@ -8,10 +8,11 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class PlaceOrderRequest {
-        UUID listingId;
-        String description;
+public class AcceptOrderRequest {
+    private UUID listingId;
+    private boolean accepted;
+
 }
