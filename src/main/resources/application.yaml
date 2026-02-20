@@ -4,9 +4,9 @@ spring:
   config:
     import: optional:classpath:application-secret.properties
   datasource:
-    url: jdbc:mysql://switchyard.proxy.rlwy.net:56471/railway
+    url: jdbc:mysql://shinkansen.proxy.rlwy.net:41830/railway
     username: root
-    password: QRLOZzwzDpJxowZgdfOycaFDuVzYXtmz
+    password: wIJrIySOkOsmUfOZluncJponTHLLqisU
   jpa:
     hibernate:
       ddl-auto: update
