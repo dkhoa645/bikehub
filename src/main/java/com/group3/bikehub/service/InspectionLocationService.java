@@ -27,9 +27,8 @@ public class InspectionLocationService {
 
     public InspectionLocationResponse createInspectionLocation(LocationCreationRequest locationCreationRequest) {
         InspectionLocation location = inspectionLocationMapper.toLocation(locationCreationRequest);
-        if(inspectionLocationRepository.existsByAddressLineAndContactName(
-                locationCreationRequest.getAddressLine(),
-                locationCreationRequest.getContactName())) {
+        if(inspectionLocationRepository.existsByAddressLine(
+                locationCreationRequest.getAddressLine())) {
             throw new AppException(ErrorCode.LOCATION_EXISTS);
         }
         location.setType(InspectionLocationType.COMPANY);

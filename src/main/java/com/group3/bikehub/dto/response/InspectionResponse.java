@@ -1,5 +1,6 @@
 package com.group3.bikehub.dto.response;
 
+import com.group3.bikehub.entity.Enum.InspectionStatus;
 import com.group3.bikehub.entity.Enum.InspectionType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -13,9 +14,8 @@ import java.util.UUID;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InspectionResponse {
-    InspectionType type;
-    UUID inspectionLocationId;
-    UUID listingId;
-    Long locationId;
+    InspectionType inspectionType;
+    InspectionLocationResponse inspectionLocation;
+    InspectionStatus status;
     Date scheduledAt;
 }

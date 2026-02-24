@@ -11,7 +11,7 @@ import java.util.UUID;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AddressUpdateRequest {
-    String contactName;
-    String contactPhone;
+    String nameContact;
+    String phoneContact;
     String addressLine;
 }

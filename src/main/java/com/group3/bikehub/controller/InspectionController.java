@@ -1,5 +1,6 @@
 package com.group3.bikehub.controller;
 
+import com.cloudinary.Api;
 import com.group3.bikehub.dto.request.ApiResponse;
 import com.group3.bikehub.dto.request.InspectionCreationRequest;
 import com.group3.bikehub.dto.request.LocationCreationRequest;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -20,7 +22,7 @@ import java.util.UUID;
 public class InspectionController {
     InspectionService inspectionService;
 
-    @PostMapping("/my-inspection")
+    @PostMapping()
     ApiResponse<InspectionResponse> createInspection(@RequestBody InspectionCreationRequest request) {
         return ApiResponse.<InspectionResponse>builder()
                 .result(inspectionService.createInspection(request))
@@ -31,6 +33,13 @@ public class InspectionController {
     ApiResponse<InspectionResponse> getMyInspection(@PathVariable UUID listingId) {
         return ApiResponse.<InspectionResponse>builder()
                 .result(inspectionService.getInspection(listingId))
+                .build();
+    }
+
+    @GetMapping()
+    ApiResponse<List<InspectionResponse>> getInspections() {
+        return ApiResponse.<List<InspectionResponse>>builder()
+                .result(inspectionService.getAll())
                 .build();
     }
 }

@@ -16,6 +16,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -31,8 +32,9 @@ public class AddressService {
     public AddressResponse create(AddressCreationRequest request) {
         Address address = addressMapper.toAddress(request);
         User user = currentUserService.getCurrentUser();
-        if(user.getAddress()!=null){
+        if(!addressRepository.existsByUser(user)){
             address.setUser(user);
+
         }else{
             throw new AppException(ErrorCode.ADDRESS_EXIST);
         }
@@ -41,7 +43,7 @@ public class AddressService {
 
     public AddressResponse findMyAddress() {
         User user = currentUserService.getCurrentUser();
-        return addressMapper.toAddressResponse(user.getAddress());
+        return addressMapper.toAddressResponse(addressRepository.findByUser(user));
     }
 
 

@@ -8,7 +8,7 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface ListingMapper {
-    @Mapping(target = "brand", ignore = true)
+
     Listing toListing(ListingCreationRequest request);
 
     ListingResponse toListingResponse(Listing listing);
