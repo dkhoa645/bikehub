@@ -17,14 +17,13 @@ import java.util.UUID;
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id")
     UUID id;
 
     String addressLine;
     String phoneContact;
     String nameContact;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne()
     @JoinColumn(name = "user_id", unique = true)
     User user;
 

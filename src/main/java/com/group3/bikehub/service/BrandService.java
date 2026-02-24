@@ -39,8 +39,14 @@ public class BrandService {
 
     public BrandResponse updateBrand(BrandUpdateRequest request) {
         Brand brand = brandRepository.findById(request.getId())
-                .orElseThrow(() -> new AppException(ErrorCode.VERIFICATION_TOKEN_EXPIRED));
+                .orElseThrow(() -> new AppException(ErrorCode.BRAND_NOT_FOUND));
         brand.setName(request.getName());
         return brandMapper.toBrandResponse(brandRepository.save(brand));
+    }
+
+    public void deleteBrand(Long brandId) {
+        Brand brand = brandRepository.findById(brandId)
+                .orElseThrow(() -> new AppException(ErrorCode.BRAND_NOT_FOUND));
+        brandRepository.delete(brand);
     }
 }

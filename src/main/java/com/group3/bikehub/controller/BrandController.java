@@ -42,4 +42,12 @@ public class BrandController {
                 .result(brandService.updateBrand(request))
                 .build();
     }
+
+    @DeleteMapping("/{brandId}")
+    ApiResponse<Void> deleteBrands(@PathVariable("brandId") Long brandId){
+        brandService.deleteBrand(brandId);
+        return ApiResponse.<Void>builder()
+                .message("Deleted brand")
+                .build();
+    }
 }

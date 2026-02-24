@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AddressCreationRequest {
-    String contactName;
-    String contactPhone;
+    String nameContact;
+    String phoneContact;
     String addressLine;
 }
