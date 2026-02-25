@@ -19,8 +19,8 @@ public class OrderItem {
     @ManyToOne
     @JoinColumn(name = "listing_id", nullable = false)
     private Listing listing;
-    SellerStatus status;
     private String description;
     @ManyToOne
+    @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 }
