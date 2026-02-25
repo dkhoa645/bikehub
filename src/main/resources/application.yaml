@@ -2,7 +2,7 @@ spring:
   application:
     name: bikehub
   config:
-    import: optional:classpath:application-secret.properties
+    import: "optional:classpath:application-secret.properties"
   datasource:
     url: jdbc:mysql://shinkansen.proxy.rlwy.net:41830/railway
     username: root
