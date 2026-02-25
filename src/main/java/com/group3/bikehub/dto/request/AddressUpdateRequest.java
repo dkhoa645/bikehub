@@ -1,4 +1,4 @@
-package com.group3.bikehub.dto.response;
+package com.group3.bikehub.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -7,11 +7,11 @@ import java.util.UUID;
 
 @Data
 @NoArgsConstructor
-@Builder
 @AllArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ListingImageResponse {
-    UUID id;
-    Integer imageOrder;
-    String secureUrl;
+public class AddressUpdateRequest {
+    String contactName;
+    String contactPhone;
+    String addressLine;
 }

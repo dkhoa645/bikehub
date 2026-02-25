@@ -1,5 +1,6 @@
 package com.group3.bikehub.dto.response;
 
+import com.group3.bikehub.entity.Enum.InspectionLocationType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -7,11 +8,13 @@ import java.util.UUID;
 
 @Data
 @NoArgsConstructor
-@Builder
 @AllArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ListingImageResponse {
+public class InspectionLocationResponse {
     UUID id;
-    Integer imageOrder;
-    String secureUrl;
+    InspectionLocationType type;
+    String contactName;
+    String contactPhone;
+    String addressLine;
 }
