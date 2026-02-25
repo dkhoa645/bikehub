@@ -25,7 +25,7 @@ public class OrderService {
     @Autowired
     private OrderRepository orderRepository;
     @Autowired
-    private CurentUserService curentUserService;
+    private CurrentUserService curentUserService;
     @Autowired
     private ListingRepository listingRepository;
     @Autowired
