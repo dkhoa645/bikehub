@@ -4,9 +4,9 @@ spring:
   config:
     import: optional:classpath:application-secret.properties
   datasource:
-    url: jdbc:mysql://tramway.proxy.rlwy.net:50975/railway
+    url: jdbc:mysql://shinkansen.proxy.rlwy.net:41830/railway
     username: root
-    password: xfuXsXcnAWAMRWaDjIecyGzMnPSoaVqf
+    password: wIJrIySOkOsmUfOZluncJponTHLLqisU
   jpa:
     hibernate:
       ddl-auto: update
@@ -32,11 +32,6 @@ com:
     googlevision:
       base-url: https://vision.googleapis.com/v1/images:annotate
       api-key: ${GOOGLE_VISION_API_KEY}
-
-  payos:
-    PAYOS_CLIENT_ID: b35ca4d1-0bfd-497e-b61f-ddbcd7eae3e4
-    PAYOS_API_KEY: 8996a296-9292-4d54-8edf-6e906426014b
-    PAYOS_CHECKSUM_KEY: 95a7817031704749d901816a9c5832e1a7a9e5b8338a906d47f5bbbdf53aff2d
 
 cloudinary:
   cloud-name: ${CLOUDINARY_CLOUD_NAME}

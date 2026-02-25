@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 @Getter
 @Setter
 @Builder
@@ -30,6 +30,8 @@ public class User {
     String verificationToken;
     Date expiration;
     boolean verified;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    Address address;
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     Kyc kycProfile;
 

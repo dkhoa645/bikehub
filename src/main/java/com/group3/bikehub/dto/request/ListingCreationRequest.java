@@ -18,7 +18,7 @@ import java.util.List;
 public class ListingCreationRequest {
     String brandName;
     BikeType bikeType;
-    String tittle;
+    String title;
     Integer usageDuration;
     String frameNumber;
     String description;
