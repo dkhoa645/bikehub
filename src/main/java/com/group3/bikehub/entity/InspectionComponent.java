@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "inspection_components")
 @Getter
@@ -18,4 +20,6 @@ public class InspectionComponent {
     Long id;
     @Column(nullable = false)
     String name;
+    @OneToMany(mappedBy = "component")
+    Set<InspectionScore> inspectionScores;
 }
