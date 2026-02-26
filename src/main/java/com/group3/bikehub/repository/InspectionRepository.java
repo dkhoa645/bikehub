@@ -7,6 +7,7 @@ import com.group3.bikehub.entity.Listing;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,5 +17,5 @@ public interface InspectionRepository extends JpaRepository<Inspection, UUID> {
 
     List<Inspection> findByInspectorId(UUID inspectorId);
 
-    List<Inspection> findByStatus(InspectionStatus status);
+    List<Inspection> findByStatusOrderByCreatedAt(InspectionStatus status);
 }
