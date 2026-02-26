@@ -9,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -57,5 +58,5 @@ public class Inspection {
     Date createdAt;
 
     @OneToMany(mappedBy = "inspection", cascade = CascadeType.ALL)
-    List<InspectionScore> scores;
+    Set<InspectionScore> scores;
 }

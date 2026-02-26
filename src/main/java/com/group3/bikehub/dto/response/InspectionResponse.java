@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -14,8 +15,11 @@ import java.util.UUID;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InspectionResponse {
+    UUID inspectionId;
     InspectionType inspectionType;
-    InspectionLocationResponse inspectionLocation;
+    InspectionLocationResponse location;
     InspectionStatus status;
+    UserResponse inspector;
     Date scheduledAt;
+    List<ScoreResponse> scores;
 }

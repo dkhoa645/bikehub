@@ -1,5 +1,6 @@
 package com.group3.bikehub.service;
 
+import com.group3.bikehub.dto.request.InspectionAssignRequest;
 import com.group3.bikehub.dto.request.InspectionCreationRequest;
 import com.group3.bikehub.dto.response.InspectionResponse;
 import com.group3.bikehub.entity.*;
@@ -11,14 +12,13 @@ import com.group3.bikehub.exception.AppException;
 import com.group3.bikehub.exception.ErrorCode;
 import com.group3.bikehub.mapper.InspectionLocationMapper;
 import com.group3.bikehub.mapper.InspectionMapper;
-import com.group3.bikehub.repository.AddressRepository;
-import com.group3.bikehub.repository.InspectionLocationRepository;
-import com.group3.bikehub.repository.InspectionRepository;
-import com.group3.bikehub.repository.ListingRepository;
+import com.group3.bikehub.repository.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -33,9 +33,9 @@ public class InspectionService {
     InspectionMapper inspectionMapper;
     ListingRepository listingRepository;
     InspectionLocationRepository inspectionLocationRepository;
-    InspectionLocationMapper inspectionLocationMapper;
     CurrentUserService currentUserService;
     AddressRepository addressRepository;
+    UserRepository userRepository;
 
     @Transactional
     public InspectionResponse createInspection(InspectionCreationRequest request) {
@@ -76,6 +76,34 @@ public class InspectionService {
 
     public List<InspectionResponse> getAll() {
         return inspectionRepository.findAll().stream()
+                .map(inspectionMapper::toInspectionResponse)
+                .toList();
+    }
+
+    public List<InspectionResponse> getMyAssign() {
+        User  user = currentUserService.getCurrentUser();
+
+        List<Inspection> inspections = inspectionRepository.findByInspectorId(user.getId());
+
+        return inspections.stream()
+                .map(inspectionMapper::toInspectionResponse)
+                .toList();
+    }
+
+    public InspectionResponse assignInspector(InspectionAssignRequest inspectionAssignRequest) {
+        Inspection inspection = inspectionRepository.findById(inspectionAssignRequest.getInspectionId())
+                .orElseThrow(()-> new AppException(ErrorCode.INSPECTION_NOT_FOUND));
+        inspection.setStatus(InspectionStatus.PENDING_ASSIGNED);
+
+        User inspector = userRepository.findById(inspectionAssignRequest.getInspectorId())
+                .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED));
+        inspection.setInspector(inspector);
+        return inspectionMapper.toInspectionResponse(inspectionRepository.save(inspection));
+    }
+
+    public List<InspectionResponse> getPending() {
+        return inspectionRepository.findByStatus(InspectionStatus.PENDING_ASSIGNED)
+                .stream()
                 .map(inspectionMapper::toInspectionResponse)
                 .toList();
     }
