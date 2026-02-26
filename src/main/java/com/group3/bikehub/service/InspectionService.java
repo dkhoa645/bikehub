@@ -98,11 +98,12 @@ public class InspectionService {
         User inspector = userRepository.findById(inspectionAssignRequest.getInspectorId())
                 .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED));
         inspection.setInspector(inspector);
+        inspection.setStatus(InspectionStatus.IN_PROGRESS);
         return inspectionMapper.toInspectionResponse(inspectionRepository.save(inspection));
     }
 
     public List<InspectionResponse> getPending() {
-        return inspectionRepository.findByStatus(InspectionStatus.PENDING_ASSIGNED)
+        return inspectionRepository.findByStatusOrderByCreatedAt(InspectionStatus.PENDING_ASSIGNED)
                 .stream()
                 .map(inspectionMapper::toInspectionResponse)
                 .toList();

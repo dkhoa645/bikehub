@@ -3,6 +3,7 @@ package com.group3.bikehub.service;
 import com.group3.bikehub.dto.request.ScoreCreationRequest;
 import com.group3.bikehub.dto.response.ComponentResponse;
 import com.group3.bikehub.dto.response.InspectionResponse;
+import com.group3.bikehub.entity.Enum.InspectionStatus;
 import com.group3.bikehub.entity.Inspection;
 import com.group3.bikehub.entity.InspectionComponent;
 import com.group3.bikehub.entity.InspectionScore;
@@ -38,6 +39,8 @@ public class InspectionScoreService {
         if(!inspection.getScores().isEmpty()){
             throw new AppException(ErrorCode.COMPONENT_EXISTS);
         }
+        inspection.setStatus(InspectionStatus.COMPLETED);
+
         List<InspectionScore> scores = scoreCreationRequestList.stream()
                 .map(request -> {
                     InspectionComponent inspectionComponent = inspectionComponentRepository
