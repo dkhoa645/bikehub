@@ -22,12 +22,13 @@ public enum ErrorCode {
     IMAGE_NOT_FOUND(1013,"Image not found", HttpStatus.NOT_FOUND),
     LISTING_NOT_FOUND(1014,"Listing not found", HttpStatus.NOT_FOUND),
     ORDER_CANCELED(1015,"Order canceled", HttpStatus.BAD_REQUEST),
-    ORDER_UNPAID(1016, "Order UNPAID", HttpStatus.BAD_REQUEST);
-    LOCATION_NOT_FOUND(1014,"Location not found", HttpStatus.NOT_FOUND),
-    ADDRESS_EXIST(1015,"Address already exists", HttpStatus.BAD_REQUEST),
-    LISTING_STATUS(1016,"Available for sold status", HttpStatus.BAD_REQUEST),
-    LOCATION_EXISTS(1017,"Location already exists", HttpStatus.BAD_REQUEST),
-    INSPECTION_NOT_FOUND(1018,"Inspection not found", HttpStatus.NOT_FOUND),
+    ORDER_UNPAID(1016, "Order UNPAID", HttpStatus.BAD_REQUEST),
+    LOCATION_NOT_FOUND(1017,"Location not found", HttpStatus.NOT_FOUND),
+    ADDRESS_EXIST(1018,"Address already exists", HttpStatus.BAD_REQUEST),
+    LISTING_STATUS(1019,"Available for sold status", HttpStatus.BAD_REQUEST),
+    LOCATION_EXISTS(1020,"Location already exists", HttpStatus.BAD_REQUEST),
+    INSPECTION_NOT_FOUND(1021,"Inspection not found", HttpStatus.NOT_FOUND),
+    INVALID_SELLER_ID(1022,"Invalid seller", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

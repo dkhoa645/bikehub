@@ -1,12 +1,12 @@
 package com.group3.bikehub.service;
 
+import ch.qos.logback.classic.spi.IThrowableProxy;
 import com.group3.bikehub.dto.request.ListingCreationRequest;
 import com.group3.bikehub.dto.response.ListingImageResponse;
 import com.group3.bikehub.dto.response.ListingResponse;
+import com.group3.bikehub.entity.*;
 import com.group3.bikehub.entity.Enum.ListingStatus;
-import com.group3.bikehub.entity.Listing;
-import com.group3.bikehub.entity.ListingImage;
-import com.group3.bikehub.entity.User;
+import com.group3.bikehub.entity.Enum.OrderStatus;
 import com.group3.bikehub.exception.AppException;
 import com.group3.bikehub.exception.ErrorCode;
 import com.group3.bikehub.mapper.InspectionMapper;
@@ -22,10 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -91,5 +88,12 @@ public class ListingService {
         return list.stream()
                 .map(listingMapper::toListingResponse)
                 .toList();
+    }
+
+    public void handleListingPayment(Payment payment){
+        UUID listingID = UUID.fromString(payment.getReferenceId());
+        Listing listing = listingRepository.findById(listingID).orElse(null);
+        listing.setStatus(ListingStatus.LIVE);
+        listingRepository.save(listing);
     }
 }

@@ -121,8 +121,10 @@ public class KycServiceImpl implements KycService {
         kycDraftStoreService.remove(draftId);
     }
 
-    public List<Kyc> getAllKyc(){
-        return kycRepository.findAll();
+    public List<KycResponse> getAllKyc(){
+        List<Kyc> list = kycRepository.findAll();
+
+        return kycMapper.toKycResponse(list);
     }
 
 

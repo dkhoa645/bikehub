@@ -1,9 +1,18 @@
 package com.group3.bikehub.service;
 
 
-import com.group3.bikehub.dto.request.CreatePaymentRequest;
+import com.group3.bikehub.dto.request.CreateListingPaymentRequest;
+import com.group3.bikehub.dto.request.CreateOrderPaymentRequest;
+import com.group3.bikehub.entity.Enum.OrderStatus;
+import com.group3.bikehub.entity.Enum.PaymentStatus;
+import com.group3.bikehub.entity.Enum.PaymentType;
+import com.group3.bikehub.entity.Listing;
 import com.group3.bikehub.entity.Order;
 import com.group3.bikehub.entity.Payment;
+import com.group3.bikehub.entity.User;
+import com.group3.bikehub.exception.AppException;
+import com.group3.bikehub.exception.ErrorCode;
+import com.group3.bikehub.repository.ListingRepository;
 import com.group3.bikehub.repository.OrderRepository;
 import com.group3.bikehub.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +32,30 @@ public class PaymentService {
     @Autowired
     OrderRepository orderRepository;
     @Autowired
+    CurrentUserService currentUserService;
+    @Autowired
+    ListingService listingService;
+    @Autowired
+    OrderService orderService;
+    @Autowired
     PaymentRepository paymentRepository;
     private final Random random = new Random();
+    @Autowired
+    ListingRepository listingRepository;
     @Autowired
     PayOS payOS;
     @Value("${com.payos.PAYOS_CHECKSUM_KEY}")
     private String CHECKSUM_KEY;
 
-    public Map<String, Object> create(CreatePaymentRequest request) {
+    public Map<String, Object> createOrderPayment(CreateOrderPaymentRequest request) {
         Order order = orderRepository.findOrderById(request.getOrder_id());
+        User buyer = currentUserService.getCurrentUser();
+        if (!buyer.getId().equals(order.getBuyer().getId())) {
+            throw new AppException(ErrorCode.INVALID_SELLER_ID);
+        }
+        if (!order.getOrderStatus().equals(OrderStatus.PENDING) ) {
+            throw new AppException(ErrorCode.ORDER_CANCELED);
+        }
         String randomSuffix = String.format("%04d", random.nextInt(10000));
         long orderCode = Long.parseLong(order.getId() + randomSuffix);
         CreatePaymentLinkRequest paymentData = CreatePaymentLinkRequest.builder()
@@ -42,9 +66,9 @@ public class PaymentService {
                 .cancelUrl("test")
                 .build();
         CreatePaymentLinkResponse paymentResult = payOS.paymentRequests().create(paymentData);
-
         Payment payment = new Payment();
-        payment.setOrder(order);
+        payment.setReferenceId(String.valueOf(order.getId()));
+        payment.setType(PaymentType.ORDER);
         payment.setPayosOrderCode(orderCode);
         paymentRepository.save(payment);
         return Map.of(
@@ -54,6 +78,48 @@ public class PaymentService {
         );
 
     }
+    public Map<String, Object> createListingPayment(CreateListingPaymentRequest request) {
+        Optional<Listing> listing = listingRepository.findById(request.getListing_id());
+        User seller = currentUserService.getCurrentUser();
+        if (!seller.getId().equals(listing.get().getSeller().getId())) {
+            throw new AppException(ErrorCode.INVALID_SELLER_ID);
+        }
+        String randomSuffix = String.format("%04d", random.nextInt(10000));
+        long orderCode = Long.parseLong(20 + randomSuffix);
+        CreatePaymentLinkRequest paymentData = CreatePaymentLinkRequest.builder()
+                .orderCode(orderCode)
+                .amount(10000L)
+                .description(" ")
+                .returnUrl("test")
+                .cancelUrl("test")
+                .build();
+        CreatePaymentLinkResponse paymentResult = payOS.paymentRequests().create(paymentData);
+        Payment payment = new Payment();
+        payment.setReferenceId(String.valueOf(listing.get().getId()));
+        payment.setType(PaymentType.LISTING);
+        payment.setPayosOrderCode(orderCode);
+        paymentRepository.save(payment);
+        return Map.of(
+                "message", "Tạo đơn hàng thành công. Vui lòng thanh toán .",
+                "ListingID", listing.get().getId(),
+                "paymentUrl", paymentResult.getCheckoutUrl()
+        );
+
+    }
+    public void handleWebHook(String orderCode){
+        Long payosOrderId = Long.parseLong(orderCode);
+        Payment payment = paymentRepository.findByPayosOrderCode(payosOrderId);
+        payment.setStatus(PaymentStatus.PAID);
+        paymentRepository.save(payment);
+        if (payment.getType().equals(PaymentType.ORDER)) {
+            orderService.handleOrderPayment(payment);
+        }else if (payment.getType().equals(PaymentType.LISTING)) {
+            listingService.handleListingPayment(payment);
+        }
+
+    }
+
+
 
     public boolean isValidData(Map<String, Object> data, String receivedSignature) {
         try {
