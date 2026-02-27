@@ -110,8 +110,8 @@ public class InspectionService {
                 .toList();
     }
 
-    public List<UserResponse> getAvailableInspector(InspectorAvailableRequest inspectorAvailableRequest) {
-        return userRepository.findAvailableInspectors(inspectorAvailableRequest.getScheduleAt()).stream()
+    public List<UserResponse> getAvailableInspector(Date scheduleAt) {
+        return userRepository.findAvailableInspectors(scheduleAt).stream()
                 .map(userMapper::toUserResponse)
                 .toList();
     }

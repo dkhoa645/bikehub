@@ -3,10 +3,14 @@ spring:
     name: bikehub
   config:
     import: "optional:classpath:application-secret.properties"
+#  datasource:
+#    url: jdbc:mysql://metro.proxy.rlwy.net:41258/railway
+#    username: root
+#    password: BEiBDchfRCeSxPWsDHGxTtSclukaDIrK
   datasource:
-    url: jdbc:mysql://metro.proxy.rlwy.net:41258/railway
+    url: jdbc:mysql://shinkansen.proxy.rlwy.net:41830/railway
     username: root
-    password: BEiBDchfRCeSxPWsDHGxTtSclukaDIrK
+    password: wIJrIySOkOsmUfOZluncJponTHLLqisU
   jpa:
     hibernate:
       ddl-auto: update

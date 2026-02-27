@@ -6,11 +6,14 @@ import com.group3.bikehub.dto.response.UserResponse;
 import com.group3.bikehub.service.InspectionScoreService;
 import com.group3.bikehub.service.InspectionService;
 import com.group3.bikehub.service.UserService;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -60,9 +63,16 @@ public class InspectionController {
     }
 
     @GetMapping("/available-inspector")
-    ApiResponse<List<UserResponse>> getInspectorByTime(@RequestParam InspectorAvailableRequest inspectorAvailableRequest) {
+    ApiResponse<List<UserResponse>> getInspectorByTime(
+            @Parameter(
+                    description = "Time to search available inspector",
+                    example = "2026-02-27T08:03:08.206Z"
+            )
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            Date scheduleAt) {
         return ApiResponse.<List<UserResponse>>builder()
-                .result(inspectionService.getAvailableInspector(inspectorAvailableRequest))
+                .result(inspectionService.getAvailableInspector(scheduleAt))
                 .build();
     }
 
