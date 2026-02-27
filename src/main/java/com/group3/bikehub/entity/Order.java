@@ -34,9 +34,8 @@ public class Order {
     private OrderStatus orderStatus;
     @JsonManagedReference
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<Payment> payments;
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> items;
     private BigDecimal total_ammount;
     private LocalDateTime created_at;
+    private LocalDateTime expiresAt;
 }

@@ -2,6 +2,7 @@ package com.group3.bikehub.controller;
 
 import com.group3.bikehub.dto.request.ApiResponse;
 import com.group3.bikehub.dto.request.PlaceOrderRequest;
+import com.group3.bikehub.dto.response.OrderResponse;
 import com.group3.bikehub.service.OrderService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,8 @@ public class OrderController {
     OrderService orderService;
 
     @PostMapping("/order/create")
-    public ApiResponse<Void> create(@RequestBody PlaceOrderRequest request) {
-        orderService.placeOrder(request);
-        return ApiResponse.<Void>builder().message("place order success").build();
+    public ApiResponse<OrderResponse> create(@RequestBody PlaceOrderRequest request) {
+        return ApiResponse.<OrderResponse>builder().result(orderService.placeOrder(request)).message("place order success").build();
     }
 
 

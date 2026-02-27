@@ -37,7 +37,7 @@ public class ApplicationInitConfig {
                                             Role.builder().name(roleEnum.toString()).build());
                                 });
                     });
-            if(userRepository.findByUsername("admin").isEmpty()){
+            if(userRepository.findByUsername("admin").isEmpty()) {
                 User userAdmin = User.builder()
                         .username("admin")
                         .password(passwordEncoder.encode("admin"))
@@ -46,6 +46,26 @@ public class ApplicationInitConfig {
                         .build();
                 userRepository.save(userAdmin);
             }
+                if(userRepository.findByUsername("buyer").isEmpty()) {
+                    User buyer = User.builder()
+                            .username("buyer")
+                            .password(passwordEncoder.encode("admin"))
+                            .name("buyer")
+                            .roles(Set.of(Role.builder().name("BUYER").build()))
+                            .build();
+                    userRepository.save(buyer);
+                }
+                    if(userRepository.findByUsername("seller").isEmpty()) {
+                        User seller = User.builder()
+                                .username("seller")
+                                .password(passwordEncoder.encode("admin"))
+                                .name("seller")
+                                .roles(Set.of(Role.builder().name("SELLER").build()))
+                                .build();
+                        userRepository.save(seller);
+                    }
+
+
             log.warn("admin user has been created with default password: admin, please change it");
         };
     }

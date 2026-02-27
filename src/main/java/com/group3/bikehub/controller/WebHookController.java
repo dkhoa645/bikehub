@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import vn.payos.PayOS;
 
 import java.util.Map;
+import vn.payos.model.webhooks.WebhookData;
 
 
 @Slf4j
@@ -28,19 +29,23 @@ public class WebHookController {
 
         try {
 
-            String signature = (String) body.get("signature");
-            Map<String, Object> data = (Map<String, Object>) body.get("data");
+            WebhookData verifiedData = payOS.webhooks().verify(body);
 
-            if (!paymentService.isValidData(data, signature)) {
+            if (verifiedData == null) {
+                log.warn("Webhook verify failed - verifiedData null");
                 return ResponseEntity.badRequest().body("Invalid signature");
             }
 
-            System.out.println("Thanh toán thành công orderCode: "
-                    + data.get("orderCode"));
-            log.info("data : {}", body);
+            String orderCode = String.valueOf(verifiedData.getOrderCode());
+
+            paymentService.handleWebHook(orderCode);
+
+            log.info("Thanh toán thành công orderCode: {}", orderCode);
+            log.info("Thanh toán thành công data : {}", verifiedData);
             return ResponseEntity.ok("OK");
 
         } catch (Exception e) {
+            log.error("Webhook error", e);
             return ResponseEntity.badRequest().body("Error");
         }
     }
