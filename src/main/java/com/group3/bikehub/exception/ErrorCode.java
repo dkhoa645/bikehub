@@ -31,6 +31,7 @@ public enum ErrorCode {
     BRAND_NOT_FOUND(1022,"Brand not found", HttpStatus.NOT_FOUND),
     COMPONENT_EXISTS(1023,"Component already exists", HttpStatus.BAD_REQUEST),
     COMPONENT_NOT_FOUND(1024, "Component not found", HttpStatus.NOT_FOUND),
+    INVALID_SELLER_ID(1025,"Invalid seller", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
