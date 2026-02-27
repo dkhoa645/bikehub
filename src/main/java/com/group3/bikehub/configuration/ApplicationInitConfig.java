@@ -73,24 +73,7 @@ public class ApplicationInitConfig {
                             userRepository.save(inspector);
                         }
             }
-                if(userRepository.findByUsername("buyer").isEmpty()) {
-                    User buyer = User.builder()
-                            .username("buyer")
-                            .password(passwordEncoder.encode("admin"))
-                            .name("buyer")
-                            .roles(Set.of(Role.builder().name("BUYER").build()))
-                            .build();
-                    userRepository.save(buyer);
-                }
-                    if(userRepository.findByUsername("seller").isEmpty()) {
-                        User seller = User.builder()
-                                .username("seller")
-                                .password(passwordEncoder.encode("admin"))
-                                .name("seller")
-                                .roles(Set.of(Role.builder().name("SELLER").build()))
-                                .build();
-                        userRepository.save(seller);
-                    }
+
 
 
             log.warn("admin user has been created with default password: admin, please change it");
