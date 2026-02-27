@@ -2,6 +2,7 @@ package com.group3.bikehub.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.group3.bikehub.entity.Enum.PaymentStatus;
+import com.group3.bikehub.entity.Enum.PaymentType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,8 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Payment {
 
-    public Payment(Order order, BigDecimal amount, PaymentStatus status, String transactionRef, Long payosOrderCode, LocalDateTime paidAt) {
-        this.order = order;
+    public Payment( BigDecimal amount, PaymentStatus status, String transactionRef, Long payosOrderCode, LocalDateTime paidAt) {
         this.amount = amount;
         this.status = status;
         this.transactionRef = transactionRef;
@@ -30,11 +30,10 @@ public class Payment {
     @Column(name = "payment_id")
     private Long paymentId;
 
-    @JsonBackReference
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
 
+    @Enumerated(EnumType.STRING)
+    private PaymentType type;
+    private String referenceId;
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)

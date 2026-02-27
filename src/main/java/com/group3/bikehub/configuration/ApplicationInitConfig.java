@@ -37,7 +37,7 @@ public class ApplicationInitConfig {
                                             Role.builder().name(roleEnum.toString()).build());
                                 });
                     });
-            if(userRepository.findByUsername("admin").isEmpty()){
+            if(userRepository.findByUsername("admin").isEmpty()) {
                 User userAdmin = User.builder()
                         .username("admin")
                         .password(passwordEncoder.encode("admin"))
@@ -73,6 +73,9 @@ public class ApplicationInitConfig {
                             userRepository.save(inspector);
                         }
             }
+
+
+
             log.warn("admin user has been created with default password: admin, please change it");
         };
     }

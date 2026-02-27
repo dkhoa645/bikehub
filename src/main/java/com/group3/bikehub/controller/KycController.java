@@ -3,6 +3,7 @@ package com.group3.bikehub.controller;
 
 import com.group3.bikehub.dto.request.*;
 import com.group3.bikehub.dto.response.KycDraftResponse;
+import com.group3.bikehub.dto.response.KycResponse;
 import com.group3.bikehub.entity.Kyc;
 import com.group3.bikehub.service.KycService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +37,8 @@ import java.util.List;
     }
 
     @GetMapping("/getall")
-    public ApiResponse<List<Kyc>> getAllKyc(){
-        return ApiResponse.<List<Kyc>>builder().result(kycService.getAllKyc()).build();
+    public ApiResponse<List<KycResponse>> getAllKyc(){
+        return ApiResponse.<List<KycResponse>>builder().result(kycService.getAllKyc()).build();
     }
 
     @PostMapping("/delete")
