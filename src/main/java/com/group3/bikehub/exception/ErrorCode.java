@@ -28,7 +28,9 @@ public enum ErrorCode {
     LISTING_STATUS(1019,"Available for sold status", HttpStatus.BAD_REQUEST),
     LOCATION_EXISTS(1020,"Location already exists", HttpStatus.BAD_REQUEST),
     INSPECTION_NOT_FOUND(1021,"Inspection not found", HttpStatus.NOT_FOUND),
-    INVALID_SELLER_ID(1022,"Invalid seller", HttpStatus.BAD_REQUEST),
+    BRAND_NOT_FOUND(1022,"Brand not found", HttpStatus.NOT_FOUND),
+    COMPONENT_EXISTS(1023,"Component already exists", HttpStatus.BAD_REQUEST),
+    COMPONENT_NOT_FOUND(1024, "Component not found", HttpStatus.NOT_FOUND),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
