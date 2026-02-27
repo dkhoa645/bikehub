@@ -5,6 +5,7 @@ import com.group3.bikehub.dto.request.*;
 import com.group3.bikehub.dto.response.ComponentResponse;
 import com.group3.bikehub.dto.response.InspectionLocationResponse;
 import com.group3.bikehub.dto.response.InspectionResponse;
+import com.group3.bikehub.dto.response.UserResponse;
 import com.group3.bikehub.service.InspectionScoreService;
 import com.group3.bikehub.service.InspectionService;
 import lombok.AccessLevel;
@@ -57,6 +58,9 @@ public class InspectionController {
                 .result(inspectionService.assignInspector(inspectionAssignRequest))
                 .build();
     }
+
+    @GetMapping("/inspector")
+    ApiResponse<List<UserResponse>> getInspectorByTime(@RequestBody )
 
     @PostMapping("/{inspectionId}/scores")
     ApiResponse<InspectionResponse> getComponentScores(
