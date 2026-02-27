@@ -11,6 +11,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -29,5 +31,9 @@ public class UserService {
     }
 
 
-
+    public List<UserResponse> getAllUser() {
+        return userRepository.findAll().stream()
+                .map(userMapper::toUserResponse)
+                .toList();
+    }
 }

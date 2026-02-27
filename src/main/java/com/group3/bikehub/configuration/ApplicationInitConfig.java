@@ -45,6 +45,33 @@ public class ApplicationInitConfig {
                         .roles(Set.of(Role.builder().name("ADMIN").build()))
                         .build();
                 userRepository.save(userAdmin);
+                if(userRepository.findByUsername("buyer").isEmpty()) {
+                    User buyer = User.builder()
+                            .username("buyer")
+                            .password(passwordEncoder.encode("string"))
+                            .name("buyer")
+                            .roles(Set.of(Role.builder().name("BUYER").build()))
+                            .build();
+                    userRepository.save(buyer);
+                }
+                    if(userRepository.findByUsername("seller").isEmpty()) {
+                        User seller = User.builder()
+                                .username("seller")
+                                .password(passwordEncoder.encode("string"))
+                                .name("seller")
+                                .roles(Set.of(Role.builder().name("SELLER").build()))
+                                .build();
+                        userRepository.save(seller);
+                    }
+                        if(userRepository.findByUsername("inspector").isEmpty()) {
+                            User inspector = User.builder()
+                                    .username("inspector")
+                                    .password(passwordEncoder.encode("string"))
+                                    .name("inspector")
+                                    .roles(Set.of(Role.builder().name("INSPECTOR").build()))
+                                    .build();
+                            userRepository.save(inspector);
+                        }
             }
                 if(userRepository.findByUsername("buyer").isEmpty()) {
                     User buyer = User.builder()
