@@ -3,10 +3,13 @@ package com.group3.bikehub.dto.request;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class InspectorUnassignedRequest {
+public class InspectorAvailableRequest {
+    Date scheduleAt;
 }

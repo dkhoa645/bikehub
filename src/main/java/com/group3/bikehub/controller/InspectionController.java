@@ -1,13 +1,11 @@
 package com.group3.bikehub.controller;
 
-import com.cloudinary.Api;
 import com.group3.bikehub.dto.request.*;
-import com.group3.bikehub.dto.response.ComponentResponse;
-import com.group3.bikehub.dto.response.InspectionLocationResponse;
 import com.group3.bikehub.dto.response.InspectionResponse;
 import com.group3.bikehub.dto.response.UserResponse;
 import com.group3.bikehub.service.InspectionScoreService;
 import com.group3.bikehub.service.InspectionService;
+import com.group3.bikehub.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -23,6 +21,7 @@ import java.util.UUID;
 public class InspectionController {
     InspectionService inspectionService;
     InspectionScoreService inspectionScoreService;
+    private final UserService userService;
 
     @PostMapping()
     ApiResponse<InspectionResponse> createInspection(@RequestBody InspectionCreationRequest request) {
@@ -52,6 +51,7 @@ public class InspectionController {
                 .build();
     }
 
+
     @PutMapping("/assign-inspector")
     ApiResponse<InspectionResponse> updateInspection(@RequestBody InspectionAssignRequest inspectionAssignRequest) {
         return ApiResponse.<InspectionResponse>builder()
@@ -59,8 +59,12 @@ public class InspectionController {
                 .build();
     }
 
-    @GetMapping("/inspector")
-    ApiResponse<List<UserResponse>> getInspectorByTime(@RequestBody )
+    @GetMapping("/available-inspector")
+    ApiResponse<List<UserResponse>> getInspectorByTime(@RequestParam InspectorAvailableRequest inspectorAvailableRequest) {
+        return ApiResponse.<List<UserResponse>>builder()
+                .result(inspectionService.getAvailableInspector(inspectorAvailableRequest))
+                .build();
+    }
 
     @PostMapping("/{inspectionId}/scores")
     ApiResponse<InspectionResponse> getComponentScores(

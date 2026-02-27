@@ -2,7 +2,9 @@ package com.group3.bikehub.service;
 
 import com.group3.bikehub.dto.request.InspectionAssignRequest;
 import com.group3.bikehub.dto.request.InspectionCreationRequest;
+import com.group3.bikehub.dto.request.InspectorAvailableRequest;
 import com.group3.bikehub.dto.response.InspectionResponse;
+import com.group3.bikehub.dto.response.UserResponse;
 import com.group3.bikehub.entity.*;
 import com.group3.bikehub.entity.Enum.InspectionLocationType;
 import com.group3.bikehub.entity.Enum.InspectionStatus;
@@ -10,15 +12,13 @@ import com.group3.bikehub.entity.Enum.InspectionType;
 import com.group3.bikehub.entity.Enum.ListingStatus;
 import com.group3.bikehub.exception.AppException;
 import com.group3.bikehub.exception.ErrorCode;
-import com.group3.bikehub.mapper.InspectionLocationMapper;
 import com.group3.bikehub.mapper.InspectionMapper;
+import com.group3.bikehub.mapper.UserMapper;
 import com.group3.bikehub.repository.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -36,6 +36,7 @@ public class InspectionService {
     CurrentUserService currentUserService;
     AddressRepository addressRepository;
     UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Transactional
     public InspectionResponse createInspection(InspectionCreationRequest request) {
@@ -106,6 +107,12 @@ public class InspectionService {
         return inspectionRepository.findByStatusOrderByCreatedAt(InspectionStatus.PENDING_ASSIGNED)
                 .stream()
                 .map(inspectionMapper::toInspectionResponse)
+                .toList();
+    }
+
+    public List<UserResponse> getAvailableInspector(InspectorAvailableRequest inspectorAvailableRequest) {
+        return userRepository.findAvailableInspectors(inspectorAvailableRequest.getScheduleAt()).stream()
+                .map(userMapper::toUserResponse)
                 .toList();
     }
 }
