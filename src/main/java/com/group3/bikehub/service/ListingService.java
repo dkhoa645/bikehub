@@ -4,6 +4,8 @@ import ch.qos.logback.classic.spi.IThrowableProxy;
 import com.group3.bikehub.dto.request.ListingCreationRequest;
 import com.group3.bikehub.dto.response.ListingImageResponse;
 import com.group3.bikehub.dto.response.ListingResponse;
+import com.group3.bikehub.dto.response.ListingSellResponse;
+import com.group3.bikehub.dto.response.PageResponse;
 import com.group3.bikehub.entity.*;
 import com.group3.bikehub.entity.Enum.ListingStatus;
 import com.group3.bikehub.entity.Enum.OrderStatus;
@@ -18,6 +20,9 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -95,5 +100,21 @@ public class ListingService {
         Listing listing = listingRepository.findById(listingID).orElse(null);
         listing.setStatus(ListingStatus.LIVE);
         listingRepository.save(listing);
+    }
+
+    public PageResponse<ListingSellResponse> getSellListing(int page, int size) {
+        Sort sort = Sort.by("createdAt").descending();
+
+        Pageable pageable = PageRequest.of(page-1, size, sort);
+
+        var pageData = listingRepository.findAll(pageable);
+
+        return PageResponse.<ListingSellResponse>builder()
+                .currentPage(page)
+                .totalElements(pageData.getTotalElements())
+                .pageSize(pageData.getSize())
+                .totalPage(pageData.getTotalPages())
+                .data(pageData.getContent().stream().map(listingMapper::toListingSellResponse).toList())
+                .build();
     }
 }

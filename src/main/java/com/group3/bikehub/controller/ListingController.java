@@ -4,12 +4,15 @@ import com.group3.bikehub.dto.request.ApiResponse;
 import com.group3.bikehub.dto.request.InspectionCreationRequest;
 import com.group3.bikehub.dto.request.ListingCreationRequest;
 import com.group3.bikehub.dto.response.ListingResponse;
+import com.group3.bikehub.dto.response.ListingSellResponse;
+import com.group3.bikehub.dto.response.PageResponse;
 import com.group3.bikehub.entity.InspectionLocation;
 import com.group3.bikehub.entity.ListingImage;
 import com.group3.bikehub.service.ListingService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.query.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +30,16 @@ public class ListingController {
     ApiResponse<ListingResponse> addListing(@ModelAttribute ListingCreationRequest listingRequest){
         return ApiResponse.<ListingResponse>builder()
                 .result(listingService.createListing(listingRequest))
+                .build();
+    }
+
+    @GetMapping()
+    ApiResponse<PageResponse<ListingSellResponse>> getAllListing(
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10")int size
+    ){
+        return ApiResponse.<PageResponse<ListingSellResponse>>builder()
+                .result(listingService.getSellListing(page,size))
                 .build();
     }
 
