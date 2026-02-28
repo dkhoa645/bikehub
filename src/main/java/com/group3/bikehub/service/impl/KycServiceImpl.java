@@ -122,9 +122,9 @@ public class KycServiceImpl implements KycService {
     }
 
     public List<KycResponse> getAllKyc(){
-        List<Kyc> list = kycRepository.findAll();
-
-        return kycMapper.toKycResponse(list);
+        return kycRepository.findAll().stream()
+                .map(kycMapper::toKycResponse)
+                .toList();
     }
 
 
