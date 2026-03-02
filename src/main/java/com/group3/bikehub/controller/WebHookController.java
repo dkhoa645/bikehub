@@ -33,22 +33,20 @@ public class WebHookController {
 
             WebhookData verifiedData = payOS.webhooks().verify(body);
 
-            if (verifiedData == null) {
-                log.warn("Webhook verify failed - test call or invalid signature");
-                return ResponseEntity.ok("OK"); // 👈 LUÔN trả 200
+            if (verifiedData != null) {
+                String orderCode = String.valueOf(verifiedData.getOrderCode());
+                paymentService.handleWebHook(orderCode);
+                log.info("Thanh toán thành công orderCode: {}", orderCode);
+            } else {
+                log.warn("Webhook verify failed or test call");
             }
-
-            String orderCode = String.valueOf(verifiedData.getOrderCode());
-
-            paymentService.handleWebHook(orderCode);
-
-            log.info("Thanh toán thành công orderCode: {}", orderCode);
-            log.info("Thanh toán thành công data : {}", verifiedData);
-            return ResponseEntity.ok("OK");
 
         } catch (Exception e) {
             log.error("Webhook error", e);
-            return ResponseEntity.badRequest().body("Error");
         }
+
+
+        return ResponseEntity.ok("OK");
     }
 }
+
