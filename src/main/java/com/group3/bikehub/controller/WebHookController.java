@@ -34,8 +34,8 @@ public class WebHookController {
             WebhookData verifiedData = payOS.webhooks().verify(body);
 
             if (verifiedData == null) {
-                log.warn("Webhook verify failed - verifiedData null");
-                return ResponseEntity.badRequest().body("Invalid signature");
+                log.warn("Webhook verify failed - test call or invalid signature");
+                return ResponseEntity.ok("OK"); // 👈 LUÔN trả 200
             }
 
             String orderCode = String.valueOf(verifiedData.getOrderCode());

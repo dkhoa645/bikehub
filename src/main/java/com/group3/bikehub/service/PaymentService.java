@@ -27,6 +27,7 @@ import vn.payos.model.v2.paymentRequests.CreatePaymentLinkResponse;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -90,6 +91,7 @@ public class PaymentService {
         Long payosOrderId = Long.parseLong(orderCode);
         Payment payment = paymentRepository.findByPayosOrderCode(payosOrderId);
         payment.setStatus(PaymentStatus.PAID);
+        payment.setPaidAt(LocalDateTime.now());
         paymentRepository.save(payment);
 
         if (payment.getType().equals(PaymentType.ORDER)) {
