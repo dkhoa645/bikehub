@@ -51,6 +51,7 @@ public class PaymentService {
     PayOS payOS;
     @Value("${com.payos.PAYOS_CHECKSUM_KEY}")
     private String CHECKSUM_KEY;
+    @Autowired
     private SubscriptionService subscriptionService;
     @Autowired
     private PaymentMapper paymentMapper;
