@@ -32,6 +32,9 @@ public enum ErrorCode {
     COMPONENT_EXISTS(1023,"Component already exists", HttpStatus.BAD_REQUEST),
     COMPONENT_NOT_FOUND(1024, "Component not found", HttpStatus.NOT_FOUND),
     INVALID_SELLER_ID(1025,"Invalid seller", HttpStatus.BAD_REQUEST),
+    PLAN_NOT_FOUND(1026,"Plan not found", HttpStatus.NOT_FOUND),
+    PLAN_EXISTS(1027,"Plan already exists", HttpStatus.BAD_REQUEST),
+    SUBSCRIPTION_NOT_FOUND(1028,"Subscription not found", HttpStatus.NOT_FOUND),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

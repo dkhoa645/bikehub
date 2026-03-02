@@ -51,6 +51,13 @@ public class Listing {
 
     Date createdAt;
 
+    Date expiryAt;
+
+    Integer priority;
+
     @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
     List<ListingImage> images;
+
+    @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
+    List<Subscription> subscriptions;
 }

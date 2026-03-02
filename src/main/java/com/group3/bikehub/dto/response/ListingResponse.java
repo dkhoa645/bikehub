@@ -26,4 +26,5 @@ public class ListingResponse {
     BigDecimal price;
     Date createdAt;
     List<ListingImageResponse> images;
+
 }

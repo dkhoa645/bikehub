@@ -1,15 +1,14 @@
 package com.group3.bikehub.controller;
 
 import com.group3.bikehub.dto.request.ApiResponse;
+import com.group3.bikehub.dto.request.InspectorCreationRequest;
+import com.group3.bikehub.dto.request.UserCreationRequest;
 import com.group3.bikehub.dto.response.UserResponse;
 import com.group3.bikehub.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,7 +34,18 @@ public class UserController {
                 .build();
     }
 
+    @PostMapping("/create-inspector")
+    ApiResponse<UserResponse> createInspector(@RequestBody InspectorCreationRequest inspectorCreationRequest){
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.createInspector(inspectorCreationRequest))
+                .build();
+    }
 
-
+    @PostMapping()
+    ApiResponse<UserResponse> createUser(@RequestBody UserCreationRequest userCreationRequest){
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.createUser(userCreationRequest))
+                .build();
+    }
 
 }

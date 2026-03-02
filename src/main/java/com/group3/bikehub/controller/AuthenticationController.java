@@ -7,6 +7,8 @@ import com.group3.bikehub.service.AuthenticationService;
 import com.group3.bikehub.service.CloudinaryService;
 import com.group3.bikehub.service.OtpTokenService;
 import com.nimbusds.jose.JOSEException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -22,7 +24,6 @@ public class AuthenticationController {
 
     AuthenticationService authenticationService;
     OtpTokenService otpTokenService;
-    CloudinaryService cloudinaryService;
 
     @PostMapping("/login")
     ApiResponse<AuthenticationResponse> login(@RequestBody AuthenticationRequest request){

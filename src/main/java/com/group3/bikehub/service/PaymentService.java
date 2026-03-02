@@ -3,18 +3,20 @@ package com.group3.bikehub.service;
 
 import com.group3.bikehub.dto.request.CreateListingPaymentRequest;
 import com.group3.bikehub.dto.request.CreateOrderPaymentRequest;
+import com.group3.bikehub.dto.request.PaymentCreationRequest;
+import com.group3.bikehub.dto.response.PaymentCreationResponse;
+import com.group3.bikehub.dto.response.PaymentResponse;
+import com.group3.bikehub.entity.*;
 import com.group3.bikehub.entity.Enum.OrderStatus;
 import com.group3.bikehub.entity.Enum.PaymentStatus;
 import com.group3.bikehub.entity.Enum.PaymentType;
-import com.group3.bikehub.entity.Listing;
-import com.group3.bikehub.entity.Order;
-import com.group3.bikehub.entity.Payment;
-import com.group3.bikehub.entity.User;
 import com.group3.bikehub.exception.AppException;
 import com.group3.bikehub.exception.ErrorCode;
+import com.group3.bikehub.mapper.PaymentMapper;
 import com.group3.bikehub.repository.ListingRepository;
 import com.group3.bikehub.repository.OrderRepository;
 import com.group3.bikehub.repository.PaymentRepository;
+import com.group3.bikehub.repository.SubscriptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -43,9 +45,14 @@ public class PaymentService {
     @Autowired
     ListingRepository listingRepository;
     @Autowired
+    SubscriptionRepository subscriptionRepository;
+    @Autowired
     PayOS payOS;
     @Value("${com.payos.PAYOS_CHECKSUM_KEY}")
     private String CHECKSUM_KEY;
+    private SubscriptionService subscriptionService;
+    @Autowired
+    private PaymentMapper paymentMapper;
 
     public Map<String, Object> createOrderPayment(CreateOrderPaymentRequest request) {
         Order order = orderRepository.findOrderById(request.getOrder_id());
@@ -78,43 +85,17 @@ public class PaymentService {
         );
 
     }
-    public Map<String, Object> createListingPayment(CreateListingPaymentRequest request) {
-        Optional<Listing> listing = listingRepository.findById(request.getListing_id());
-        User seller = currentUserService.getCurrentUser();
-        if (!seller.getId().equals(listing.get().getSeller().getId())) {
-            throw new AppException(ErrorCode.INVALID_SELLER_ID);
-        }
-        String randomSuffix = String.format("%04d", random.nextInt(10000));
-        long orderCode = Long.parseLong(20 + randomSuffix);
-        CreatePaymentLinkRequest paymentData = CreatePaymentLinkRequest.builder()
-                .orderCode(orderCode)
-                .amount(10000L)
-                .description(" ")
-                .returnUrl("test")
-                .cancelUrl("test")
-                .build();
-        CreatePaymentLinkResponse paymentResult = payOS.paymentRequests().create(paymentData);
-        Payment payment = new Payment();
-        payment.setReferenceId(String.valueOf(listing.get().getId()));
-        payment.setType(PaymentType.LISTING);
-        payment.setPayosOrderCode(orderCode);
-        paymentRepository.save(payment);
-        return Map.of(
-                "message", "Tạo đơn hàng thành công. Vui lòng thanh toán .",
-                "ListingID", listing.get().getId(),
-                "paymentUrl", paymentResult.getCheckoutUrl()
-        );
 
-    }
     public void handleWebHook(String orderCode){
         Long payosOrderId = Long.parseLong(orderCode);
         Payment payment = paymentRepository.findByPayosOrderCode(payosOrderId);
         payment.setStatus(PaymentStatus.PAID);
         paymentRepository.save(payment);
+
         if (payment.getType().equals(PaymentType.ORDER)) {
             orderService.handleOrderPayment(payment);
-        }else if (payment.getType().equals(PaymentType.LISTING)) {
-            listingService.handleListingPayment(payment);
+        }else if (payment.getType().equals(PaymentType.SUBSCRIPTION)) {
+            subscriptionService.handleSubscriptionPayment(payment);
         }
 
     }
@@ -172,4 +153,35 @@ public class PaymentService {
         return sb.toString();
     }
 
+    public PaymentCreationResponse createSubscriptionPayment(PaymentCreationRequest paymentCreationRequest) {
+        Subscription subscription = subscriptionRepository.findById(paymentCreationRequest.getSubscriptionId())
+                .orElseThrow(()-> new AppException(ErrorCode.SUBSCRIPTION_NOT_FOUND));
+
+        String randomSuffix = String.format("%04d", random.nextInt(10000));
+        long orderCode = Long.parseLong(20 + randomSuffix);
+        CreatePaymentLinkRequest paymentData = CreatePaymentLinkRequest.builder()
+                .orderCode(orderCode)
+                .amount(2000L)
+                .description(" ")
+                .returnUrl("test")
+                .cancelUrl("test")
+                .build();
+        CreatePaymentLinkResponse paymentResult = payOS.paymentRequests().create(paymentData);
+        Payment payment = new Payment();
+        payment.setReferenceId(String.valueOf(subscription.getId()));
+        payment.setType(PaymentType.SUBSCRIPTION);
+        payment.setPayosOrderCode(orderCode);
+        payment.setAmount(subscription.getPlan().getPrice());
+        payment.setStatus(PaymentStatus.PENDING);
+        paymentRepository.save(payment);
+
+        return PaymentCreationResponse.builder().paymentUrl(paymentResult.getCheckoutUrl()).build();
+
+    }
+
+    public List<PaymentResponse> getAll() {
+        return paymentRepository.findAll().stream()
+                .map(paymentMapper::toPaymentResponse)
+                .toList();
+    }
 }

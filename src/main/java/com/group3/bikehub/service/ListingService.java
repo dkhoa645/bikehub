@@ -50,7 +50,7 @@ public class ListingService {
         List<Listing> list = listingRepository.findByFrameNumber(request.getFrameNumber());
         if(!list.isEmpty()){
             list.forEach(each -> {
-                if(!listing.getStatus().equals(ListingStatus.SOLD)){
+                if(!each.getStatus().equals(ListingStatus.SOLD)){
                     throw new AppException(ErrorCode.LISTING_STATUS);
                 }
             });
@@ -95,19 +95,16 @@ public class ListingService {
                 .toList();
     }
 
-    public void handleListingPayment(Payment payment){
-        UUID listingID = UUID.fromString(payment.getReferenceId());
-        Listing listing = listingRepository.findById(listingID).orElse(null);
-        listing.setStatus(ListingStatus.LIVE);
-        listingRepository.save(listing);
-    }
 
     public PageResponse<ListingSellResponse> getSellListing(int page, int size) {
-        Sort sort = Sort.by("createdAt").descending();
+        Sort sort = Sort.by(
+                Sort.Order.desc("createdAt"),
+                Sort.Order.asc("createdAt")
+        );
 
         Pageable pageable = PageRequest.of(page-1, size, sort);
 
-        var pageData = listingRepository.findAll(pageable);
+        var pageData = listingRepository.findActiveListings(pageable,ListingStatus.LIVE,new Date());
 
         return PageResponse.<ListingSellResponse>builder()
                 .currentPage(page)
@@ -116,5 +113,11 @@ public class ListingService {
                 .totalPage(pageData.getTotalPages())
                 .data(pageData.getContent().stream().map(listingMapper::toListingSellResponse).toList())
                 .build();
+    }
+
+    public List<ListingSellResponse> getAllListing() {
+        return listingRepository.findAll().stream()
+                .map(listingMapper::toListingSellResponse)
+                .toList();
     }
 }

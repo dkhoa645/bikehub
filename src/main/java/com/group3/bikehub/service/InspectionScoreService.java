@@ -4,6 +4,7 @@ import com.group3.bikehub.dto.request.ScoreCreationRequest;
 import com.group3.bikehub.dto.response.ComponentResponse;
 import com.group3.bikehub.dto.response.InspectionResponse;
 import com.group3.bikehub.entity.Enum.InspectionStatus;
+import com.group3.bikehub.entity.Enum.ListingStatus;
 import com.group3.bikehub.entity.Inspection;
 import com.group3.bikehub.entity.InspectionComponent;
 import com.group3.bikehub.entity.InspectionScore;
@@ -41,6 +42,8 @@ public class InspectionScoreService {
         }
         inspection.setStatus(InspectionStatus.COMPLETED);
 
+        inspection.getListing().setStatus(ListingStatus.APPROVED);
+
         List<InspectionScore> scores = scoreCreationRequestList.stream()
                 .map(request -> {
                     InspectionComponent inspectionComponent = inspectionComponentRepository
@@ -58,6 +61,8 @@ public class InspectionScoreService {
         inspectionResponse.setScores(
                 scores.stream().map(inspectionScoreMapper::toScoreResponse).toList()
         );
+
+
 
         return inspectionResponse;
     }

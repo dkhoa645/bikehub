@@ -1,0 +1,15 @@
+package com.group3.bikehub.dto.request;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class InspectorCreationRequest {
+    String username;
+    String password;
+    String name;
+}

@@ -1,5 +1,6 @@
 package com.group3.bikehub.mapper;
 
+import com.group3.bikehub.dto.request.UserCreationRequest;
 import com.group3.bikehub.dto.response.UserResponse;
 import com.group3.bikehub.entity.User;
 import org.mapstruct.Mapper;
@@ -7,4 +8,5 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
     UserResponse toUserResponse(User user);
+    User toUser(UserCreationRequest userCreationRequest);
 }

@@ -49,4 +49,11 @@ public class ListingController {
                 .result(listingService.getMyListing())
                 .build();
     }
+
+    @GetMapping("/all")
+    ApiResponse<List<ListingSellResponse>> getAllListings(){
+        return ApiResponse.<List<ListingSellResponse>>builder()
+                .result(listingService.getAllListing())
+                .build();
+    }
 }
