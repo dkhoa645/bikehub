@@ -16,5 +16,5 @@ public class UserResponse {
     String name;
     Set<RoleResponse> roles;
     boolean isKyc;
-    boolean address;
+    boolean hasAddress;
 }

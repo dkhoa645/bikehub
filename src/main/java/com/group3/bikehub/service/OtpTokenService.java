@@ -39,7 +39,7 @@ public class OtpTokenService {
     }
 
 
-    public OtpTokenResponse sendRegistrationOtp(OtpTokenRequest otpRequest) {
+    public void sendRegistrationOtp(OtpTokenRequest otpRequest) {
 
         User user = userRepository.findByUsername(otpRequest.getEmail())
                 .orElse(null);
@@ -85,9 +85,7 @@ public class OtpTokenService {
                         .mail(otpRequest.getEmail())
                         .build());
 
-        return OtpTokenResponse.builder()
-                .otp(otp)
-                .build();
+
     }
 
     @Transactional

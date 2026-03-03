@@ -11,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/user")
@@ -45,6 +46,14 @@ public class UserController {
     ApiResponse<UserResponse> createUser(@RequestBody UserCreationRequest userCreationRequest){
         return ApiResponse.<UserResponse>builder()
                 .result(userService.createUser(userCreationRequest))
+                .build();
+    }
+
+    @DeleteMapping("/{id}")
+    ApiResponse<Void> deleteUser(@PathVariable UUID id){
+        userService.deleteUser(id);
+        return ApiResponse.<Void>builder()
+                .message("Deleted User")
                 .build();
     }
 
