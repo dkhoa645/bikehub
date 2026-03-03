@@ -23,7 +23,6 @@ public class Subscription {
     @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name="listing_id")
     Listing listing;
     @ManyToOne(fetch = FetchType.LAZY)
     Plan plan;
