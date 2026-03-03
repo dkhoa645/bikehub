@@ -54,7 +54,6 @@ public class InspectionController {
                 .build();
     }
 
-
     @PutMapping("/assign-inspector")
     ApiResponse<InspectionResponse> updateInspection(@RequestBody InspectionAssignRequest inspectionAssignRequest) {
         return ApiResponse.<InspectionResponse>builder()

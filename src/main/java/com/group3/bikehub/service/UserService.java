@@ -34,6 +34,7 @@ public class UserService {
     public UserResponse getMyInfo() {
         User user = currentUserService.getCurrentUser();
         UserResponse userResponse = userMapper.toUserResponse(user);
+        userResponse.setAddress(!ObjectUtils.isEmpty(user.getAddress()));
         userResponse.setKyc(!ObjectUtils.isEmpty(kycRepository.findByUser(user)));
         return userResponse;
     }
