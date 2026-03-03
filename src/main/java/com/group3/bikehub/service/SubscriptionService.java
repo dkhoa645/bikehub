@@ -62,11 +62,12 @@ public class SubscriptionService {
         int days = subscription.getPlan().getDurationDays();
         int priority = subscription.getPlan().getPriority();
 
+
         Date listingDate = subscription.getListing().getExpiryAt();
         Date createDate = new Date();
         Date startDate = new Date();
         Date expiryDate = new Date();
-        if(listingDate.before(new Date())) {
+        if(listingDate == null ||listingDate.before(new Date())) {
             expiryDate = Date.from(Instant.now().plus(days, ChronoUnit.DAYS));
         }else{
             startDate = Date.from(listingDate.toInstant().plus(1, ChronoUnit.DAYS));
