@@ -1,6 +1,8 @@
 spring:
   application:
     name: bikehub
+  jackson:
+    time-zone: Asia/Ho_Chi_Minh
   config:
     import: "optional:classpath:application-secret.properties"
 #  datasource:
