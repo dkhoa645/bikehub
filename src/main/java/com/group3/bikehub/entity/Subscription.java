@@ -5,6 +5,7 @@ import com.group3.bikehub.entity.Enum.SubscriptionStatusEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Cascade;
 
 import java.util.Date;
 import java.util.UUID;
@@ -21,7 +22,8 @@ public class Subscription {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name="listing_id")
     Listing listing;
     @ManyToOne(fetch = FetchType.LAZY)
     Plan plan;
