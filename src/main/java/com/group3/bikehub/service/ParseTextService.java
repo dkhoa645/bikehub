@@ -41,11 +41,21 @@ public class ParseTextService {
                 extract(text, "(Ngày sinh|Date of birth).*?:\\s*(\\d{2}/\\d{2}/\\d{4})"),
                 extract(text, "(Giới tính|Sex).*?(Nam|Nữ)"),
                 extract(text, "Nationality:\\s*([A-Za-zÀ-ỹ ]+)"),
-                extractNextLine(text, "Place of origin"),
-                extract(text, "(?:Nơi thường trú|Place of residence).*?:\\s*([\\s\\S]+?)(?:\\n(?:Có giá trị|Date of expiry)|$)"),
+                clean( extractNextLine(text, "Place of origin")),
+                clean(  extract(text,
+                        "(?:Nơi thường trú\\s*/\\s*Place of residence|Place of residence|Nơi thường trú)[\\s\\.:/]*([\\s\\S]+?)(?:\\n(?:Có giá trị|Date of expiry)|$)"
+                )),
                 expiryDate);
 
         return response;
+    }
+    private String clean(String input) {
+        if (input == null) return null;
+
+        return input
+                .replaceAll("\\r?\\n", " ")
+                .replaceAll("\\s{2,}", " ")
+                .trim();
     }
     public String extractOptional(String text, String regex) {
         Matcher matcher = Pattern
