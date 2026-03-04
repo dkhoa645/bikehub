@@ -112,8 +112,6 @@ public class UserService {
                 User.builder()
                         .username(inspectorCreationRequest.getUsername())
                         .password(passwordEncoder.encode(inspectorCreationRequest.getPassword()))
-                        .address(new Address())
-                        .kycProfile(new Kyc())
                         .roles(roles)
                         .name(inspectorCreationRequest.getName())
                         .build()
