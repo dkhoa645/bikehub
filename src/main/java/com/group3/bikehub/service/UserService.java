@@ -89,7 +89,7 @@ public class UserService {
                 inspectorCreationRequest.getPassword()
         );
 
-        if(userRepository.existsByUsername(inspectorCreationRequest.getName())){
+        if(userRepository.existsByUsername(inspectorCreationRequest.getUsername())){
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
