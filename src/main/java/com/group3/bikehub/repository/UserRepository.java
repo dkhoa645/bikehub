@@ -27,4 +27,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     )
     """)
     List<User> findAvailableInspectors(Date scheduleAt);
+
+    boolean existsByUsername(String username);
 }

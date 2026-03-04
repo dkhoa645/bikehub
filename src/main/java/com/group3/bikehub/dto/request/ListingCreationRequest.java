@@ -19,7 +19,7 @@ import java.util.List;
 public class ListingCreationRequest {
     @Schema(description = "Brand được tạo bằng API brand", example = "/brand", requiredMode = Schema.RequiredMode.REQUIRED)
     String brandName;
-    @Schema(description = "Loại xe", example = "MTP_BIKE, ROAD_BIKE", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Loại xe", example = "MTB_BIKE, ROAD_BIKE", requiredMode = Schema.RequiredMode.REQUIRED)
     BikeType bikeType;
     String title;
     @Schema(description = "Thời gian đã sử dụng (năm)", example = "12")

@@ -89,6 +89,10 @@ public class UserService {
                 inspectorCreationRequest.getPassword()
         );
 
+        if(userRepository.existsByUsername(inspectorCreationRequest.getName())){
+            throw new AppException(ErrorCode.USER_EXISTED);
+        }
+
         try {
             sendGridService.dispatchEmail(
                     inspectorCreationRequest.getUsername(),
@@ -102,15 +106,18 @@ public class UserService {
                 .orElseThrow();
         Set<Role> roles = new HashSet<>();
         roles.add(role);
+
         return userMapper.toUserResponse(
+                userRepository.save(
                 User.builder()
                         .username(inspectorCreationRequest.getUsername())
                         .password(passwordEncoder.encode(inspectorCreationRequest.getPassword()))
                         .address(new Address())
                         .kycProfile(new Kyc())
                         .roles(roles)
+                        .name(inspectorCreationRequest.getName())
                         .build()
-        );
+                ));
     }
 
     public UserResponse createUser(UserCreationRequest userCreationRequest) {
