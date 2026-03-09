@@ -45,7 +45,7 @@ public class InspectionScoreService {
             throw new AppException(ErrorCode.SCORE_ALREADY);
         }
 
-        if (inspection.getScheduledAt().after(Date.from(
+        if (inspection.getScheduledAt().before(Date.from(
                 Instant.now().plus(2, ChronoUnit.HOURS)))) {
             inspection.setStatus(InspectionStatus.EXPIRED);
             throw new AppException(ErrorCode.INSPECTION_EXPIRED);

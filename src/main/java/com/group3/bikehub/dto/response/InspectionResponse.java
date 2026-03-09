@@ -1,5 +1,6 @@
 package com.group3.bikehub.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.group3.bikehub.dto.request.ScoreCreationRequest;
 import com.group3.bikehub.entity.Enum.InspectionResult;
 import com.group3.bikehub.entity.Enum.InspectionStatus;
@@ -23,8 +24,11 @@ public class InspectionResponse {
     InspectionStatus status;
     UserResponse inspector;
     InspectionResult inspectionResult;
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     Date scheduledAt;
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     Date expiredAt;
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     Date createdAt;
     Integer score;
     String comment;
