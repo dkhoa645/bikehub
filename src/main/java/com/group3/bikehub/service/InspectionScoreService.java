@@ -7,6 +7,7 @@ import com.group3.bikehub.entity.Enum.InspectionStatus;
 import com.group3.bikehub.entity.Enum.ListingStatus;
 import com.group3.bikehub.entity.Inspection;
 import com.group3.bikehub.entity.InspectionImage;
+import com.group3.bikehub.entity.User;
 import com.group3.bikehub.exception.AppException;
 import com.group3.bikehub.exception.ErrorCode;
 import com.group3.bikehub.mapper.InspectionMapper;
@@ -28,10 +29,16 @@ public class InspectionScoreService {
     InspectionRepository inspectionRepository;
     CloudinaryService cloudinaryService;
     InspectionMapper inspectionMapper;
+    CurrentUserService currentUserService;
 
     public InspectionResponse createScore(UUID inspectionId, ScoreCreationRequest scoreCreationRequest) {
         Inspection inspection = inspectionRepository.findById(inspectionId)
                 .orElseThrow(() -> new AppException(ErrorCode.INSPECTION_NOT_FOUND));
+
+        User user = currentUserService.getCurrentUser();
+        if(!inspection.getInspectionId().equals(user.getId())) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
 
         if(inspection.getScore() != null) {
             throw new AppException(ErrorCode.SCORE_ALREADY);
