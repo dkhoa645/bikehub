@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ScoreCreationRequest {
     Long componentId;
-    @Min(1)
-    @Max(10)
+    @Min(value = 1, message = "SCORE_MIN")
+    @Max(value = 10, message = "SCORE_MAX")
     Integer score;
 }

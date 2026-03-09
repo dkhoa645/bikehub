@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -36,7 +37,7 @@ public class InspectionService {
     CurrentUserService currentUserService;
     AddressRepository addressRepository;
     UserRepository userRepository;
-    private final UserMapper userMapper;
+    UserMapper userMapper;
 
     @Transactional
     public InspectionResponse createInspection(InspectionCreationRequest request) {
@@ -44,9 +45,19 @@ public class InspectionService {
         inspection.setStatus(InspectionStatus.PENDING_ASSIGNED);
         Listing listing = listingRepository.findById(request.getListingId())
                 .orElseThrow(() -> new AppException(ErrorCode.DRAFT_NOT_FOUND));
+        if(!listing.getStatus().equals(ListingStatus.PAID)) {
+            throw new AppException(ErrorCode.LISTING_STATUS);
+        }
         listing.setStatus(ListingStatus.PENDING);
         inspection.setListing(listing);
         inspection.setCreatedAt(new Date());
+        inspection.setExpiredAt(Date.from(request.getScheduledAt().toInstant()
+                .plus(2, ChronoUnit.HOURS)));
+
+        if(request.getScheduledAt().before(new Date())){
+            throw new AppException(ErrorCode.TIME_BEFORE);
+        }
+
         InspectionLocation location = new InspectionLocation() ;
         if (request.getInspectionType().equals(InspectionType.ONSITE)) {
             User user = currentUserService.getCurrentUser();
@@ -61,6 +72,8 @@ public class InspectionService {
                 .orElseThrow(() -> new AppException(ErrorCode.LOCATION_NOT_FOUND));
         }
         inspection.setLocation(location);
+
+
 
         return inspectionMapper.toInspectionResponse(inspectionRepository.save(inspection));
     }
@@ -84,7 +97,7 @@ public class InspectionService {
     public List<InspectionResponse> getMyAssign() {
         User  user = currentUserService.getCurrentUser();
 
-        List<Inspection> inspections = inspectionRepository.findByInspectorId(user.getId());
+        List<Inspection> inspections = inspectionRepository.findByInspectorIdOrderByCreatedAt(user.getId());
 
         return inspections.stream()
                 .map(inspectionMapper::toInspectionResponse)
@@ -110,8 +123,11 @@ public class InspectionService {
                 .toList();
     }
 
+
+
     public List<UserResponse> getAvailableInspector(Date scheduleAt) {
-        return userRepository.findAvailableInspectors(scheduleAt).stream()
+        Date expiryAt = Date.from(scheduleAt.toInstant().plus(2, ChronoUnit.HOURS));
+        return userRepository.findAvailableInspectors(scheduleAt, expiryAt).stream()
                 .map(userMapper::toUserResponse)
                 .toList();
     }

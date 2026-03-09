@@ -17,16 +17,18 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByVerificationToken(String verificationToken);
 
     @Query("""
-    SELECT DISTINCT u FROM User u
-    JOIN u.roles r
-    WHERE r.name = 'INSPECTOR'
-    AND NOT EXISTS (
+SELECT DISTINCT u FROM User u
+JOIN u.roles r
+WHERE r.name = 'INSPECTOR'
+AND NOT EXISTS (
     SELECT i FROM Inspection i
     WHERE i.inspector = u
-    AND i.scheduledAt = :scheduleAt
-    )
-    """)
-    List<User> findAvailableInspectors(Date scheduleAt);
+    AND i.status = 'PENDING'
+    AND i.scheduledAt < :scheduleAt
+    AND i.expiredAt > :expiredAt
+)
+""")
+    List<User> findAvailableInspectors(Date scheduleAt, Date expiredAt);
 
     boolean existsByUsername(String username);
 }

@@ -79,7 +79,7 @@ public class SubscriptionService {
         subscription.setExpiredDate(expiryDate);
         subscription.setStatus(SubscriptionStatusEnum.ACTIVE);
         subscription.getListing().setExpiryAt(expiryDate);
-        subscription.getListing().setStatus(ListingStatus.LIVE);
+        subscription.getListing().setStatus(ListingStatus.PAID);
         subscription.getListing().setPriority(priority);
         subscriptionRepository.save(subscription);
     }

@@ -3,6 +3,8 @@ package com.group3.bikehub.dto.request;
 import com.group3.bikehub.dto.response.BrandResponse;
 import com.group3.bikehub.entity.Enum.BikeType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -27,7 +29,8 @@ public class ListingCreationRequest {
     @Schema(description = "FRAME_NUMBER ko được trùng, trừ khi đã SOLD", example = "FN-ABC-123456", requiredMode = Schema.RequiredMode.REQUIRED)
     String frameNumber;
     String description;
+    @DecimalMin(value = "100000", message = "PRICE_MIN")
     BigDecimal price;
-    @Size(min = 3, max = 8)
+    @Size(min = 3, max = 5)
     List<MultipartFile> images;
 }

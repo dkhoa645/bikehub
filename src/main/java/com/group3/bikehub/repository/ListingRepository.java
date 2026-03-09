@@ -18,6 +18,8 @@ import java.util.UUID;
 public interface ListingRepository extends JpaRepository<Listing,UUID> {
     List<Listing> findBySeller(User seller);
 
+    List<Listing> findBySellerOrderByCreatedAtDesc(User seller);
+    
     List<Listing> findByFrameNumber(String frameNumber);
 
     @Query("""

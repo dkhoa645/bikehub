@@ -3,6 +3,9 @@ package com.group3.bikehub.controller;
 
 import com.group3.bikehub.configuration.PayOSConfig;
 import com.group3.bikehub.service.PaymentService;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -20,10 +23,12 @@ import vn.payos.model.webhooks.WebhookData;
 @Slf4j
 
 @RestController
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class WebHookController {
-    @Autowired
+
     PayOS payOS;
-    @Autowired
+
     PaymentService paymentService;
 
     @PostMapping("/webhook")
@@ -44,7 +49,6 @@ public class WebHookController {
         } catch (Exception e) {
             log.error("Webhook error", e);
         }
-
 
         return ResponseEntity.ok("OK");
     }

@@ -1,5 +1,6 @@
 package com.group3.bikehub.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.group3.bikehub.entity.Enum.InspectionStatus;
 import com.group3.bikehub.entity.Enum.ListingStatus;
 import lombok.*;
@@ -24,6 +25,7 @@ public class ListingResponse {
     String frameNumber;
     ListingStatus status;
     BigDecimal price;
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     Date createdAt;
     List<ListingImageResponse> images;
 

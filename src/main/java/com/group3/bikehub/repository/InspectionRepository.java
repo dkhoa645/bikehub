@@ -17,5 +17,7 @@ public interface InspectionRepository extends JpaRepository<Inspection, UUID> {
 
     List<Inspection> findByInspectorId(UUID inspectorId);
 
+    List<Inspection> findByInspectorIdOrderByCreatedAt(UUID inspectorId);
+
     List<Inspection> findByStatusOrderByCreatedAt(InspectionStatus status);
 }

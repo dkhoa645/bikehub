@@ -1,15 +1,12 @@
 package com.group3.bikehub.service;
 
 
-import com.group3.bikehub.dto.request.CreateListingPaymentRequest;
 import com.group3.bikehub.dto.request.CreateOrderPaymentRequest;
 import com.group3.bikehub.dto.request.PaymentCreationRequest;
 import com.group3.bikehub.dto.response.PaymentCreationResponse;
 import com.group3.bikehub.dto.response.PaymentResponse;
 import com.group3.bikehub.entity.*;
-import com.group3.bikehub.entity.Enum.OrderStatus;
-import com.group3.bikehub.entity.Enum.PaymentStatus;
-import com.group3.bikehub.entity.Enum.PaymentType;
+import com.group3.bikehub.entity.Enum.*;
 import com.group3.bikehub.exception.AppException;
 import com.group3.bikehub.exception.ErrorCode;
 import com.group3.bikehub.mapper.PaymentMapper;
@@ -17,7 +14,10 @@ import com.group3.bikehub.repository.ListingRepository;
 import com.group3.bikehub.repository.OrderRepository;
 import com.group3.bikehub.repository.PaymentRepository;
 import com.group3.bikehub.repository.SubscriptionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import vn.payos.PayOS;
@@ -31,30 +31,31 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PaymentService {
-    @Autowired
+
     OrderRepository orderRepository;
-    @Autowired
+
     CurrentUserService currentUserService;
-    @Autowired
-    ListingService listingService;
-    @Autowired
+
     OrderService orderService;
-    @Autowired
+
     PaymentRepository paymentRepository;
-    private final Random random = new Random();
-    @Autowired
-    ListingRepository listingRepository;
-    @Autowired
+
+    Random random = new Random();
+
     SubscriptionRepository subscriptionRepository;
-    @Autowired
+
     PayOS payOS;
+
     @Value("${com.payos.PAYOS_CHECKSUM_KEY}")
-    private String CHECKSUM_KEY;
-    @Autowired
-    private SubscriptionService subscriptionService;
-    @Autowired
-    private PaymentMapper paymentMapper;
+    @NonFinal
+    String CHECKSUM_KEY;
+
+    SubscriptionService subscriptionService;
+
+    PaymentMapper paymentMapper;
 
     public Map<String, Object> createOrderPayment(CreateOrderPaymentRequest request) {
         Order order = orderRepository.findOrderById(request.getOrder_id());
@@ -69,7 +70,7 @@ public class PaymentService {
         long orderCode = Long.parseLong(order.getId() + randomSuffix);
         CreatePaymentLinkRequest paymentData = CreatePaymentLinkRequest.builder()
                 .orderCode(orderCode)
-                .amount(order.getTotal_ammount().longValue())
+                .amount(order.getTotal_amount().longValue())
                 .description(request.getDescription())
                 .returnUrl("test")
                 .cancelUrl("test")
@@ -160,8 +161,22 @@ public class PaymentService {
         Subscription subscription = subscriptionRepository.findById(paymentCreationRequest.getSubscriptionId())
                 .orElseThrow(()-> new AppException(ErrorCode.SUBSCRIPTION_NOT_FOUND));
 
+        if(!subscription.getListing().getStatus().equals(ListingStatus.DRAFT)){
+            throw new AppException(ErrorCode.LISTING_STATUS);
+        }
+
         String randomSuffix = String.format("%04d", random.nextInt(10000));
         long orderCode = Long.parseLong(20 + randomSuffix);
+
+        Payment payment = new Payment();
+        payment.setReferenceId(String.valueOf(subscription.getId()));
+        payment.setType(PaymentType.SUBSCRIPTION);
+        payment.setPayosOrderCode(orderCode);
+        payment.setAmount(subscription.getPlan().getPrice());
+        payment.setStatus(PaymentStatus.PENDING);
+        payment = paymentRepository.save(payment);
+
+
         CreatePaymentLinkRequest paymentData = CreatePaymentLinkRequest.builder()
                 .orderCode(orderCode)
                 .amount(2000L)
@@ -169,16 +184,13 @@ public class PaymentService {
                 .returnUrl("test")
                 .cancelUrl("test")
                 .build();
-        CreatePaymentLinkResponse paymentResult = payOS.paymentRequests().create(paymentData);
-        Payment payment = new Payment();
-        payment.setReferenceId(String.valueOf(subscription.getId()));
-        payment.setType(PaymentType.SUBSCRIPTION);
-        payment.setPayosOrderCode(orderCode);
-        payment.setAmount(subscription.getPlan().getPrice());
-        payment.setStatus(PaymentStatus.PENDING);
-        paymentRepository.save(payment);
 
-        return PaymentCreationResponse.builder().paymentUrl(paymentResult.getCheckoutUrl()).build();
+        CreatePaymentLinkResponse paymentResult = payOS.paymentRequests().create(paymentData);
+
+
+        return PaymentCreationResponse.builder()
+                .paymentUrl(paymentResult.getCheckoutUrl())
+                .build();
 
     }
 
@@ -186,5 +198,14 @@ public class PaymentService {
         return paymentRepository.findAll().stream()
                 .map(paymentMapper::toPaymentResponse)
                 .toList();
+    }
+
+    public List<PaymentResponse> myPayment() {
+        User user = currentUserService.getCurrentUser();
+        List<Payment> list = paymentRepository.findByUserOrderByPaidAt(user);
+        return list.stream()
+                .map(paymentMapper::toPaymentResponse)
+                .toList();
+
     }
 }

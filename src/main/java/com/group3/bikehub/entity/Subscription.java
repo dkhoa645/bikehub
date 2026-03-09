@@ -5,7 +5,7 @@ import com.group3.bikehub.entity.Enum.SubscriptionStatusEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.Cascade;
+
 
 import java.util.Date;
 import java.util.UUID;

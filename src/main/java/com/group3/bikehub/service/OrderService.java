@@ -7,14 +7,15 @@ import com.group3.bikehub.dto.response.OrderResponse;
 import com.group3.bikehub.entity.*;
 import com.group3.bikehub.entity.Enum.ListingStatus;
 import com.group3.bikehub.entity.Enum.OrderStatus;
-import com.group3.bikehub.entity.Enum.PaymentStatus;
 import com.group3.bikehub.entity.Enum.SellerStatus;
 import com.group3.bikehub.exception.AppException;
 import com.group3.bikehub.exception.ErrorCode;
 import com.group3.bikehub.repository.ListingRepository;
 import com.group3.bikehub.repository.OrderItemRepository;
 import com.group3.bikehub.repository.OrderRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,19 +25,22 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OrderService {
-    @Autowired
-    private OrderRepository orderRepository;
-    @Autowired
-    private CurrentUserService curentUserService;
-    @Autowired
-    private ListingRepository listingRepository;
-    @Autowired
-    private OrderItemRepository orderItemRepository;
+    
+    OrderRepository orderRepository;
+    
+    CurrentUserService curentUserService;
+    
+    ListingRepository listingRepository;
+    
+    OrderItemRepository orderItemRepository;
 
     public OrderResponse placeOrder(PlaceOrderRequest request) {
         User user = curentUserService.getCurrentUser();
         Optional<Listing> listing = listingRepository.findById(request.getListingId());
+
         if (listing.isEmpty()) {
             throw new AppException(ErrorCode.LISTING_NOT_FOUND);
         }
@@ -45,12 +49,10 @@ public class OrderService {
             throw new AppException(ErrorCode.LISTING_NOT_FOUND);
         }
 
-
         Order order = new Order();
         order.setBuyer(user);
         order.setSeller(listing.get().getSeller());
-        order.setTotal_ammount(listing.orElseThrow().getPrice());
-
+        order.setTotal_amount(listing.orElseThrow().getPrice());
         order.setCreated_at(LocalDateTime.now());
         order.setExpiresAt(LocalDateTime.now().plusMinutes(1));
 
@@ -60,6 +62,7 @@ public class OrderService {
         orderItem.setOrder(order);
         order.setOrderStatus(OrderStatus.PENDING);
         listing.get().setStatus(ListingStatus.RESERVED);
+
         orderRepository.save(order);
         orderItemRepository.save(orderItem);
         OrderResponse orderResponse = new OrderResponse();

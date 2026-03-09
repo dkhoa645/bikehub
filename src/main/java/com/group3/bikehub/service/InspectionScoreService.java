@@ -20,6 +20,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -37,12 +40,22 @@ public class InspectionScoreService {
     public InspectionResponse createScore(UUID inspectionId, List<ScoreCreationRequest> scoreCreationRequestList) {
         Inspection inspection = inspectionRepository.findById(inspectionId)
                 .orElseThrow(() -> new AppException(ErrorCode.INSPECTION_NOT_FOUND));
+
         if(!inspection.getScores().isEmpty()){
             throw new AppException(ErrorCode.COMPONENT_EXISTS);
         }
+
+        if(inspection.getScheduledAt().after(Date.from(
+                Instant.now().plus(2,ChronoUnit.HOURS)))){
+            inspection.setStatus(InspectionStatus.EXPIRED);
+            throw new AppException(ErrorCode.INSPECTION_EXPIRED);
+        }
+
         inspection.setStatus(InspectionStatus.COMPLETED);
 
-        inspection.getListing().setStatus(ListingStatus.APPROVED);
+        inspection.getListing().setStatus(ListingStatus.LIVE);
+
+
 
         List<InspectionScore> scores = scoreCreationRequestList.stream()
                 .map(request -> {
@@ -61,7 +74,6 @@ public class InspectionScoreService {
         inspectionResponse.setScores(
                 scores.stream().map(inspectionScoreMapper::toScoreResponse).toList()
         );
-
 
 
         return inspectionResponse;

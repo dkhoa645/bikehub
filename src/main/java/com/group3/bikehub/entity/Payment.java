@@ -4,51 +4,48 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.group3.bikehub.entity.Enum.PaymentStatus;
 import com.group3.bikehub.entity.Enum.PaymentType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
 @Entity
 @NoArgsConstructor
 public class Payment {
-
-    public Payment( BigDecimal amount, PaymentStatus status, String transactionRef, Long payosOrderCode, LocalDateTime paidAt) {
-        this.amount = amount;
-        this.status = status;
-        this.transactionRef = transactionRef;
-        this.payosOrderCode = payosOrderCode;
-        this.paidAt = paidAt;
-    }
+    
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payment_id")
-    private Long paymentId;
+    Long paymentId;
 
 
     @Enumerated(EnumType.STRING)
-    private PaymentType type;
-    private String referenceId;
-    private BigDecimal amount;
+    PaymentType type;
+    String referenceId;
+    BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
-    private PaymentStatus status;
+    PaymentStatus status;
 
     @Column(name = "transaction_ref")
-    private String transactionRef;
+    String transactionRef;
     @Column(unique = true)
-    private Long payosOrderCode;
+    Long payosOrderCode;
     @Column(name = "paid_at")
-    private LocalDateTime paidAt;
+    LocalDateTime paidAt;
+    @Column(name = "create_at")
+    LocalDateTime createAt;
     @PrePersist
     protected void onCreate() {
         this.transactionRef = UUID.randomUUID().toString();
     }
-
+    @ManyToOne
+    User user;
 
 }

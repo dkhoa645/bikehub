@@ -39,7 +39,7 @@ public class ListingService {
     CurrentUserService currentUserService;
     CloudinaryService cloudinaryService;
     ListingImagineRepository  listingImagineRepository;
-    InspectionMapper inspectionMapper;
+
 
 
     @Transactional
@@ -48,10 +48,11 @@ public class ListingService {
         Listing listing = listingMapper.toListing(request);
 
         List<Listing> list = listingRepository.findByFrameNumber(request.getFrameNumber());
+
         if(!list.isEmpty()){
             list.forEach(each -> {
                 if(!each.getStatus().equals(ListingStatus.SOLD)){
-                    throw new AppException(ErrorCode.LISTING_STATUS);
+                    throw new AppException(ErrorCode.LISTING_SOLD);
                 }
             });
         }
@@ -68,6 +69,18 @@ public class ListingService {
         Listing listingSaved = listingRepository.save(listing);
 
         List<ListingImage> imageList = new ArrayList<>();
+
+        Set<String> uniqueImages = new HashSet<>();
+
+        for(MultipartFile file: request.getImages()){
+
+            String key = file.getOriginalFilename();
+
+            if(!uniqueImages.add(key)){
+                throw new AppException(ErrorCode.IMAGE_DUPLICATE);
+            }
+        }
+
         int order = 1;
         for(MultipartFile file : request.getImages()) {
             try {
@@ -89,7 +102,7 @@ public class ListingService {
 
     public List<ListingResponse> getMyListing() {
         User user = currentUserService.getCurrentUser();
-        List<Listing> list = listingRepository.findBySeller(user);
+        List<Listing> list = listingRepository.findBySellerOrderByCreatedAtDesc(user);
         return list.stream()
                 .map(listingMapper::toListingResponse)
                 .toList();
@@ -99,7 +112,7 @@ public class ListingService {
     public PageResponse<ListingSellResponse> getSellListing(int page, int size) {
         Sort sort = Sort.by(
                 Sort.Order.desc("createdAt"),
-                Sort.Order.asc("createdAt")
+                Sort.Order.asc("priority")
         );
 
         Pageable pageable = PageRequest.of(page-1, size, sort);
@@ -119,5 +132,12 @@ public class ListingService {
         return listingRepository.findAll().stream()
                 .map(listingMapper::toListingSellResponse)
                 .toList();
+    }
+
+    public ListingResponse getById(UUID id) {
+        return listingMapper.toListingResponse(
+                listingRepository.findById(id)
+                        .orElseThrow(()-> new AppException(ErrorCode.IMAGE_DUPLICATE))
+        );
     }
 }

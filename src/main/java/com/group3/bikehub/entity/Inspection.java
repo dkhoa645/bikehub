@@ -43,7 +43,7 @@ public class Inspection {
     InspectionLocation location;
 
     Date scheduledAt;
-
+    Date expiredAt;
     @Enumerated(EnumType.STRING)
     InspectionStatus status;
 
@@ -57,6 +57,10 @@ public class Inspection {
 
     Date createdAt;
 
+
     @OneToMany(mappedBy = "inspection", cascade = CascadeType.ALL)
     Set<InspectionScore> scores;
+
+
+
 }

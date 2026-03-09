@@ -4,5 +4,6 @@ public enum InspectionStatus {
     PENDING_ASSIGNED,
     ASSIGNED,
     IN_PROGRESS,
-    COMPLETED
+    COMPLETED,
+    EXPIRED
 }

@@ -6,6 +6,9 @@ import com.group3.bikehub.dto.response.KycDraftResponse;
 import com.group3.bikehub.dto.response.KycResponse;
 import com.group3.bikehub.entity.Kyc;
 import com.group3.bikehub.service.KycService;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,9 +20,11 @@ import java.util.List;
 
 
 @RestController
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
     @RequestMapping("/kyc")
     public class KycController {
-    @Autowired
+
     KycService kycService;
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

@@ -1,5 +1,6 @@
 package com.group3.bikehub.dto.response;
 
+import com.group3.bikehub.entity.Enum.InspectionResult;
 import com.group3.bikehub.entity.Enum.InspectionStatus;
 import com.group3.bikehub.entity.Enum.InspectionType;
 import lombok.*;
@@ -20,6 +21,7 @@ public class InspectionResponse {
     InspectionLocationResponse location;
     InspectionStatus status;
     UserResponse inspector;
+    InspectionResult inspectionResult;
     Date scheduledAt;
     List<ScoreResponse> scores;
 }

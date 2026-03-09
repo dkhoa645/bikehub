@@ -24,6 +24,8 @@ public class PlanService {
 
     public PlanResponse createPlan(PlanCreationRequest request) {
         Plan plan = planMapper.toPlan(request);
+        if(planRepository.existsByNameAndDurationDays(request.getName(), request.getDurationDays()))
+            throw new AppException(ErrorCode.PLAN_EXISTS);
         return planMapper.toPlanResponse(planRepository.save(plan));
     }
 

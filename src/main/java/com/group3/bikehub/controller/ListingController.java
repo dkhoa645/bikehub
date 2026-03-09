@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/listing")
@@ -54,6 +55,13 @@ public class ListingController {
     ApiResponse<List<ListingSellResponse>> getAllListings(){
         return ApiResponse.<List<ListingSellResponse>>builder()
                 .result(listingService.getAllListing())
+                .build();
+    }
+
+    @GetMapping("/{id}")
+    ApiResponse<ListingResponse> getListingById(@PathVariable UUID id){
+        return ApiResponse.<ListingResponse>builder()
+                .result(listingService.getById(id))
                 .build();
     }
 }

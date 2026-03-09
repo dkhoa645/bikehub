@@ -7,22 +7,24 @@ import com.group3.bikehub.dto.request.PaymentCreationRequest;
 import com.group3.bikehub.dto.response.PaymentCreationResponse;
 import com.group3.bikehub.dto.response.PaymentResponse;
 import com.group3.bikehub.service.PaymentService;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/payment")
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PaymentController {
-    @Autowired
-    private PaymentService paymentService;
 
+    PaymentService paymentService;
 
-    @PostMapping("/payment/create/order")
+    @PostMapping("/order")
     public ApiResponse<Map<String, Object>> createOrderPayment(
             @RequestBody CreateOrderPaymentRequest request) {
         return ApiResponse.<Map<String, Object>>builder()
@@ -31,7 +33,7 @@ public class PaymentController {
                 .build();
     }
 
-    @PostMapping("/payment/create/subscription")
+    @PostMapping("/subscription")
     ApiResponse<PaymentCreationResponse> createSubscriptionPayment(
             @RequestBody PaymentCreationRequest paymentCreationRequest
     ){
@@ -46,6 +48,15 @@ public class PaymentController {
                 .result(paymentService.getAll())
                 .build();
     }
+
+    @GetMapping("/my-payment")
+    ApiResponse<List<PaymentResponse>> myPayments() {
+        return ApiResponse.<List<PaymentResponse>>builder()
+                .result(paymentService.myPayment())
+                .build();
+    }
+
+
 
 
 

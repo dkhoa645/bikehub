@@ -25,7 +25,8 @@ public enum ErrorCode {
     ORDER_UNPAID(1016, "Order UNPAID", HttpStatus.BAD_REQUEST),
     LOCATION_NOT_FOUND(1017,"Location not found", HttpStatus.NOT_FOUND),
     ADDRESS_EXIST(1018,"Address already exists", HttpStatus.BAD_REQUEST),
-    LISTING_STATUS(1019,"Available for sold status", HttpStatus.BAD_REQUEST),
+    LISTING_SOLD(1019,"Listing with sold status not available", HttpStatus.BAD_REQUEST),
+    LISTING_STATUS(1019,"Listing with this status not available", HttpStatus.BAD_REQUEST),
     LOCATION_EXISTS(1020,"Location already exists", HttpStatus.BAD_REQUEST),
     INSPECTION_NOT_FOUND(1021,"Inspection not found", HttpStatus.NOT_FOUND),
     BRAND_NOT_FOUND(1022,"Brand not found", HttpStatus.NOT_FOUND),
@@ -35,6 +36,13 @@ public enum ErrorCode {
     PLAN_NOT_FOUND(1026,"Plan not found", HttpStatus.NOT_FOUND),
     PLAN_EXISTS(1027,"Plan already exists", HttpStatus.BAD_REQUEST),
     SUBSCRIPTION_NOT_FOUND(1028,"Subscription not found", HttpStatus.NOT_FOUND),
+    IMAGE_DUPLICATE(1029, "Image exist", HttpStatus.NOT_FOUND),
+    TIME_BEFORE(1030, "Time must be after now", HttpStatus.BAD_REQUEST),
+    INSPECTION_EXPIRED(1031,"Inspection date expired", HttpStatus.BAD_REQUEST),
+    PRICE_MIN(1032, "Price must be at least 100.000vnd", HttpStatus.BAD_REQUEST),
+    SCORE_MIN(1033, "Score min is 1", HttpStatus.BAD_REQUEST),
+    SCORE_MAX(1033, "Score max is 10", HttpStatus.BAD_REQUEST),
+
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
