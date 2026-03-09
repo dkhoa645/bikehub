@@ -3,9 +3,7 @@ package com.group3.bikehub.dto.request;
 import com.group3.bikehub.dto.response.BrandResponse;
 import com.group3.bikehub.entity.Enum.BikeType;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,18 +17,23 @@ import java.util.List;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ListingCreationRequest {
-    @Schema(description = "Brand được tạo bằng API brand", example = "/brand", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Brand được tạo bằng API brand", requiredMode = Schema.RequiredMode.REQUIRED)
     String brandName;
-    @Schema(description = "Loại xe", example = "MTB_BIKE, ROAD_BIKE", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Loại xe MTB_BIKE, ROAD_BIKE", requiredMode = Schema.RequiredMode.REQUIRED)
     BikeType bikeType;
     String title;
-    @Schema(description = "Thời gian đã sử dụng (năm)", example = "12")
+    @Schema(description = "Thời gian đã sử dụng (năm) min 0, max 10")
+    @Max(10)
+    @Min(0)
     Integer usageDuration;
-    @Schema(description = "FRAME_NUMBER ko được trùng, trừ khi đã SOLD", example = "FN-ABC-123456", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "FRAME_NUMBER ko được trùng, trừ khi đã SOLD",  requiredMode = Schema.RequiredMode.REQUIRED)
     String frameNumber;
     String description;
     @DecimalMin(value = "100000", message = "PRICE_MIN")
+    @DecimalMax(value = "10000000")
+    @Schema(description = "Giá bán min 100k, max 100m ")
     BigDecimal price;
     @Size(min = 3, max = 5)
+    @Schema(description = "Tối thiểu 3, tối đa 5 ")
     List<MultipartFile> images;
 }

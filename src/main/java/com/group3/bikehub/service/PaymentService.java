@@ -93,7 +93,7 @@ public class PaymentService {
         Long payosOrderId = Long.parseLong(orderCode);
         Payment payment = paymentRepository.findByPayosOrderCode(payosOrderId);
         payment.setStatus(PaymentStatus.PAID);
-        payment.setPaidAt(LocalDateTime.now());
+        payment.setPaidAt(new Date());
         paymentRepository.save(payment);
 
         if (payment.getType().equals(PaymentType.ORDER)) {
@@ -161,6 +161,8 @@ public class PaymentService {
         Subscription subscription = subscriptionRepository.findById(paymentCreationRequest.getSubscriptionId())
                 .orElseThrow(()-> new AppException(ErrorCode.SUBSCRIPTION_NOT_FOUND));
 
+        User user = currentUserService.getCurrentUser();
+
         if(!subscription.getListing().getStatus().equals(ListingStatus.DRAFT)){
             throw new AppException(ErrorCode.LISTING_STATUS);
         }
@@ -174,6 +176,8 @@ public class PaymentService {
         payment.setPayosOrderCode(orderCode);
         payment.setAmount(subscription.getPlan().getPrice());
         payment.setStatus(PaymentStatus.PENDING);
+        payment.setUser(user);
+        payment.setCreateAt(new Date());
         payment = paymentRepository.save(payment);
 
 

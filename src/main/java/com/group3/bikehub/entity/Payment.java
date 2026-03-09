@@ -8,6 +8,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.UUID;
 
 @Getter
@@ -36,9 +37,9 @@ public class Payment {
     @Column(unique = true)
     Long payosOrderCode;
     @Column(name = "paid_at")
-    LocalDateTime paidAt;
+    Date paidAt;
     @Column(name = "create_at")
-    LocalDateTime createAt;
+    Date createAt;
     @PrePersist
     protected void onCreate() {
         this.transactionRef = UUID.randomUUID().toString();

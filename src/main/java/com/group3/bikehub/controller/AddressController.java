@@ -19,6 +19,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AddressController {
+
     AddressService addressService;
 
     @PostMapping()

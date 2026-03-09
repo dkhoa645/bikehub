@@ -76,8 +76,7 @@ public class InspectionController {
                 .build();
     }
 
-    @PostMapping(value = "/{inspectionId}/scores",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/{inspectionId}/scores", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ApiResponse<InspectionResponse> getComponentScores(
             @PathVariable UUID inspectionId,
             @ModelAttribute ScoreCreationRequest scoreCreationRequestList) {

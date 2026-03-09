@@ -43,6 +43,7 @@ public enum ErrorCode {
     SCORE_MIN(1033, "Score min is 1", HttpStatus.BAD_REQUEST),
     SCORE_MAX(1033, "Score max is 10", HttpStatus.BAD_REQUEST),
     SCORE_ALREADY(1034, "Score already", HttpStatus.BAD_REQUEST),
+    FILE_MIN(1035, "Max 4 images", HttpStatus.BAD_REQUEST),
 
     ;
 

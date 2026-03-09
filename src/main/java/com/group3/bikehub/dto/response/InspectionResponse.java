@@ -26,7 +26,7 @@ public class InspectionResponse {
     Date scheduledAt;
     Date expiredAt;
     Date createdAt;
-    int score;
+    Integer score;
     String comment;
     List<InspectionImageResponse> images;
 }

@@ -16,9 +16,9 @@ import java.util.List;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ScoreCreationRequest {
-    @Schema(description = "Chụp các type gồm LEFT_VIEW, RIGHT_VIEW,FRONT_VIEW,REAR_VIEW")
-    List<InspectionImageCreation> inspectionImageCreations;
     String comment;
     Integer score;
-
+    @Schema(description = "Gửi đúng 4 ảnh xe theo thứ tự: LEFT_VIEW ,RIGHT_VIEW ,FRONT_VIEW, REAR_VIEW")
+    @Min(value = 4, message = "FILE_MIN")
+    List<MultipartFile> files;
 }
