@@ -20,6 +20,7 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -43,7 +44,7 @@ public class ListingService {
 
 
     @Transactional
-    public ListingResponse createListing(ListingCreationRequest request) {
+    public ListingResponse createListing(ListingCreationRequest request) throws IOException {
 
         Listing listing = listingMapper.toListing(request);
 
@@ -72,11 +73,9 @@ public class ListingService {
 
         Set<String> uniqueImages = new HashSet<>();
 
-        for(MultipartFile file: request.getImages()){
-
-            String key = file.getOriginalFilename();
-
-            if(!uniqueImages.add(key)){
+        for (MultipartFile file : request.getImages()) {
+            String key = DigestUtils.sha256Hex(file.getBytes());
+            if (!uniqueImages.add(key)) {
                 throw new AppException(ErrorCode.IMAGE_DUPLICATE);
             }
         }
@@ -84,7 +83,6 @@ public class ListingService {
         int order = 1;
         for(MultipartFile file : request.getImages()) {
             try {
-
                 Map res = cloudinaryService.uploadFile(file,"listing");
                 imageList.add(listingImagineRepository.save(ListingImage.builder()
                         .secureUrl((String)res.get("secure_url"))
@@ -96,7 +94,6 @@ public class ListingService {
                 throw new RuntimeException(e);
             }
         }
-
         return listingMapper.toListingResponse(listingSaved);
     }
 
