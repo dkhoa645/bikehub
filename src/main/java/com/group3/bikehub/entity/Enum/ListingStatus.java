@@ -4,9 +4,10 @@ public enum ListingStatus {
     DRAFT,
     PAID,
     PENDING,
-    RESERVED,
-    REJECTED,
-    APPROVED,
+    REJECT,
     LIVE,
-    SOLD
+    RESERVED,
+    SOLD,
+    DELETED,
+    EXPIRED
 }

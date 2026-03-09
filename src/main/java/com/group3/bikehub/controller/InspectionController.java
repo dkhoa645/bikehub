@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -75,10 +76,11 @@ public class InspectionController {
                 .build();
     }
 
-    @PostMapping("/{inspectionId}/scores")
+    @PostMapping(value = "/{inspectionId}/scores",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ApiResponse<InspectionResponse> getComponentScores(
             @PathVariable UUID inspectionId,
-            @RequestBody List<ScoreCreationRequest> scoreCreationRequestList) {
+            @ModelAttribute ScoreCreationRequest scoreCreationRequestList) {
         return ApiResponse.<InspectionResponse>builder()
                 .result(inspectionScoreService.createScore(inspectionId,scoreCreationRequestList))
                 .build();

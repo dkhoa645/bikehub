@@ -50,17 +50,12 @@ public class Inspection {
     @Enumerated(EnumType.STRING)
     InspectionResult inspectionResult;
 
-    Integer overallScore;
+    Integer score;
 
     @Column(columnDefinition = "text")
-    String rejectReason;
+    String comment;
 
     Date createdAt;
-
-
-    @OneToMany(mappedBy = "inspection", cascade = CascadeType.ALL)
-    Set<InspectionScore> scores;
-
 
 
 }

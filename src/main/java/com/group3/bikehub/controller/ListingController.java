@@ -28,7 +28,7 @@ public class ListingController {
 
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ApiResponse<ListingResponse> addListing(@ModelAttribute ListingCreationRequest listingRequest){
+    ApiResponse<ListingResponse> addListing(@ModelAttribute  ListingCreationRequest listingRequest){
         return ApiResponse.<ListingResponse>builder()
                 .result(listingService.createListing(listingRequest))
                 .build();

@@ -17,8 +17,6 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor
 public class Payment {
-    
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payment_id")

@@ -42,6 +42,7 @@ public enum ErrorCode {
     PRICE_MIN(1032, "Price must be at least 100.000vnd", HttpStatus.BAD_REQUEST),
     SCORE_MIN(1033, "Score min is 1", HttpStatus.BAD_REQUEST),
     SCORE_MAX(1033, "Score max is 10", HttpStatus.BAD_REQUEST),
+    SCORE_ALREADY(1034, "Score already", HttpStatus.BAD_REQUEST),
 
     ;
 

@@ -1,5 +1,6 @@
 package com.group3.bikehub.dto.response;
 
+import com.group3.bikehub.dto.request.ScoreCreationRequest;
 import com.group3.bikehub.entity.Enum.InspectionResult;
 import com.group3.bikehub.entity.Enum.InspectionStatus;
 import com.group3.bikehub.entity.Enum.InspectionType;
@@ -23,5 +24,6 @@ public class InspectionResponse {
     UserResponse inspector;
     InspectionResult inspectionResult;
     Date scheduledAt;
-    List<ScoreResponse> scores;
+    int score;
+    List<ScoreCreationRequest> scoreCreationRequestList;
 }
