@@ -16,6 +16,7 @@ import org.hibernate.query.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,7 +29,7 @@ public class ListingController {
 
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ApiResponse<ListingResponse> addListing(@ModelAttribute  ListingCreationRequest listingRequest){
+    ApiResponse<ListingResponse> addListing(@ModelAttribute  ListingCreationRequest listingRequest) throws IOException {
         return ApiResponse.<ListingResponse>builder()
                 .result(listingService.createListing(listingRequest))
                 .build();
