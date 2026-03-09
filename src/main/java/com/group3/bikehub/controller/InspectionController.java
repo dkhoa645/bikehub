@@ -25,7 +25,7 @@ import java.util.UUID;
 public class InspectionController {
     InspectionService inspectionService;
     InspectionScoreService inspectionScoreService;
-    private final UserService userService;
+    UserService userService;
 
     @PostMapping()
     ApiResponse<InspectionResponse> createInspection(@RequestBody InspectionCreationRequest request) {

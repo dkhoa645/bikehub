@@ -24,6 +24,9 @@ public class InspectionResponse {
     UserResponse inspector;
     InspectionResult inspectionResult;
     Date scheduledAt;
+    Date expiredAt;
+    Date createdAt;
     int score;
-    List<ScoreCreationRequest> scoreCreationRequestList;
+    String comment;
+    List<InspectionImageResponse> images;
 }

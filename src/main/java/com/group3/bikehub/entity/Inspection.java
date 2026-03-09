@@ -57,5 +57,6 @@ public class Inspection {
 
     Date createdAt;
 
-
+    @OneToMany(cascade = CascadeType.ALL)
+    List<InspectionImage> images;
 }

@@ -6,13 +6,11 @@ import com.group3.bikehub.entity.Enum.InspectionResult;
 import com.group3.bikehub.entity.Enum.InspectionStatus;
 import com.group3.bikehub.entity.Enum.ListingStatus;
 import com.group3.bikehub.entity.Inspection;
+import com.group3.bikehub.entity.InspectionImage;
 import com.group3.bikehub.exception.AppException;
 import com.group3.bikehub.exception.ErrorCode;
 import com.group3.bikehub.mapper.InspectionMapper;
-import com.group3.bikehub.mapper.InspectionScoreMapper;
-import com.group3.bikehub.repository.InspectionComponentRepository;
 import com.group3.bikehub.repository.InspectionRepository;
-import com.group3.bikehub.repository.InspectionScoreRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,20 +18,18 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class InspectionScoreService {
-    InspectionScoreRepository inspectionScoreRepository;
+
     InspectionRepository inspectionRepository;
-    InspectionComponentRepository inspectionComponentRepository;
-    InspectionScoreMapper inspectionScoreMapper;
+    CloudinaryService cloudinaryService;
     InspectionMapper inspectionMapper;
 
-    public InspectionResponse createScore(UUID inspectionId, ScoreCreationRequest scoreCreationRequestList) {
+    public InspectionResponse createScore(UUID inspectionId, ScoreCreationRequest scoreCreationRequest) {
         Inspection inspection = inspectionRepository.findById(inspectionId)
                 .orElseThrow(() -> new AppException(ErrorCode.INSPECTION_NOT_FOUND));
 
@@ -51,14 +47,33 @@ public class InspectionScoreService {
 
         inspection.getListing().setStatus(ListingStatus.LIVE);
 
-        if (scoreCreationRequestList.getScore() < 5) {
+        inspection.setScore(scoreCreationRequest.getScore());
+        if (inspection.getScore() < 5) {
             inspection.setInspectionResult(InspectionResult.FAILED);
         } else {
             inspection.setInspectionResult(InspectionResult.PASSED);
         }
 
+        List<InspectionImage> list = new ArrayList<>();
+        scoreCreationRequest.getInspectionImageCreations().stream().forEach(
+                inspectionImage -> {
+                    try {
+                        //gửi lên cloudinary
+                        Map res = cloudinaryService.uploadFile(inspectionImage.getFile(), "inspection");
+                        //Lưu ảnh vào list
+                        list.add(InspectionImage.builder()
+                            .inspection(inspection)
+                            .type(inspectionImage.getType())
+                            .url((String) res.get("secure_url"))
+                            .build());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
 
+        inspection.setComment(scoreCreationRequest.getComment());
+        inspection.setImages(list);
 
-        return ;
+        return inspectionMapper.toInspectionResponse(inspectionRepository.save(inspection));
     }
 }
