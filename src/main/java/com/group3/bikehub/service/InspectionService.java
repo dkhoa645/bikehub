@@ -133,4 +133,14 @@ public class InspectionService {
     }
 
 
+    public InspectionResponse getInspectionById(UUID id) {
+        Inspection inspection = inspectionRepository.findById(id).orElse(null);
+        return inspectionMapper.toInspectionResponse(inspection);
+    }
+
+    public List<InspectionResponse> getMyInspection() {
+        return inspectionRepository.findAll().stream()
+                .map(inspectionMapper::toInspectionResponse)
+                .toList();
+    }
 }

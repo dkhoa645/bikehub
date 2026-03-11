@@ -178,15 +178,15 @@ public class PaymentService {
         payment.setStatus(PaymentStatus.PENDING);
         payment.setUser(user);
         payment.setCreateAt(new Date());
-        payment = paymentRepository.save(payment);
+        paymentRepository.save(payment);
 
 
         CreatePaymentLinkRequest paymentData = CreatePaymentLinkRequest.builder()
                 .orderCode(orderCode)
                 .amount(2000L)
                 .description(" ")
-                .returnUrl("test")
-                .cancelUrl("test")
+                .returnUrl("https://helpesign.misa.vn/wp-content/uploads/2020/06/image-22.png")
+                .cancelUrl("https://helpesign.misa.vn/wp-content/uploads/2020/06/image-22.png")
                 .build();
 
         CreatePaymentLinkResponse paymentResult = payOS.paymentRequests().create(paymentData);

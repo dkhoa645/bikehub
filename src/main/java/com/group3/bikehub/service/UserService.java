@@ -1,6 +1,7 @@
 package com.group3.bikehub.service;
 
 import com.group3.bikehub.dto.request.InspectorCreationRequest;
+import com.group3.bikehub.dto.request.PasswordChangeRequest;
 import com.group3.bikehub.dto.request.UserCreationRequest;
 import com.group3.bikehub.dto.response.UserResponse;
 import com.group3.bikehub.entity.Address;
@@ -131,5 +132,14 @@ public class UserService {
 
     public void deleteUser(UUID id) {
         userRepository.deleteById(id);
+    }
+
+    public void changePass( PasswordChangeRequest passwordChangeRequest) {
+        User user = currentUserService.getCurrentUser();
+        if(!user.getPassword().equals(passwordEncoder.encode(passwordChangeRequest.getCurrentPassword()))) {
+            throw new AppException(ErrorCode.CURRENT_PASSWORD);
+        }
+        user.setPassword(passwordEncoder.encode(passwordChangeRequest.getCurrentPassword()));
+        userRepository.save(user);
     }
 }

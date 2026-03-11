@@ -11,6 +11,7 @@ import com.group3.bikehub.exception.ErrorCode;
 import com.group3.bikehub.repository.OtpTokenRepository;
 import com.group3.bikehub.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -40,17 +41,13 @@ public class OtpTokenService {
 
 
     public void sendRegistrationOtp(OtpTokenRequest otpRequest) {
-
         User user = userRepository.findByUsername(otpRequest.getEmail())
                 .orElse(null);
-
         if (user != null ) {
             if (user.isVerified()) {
                 throw new AppException(ErrorCode.USER_EXISTED);
             }
         }
-
-
         Date exp = new Date(Instant.now().plus(5, ChronoUnit.MINUTES)
                 .toEpochMilli());
 
@@ -67,7 +64,6 @@ public class OtpTokenService {
             <p>If you did not request this code, please ignore this email.</p>
         </div>
     """.formatted(otp);
-
         try {
             sendGridService.dispatchEmail(
                     otpRequest.getEmail(),
@@ -77,8 +73,6 @@ public class OtpTokenService {
         } catch (IOException e) {
             throw new AppException(ErrorCode.SEND_EMAIL_FAILED);
         }
-
-
         otpTokenRepository.save(OtpToken.builder()
                         .otp(otp)
                         .expiration(exp)
@@ -112,5 +106,40 @@ public class OtpTokenService {
         userRepository.save(user);
 
         return OtpVerifyResponse.builder().verificationToken(verificationToken).build();
+    }
+
+    public void sendForgotOtp(@Valid OtpTokenRequest otpRequest) {
+        User user = userRepository.findByUsername(otpRequest.getEmail())
+                .orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED));
+        Date exp = Date.from(Instant.now().plus(5, ChronoUnit.MINUTES));
+
+        String otp = generateOtp();
+
+        String subject = "Your OTP Code";
+        String body = """
+        <div style="font-family: Arial, sans-serif">
+            <h2>OTP Verification</h2>
+            <p>Your OTP code is:</p>
+            <h1 style="color:#2e6cf6">%s</h1>
+            <p>This code will expire in <b>5 minutes</b>.</p>
+            <br/>
+            <p>If you did not request this code, please ignore this email.</p>
+        </div>
+    """.formatted(otp);
+        try {
+            sendGridService.dispatchEmail(
+                    otpRequest.getEmail(),
+                    subject,
+                    body
+            );
+        } catch (IOException e) {
+            throw new AppException(ErrorCode.SEND_EMAIL_FAILED);
+        }
+        otpTokenRepository.save(OtpToken.builder()
+                .otp(otp)
+                .expiration(exp)
+                .mail(otpRequest.getEmail())
+                .build());
+
     }
 }

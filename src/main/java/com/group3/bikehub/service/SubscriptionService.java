@@ -2,18 +2,12 @@ package com.group3.bikehub.service;
 
 import com.group3.bikehub.dto.request.SubscriptionCreationRequest;
 import com.group3.bikehub.dto.response.SubscriptionResponse;
-import com.group3.bikehub.entity.Enum.ListingStatus;
-import com.group3.bikehub.entity.Enum.SubscriptionStatusEnum;
-import com.group3.bikehub.entity.Listing;
-import com.group3.bikehub.entity.Payment;
-import com.group3.bikehub.entity.Plan;
-import com.group3.bikehub.entity.Subscription;
+import com.group3.bikehub.entity.*;
+import com.group3.bikehub.entity.Enum.*;
 import com.group3.bikehub.exception.AppException;
 import com.group3.bikehub.exception.ErrorCode;
 import com.group3.bikehub.mapper.SubscriptionMapper;
-import com.group3.bikehub.repository.ListingRepository;
-import com.group3.bikehub.repository.PlanRepository;
-import com.group3.bikehub.repository.SubscriptionRepository;
+import com.group3.bikehub.repository.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -34,6 +28,8 @@ public class SubscriptionService {
     SubscriptionMapper subscriptionMapper;
     ListingRepository listingRepository;
     PlanRepository planRepository;
+    TransactionRepository transactionRepository;
+    UserRepository userRepository;
 
 
     public SubscriptionResponse createSubscription(SubscriptionCreationRequest subscriptionCreationRequest) {
@@ -73,6 +69,18 @@ public class SubscriptionService {
             startDate = Date.from(listingDate.toInstant().plus(1, ChronoUnit.DAYS));
             expiryDate = Date.from(startDate.toInstant().plus(days, ChronoUnit.DAYS));
         }
+
+        transactionRepository.save(
+                Transaction.builder()
+                        .fromUser(payment.getUser())
+                        .toUser(userRepository.findByUsername("admin").orElse(null))
+                        .referenceType(ReferenceType.SUBSCRIPTION)
+                        .referenceId(UUID.fromString(payment.getReferenceId()))
+                        .status(TransactionStatus.SUCCESS)
+                        .type(TransactionType.PAYMENT)
+                        .amount(payment.getAmount())
+                        .createdAt(new Date())
+                        .build());
 
         subscription.setCreatedDate(createDate);
         subscription.setStartDate(startDate);

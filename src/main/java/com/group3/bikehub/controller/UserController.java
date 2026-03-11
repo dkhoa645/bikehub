@@ -2,9 +2,11 @@ package com.group3.bikehub.controller;
 
 import com.group3.bikehub.dto.request.ApiResponse;
 import com.group3.bikehub.dto.request.InspectorCreationRequest;
+import com.group3.bikehub.dto.request.PasswordChangeRequest;
 import com.group3.bikehub.dto.request.UserCreationRequest;
 import com.group3.bikehub.dto.response.UserResponse;
 import com.group3.bikehub.service.UserService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -36,7 +38,8 @@ public class UserController {
     }
 
     @PostMapping("/create-inspector")
-    ApiResponse<UserResponse> createInspector(@RequestBody InspectorCreationRequest inspectorCreationRequest){
+    ApiResponse<UserResponse> createInspector(
+            @RequestBody @Valid InspectorCreationRequest inspectorCreationRequest){
         return ApiResponse.<UserResponse>builder()
                 .result(userService.createInspector(inspectorCreationRequest))
                 .build();
@@ -54,6 +57,14 @@ public class UserController {
         userService.deleteUser(id);
         return ApiResponse.<Void>builder()
                 .message("Deleted User")
+                .build();
+    }
+
+    @PutMapping("/password")
+    ApiResponse<Void> changePassword(@RequestBody PasswordChangeRequest passwordChangeRequest){
+        userService.changePass(passwordChangeRequest);
+        return ApiResponse.<Void>builder()
+                .message("Changed Password Successfully!")
                 .build();
     }
 

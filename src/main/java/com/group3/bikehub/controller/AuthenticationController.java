@@ -68,9 +68,22 @@ public class AuthenticationController {
                 .message("Registration Successful")
                 .build();
     }
+    
+    @PutMapping("/forgot-password")
+    ApiResponse<Void> forgotPassword(@RequestBody PasswordForgotRequest passwordForgotRequest)  {
+        authenticationService.forgotPassword(passwordForgotRequest);
+        return ApiResponse.<Void>builder()
+                .message("Change Password Successful")
+                .build();
+    }
 
-
-
+    @PostMapping("/send-forgot-otp")
+    ApiResponse<Void> sendForgotOtp(@RequestBody @Valid OtpTokenRequest otpRequest) {
+        otpTokenService.sendForgotOtp(otpRequest);
+        return ApiResponse.<Void>builder()
+                .message("OTP Sent Successfully!")
+                .build();
+    }
 
 
 

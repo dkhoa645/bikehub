@@ -211,4 +211,13 @@ public class AuthenticationService {
         user.setRoles(roles);
         userRepository.save(user);
     }
+
+    public void forgotPassword(PasswordForgotRequest passwordForgotRequest) {
+        User user = userRepository.findByVerificationToken(passwordForgotRequest.getVerificationToken())
+                .orElseThrow(()-> new AppException(ErrorCode.INVALID_TOKEN));
+        if (user.getExpiration().before(new Date()))
+            throw new AppException(ErrorCode.VERIFICATION_TOKEN_EXPIRED);
+        user.setPassword(passwordEncoder.encode(passwordForgotRequest.getPassword()));
+        userRepository.save(user);
+    }
 }

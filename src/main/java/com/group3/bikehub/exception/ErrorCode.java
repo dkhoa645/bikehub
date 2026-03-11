@@ -44,6 +44,7 @@ public enum ErrorCode {
     SCORE_MAX(1033, "Score max is 10", HttpStatus.BAD_REQUEST),
     SCORE_ALREADY(1034, "Score already", HttpStatus.BAD_REQUEST),
     FILE_MIN(1035, "Max 4 images", HttpStatus.BAD_REQUEST),
+    CURRENT_PASSWORD(1036, "Your current password is invalid ", HttpStatus.BAD_REQUEST),
 
     ;
 

@@ -92,4 +92,18 @@ public class InspectionController {
                 .build();
     }
 
+    @GetMapping("/my-inspection")
+    ApiResponse<List<InspectionResponse>> getMyInspections() {
+        return ApiResponse.<List<InspectionResponse>>builder()
+                .result(inspectionService.getMyInspection())
+                .build();
+    }
+
+    @GetMapping("{id}")
+    ApiResponse<InspectionResponse> getInspectionById(@PathVariable UUID id) {
+        return ApiResponse.<InspectionResponse>builder()
+                .result(inspectionService.getInspectionById(id))
+                .build();
+    }
+
 }
