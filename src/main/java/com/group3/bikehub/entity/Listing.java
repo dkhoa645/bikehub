@@ -57,6 +57,8 @@ public class Listing {
 
     @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
     List<ListingImage> images;
+    @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
+    List<Order> orders;
 
     @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
     List<Subscription> subscriptions;

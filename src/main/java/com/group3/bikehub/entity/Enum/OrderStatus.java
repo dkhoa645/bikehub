@@ -3,8 +3,9 @@ package com.group3.bikehub.entity.Enum;
 public enum OrderStatus {
     PENDING,
     PAID,
-    PROCESSING,
+    DELIVERING,
     DELIVERED,
     CONFIRMED,
+    COMPLETE,
     CANCELLED
 }

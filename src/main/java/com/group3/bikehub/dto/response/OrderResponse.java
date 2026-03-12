@@ -1,14 +1,25 @@
 package com.group3.bikehub.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.group3.bikehub.entity.Enum.OrderStatus;
+import com.group3.bikehub.entity.Enum.SellerStatus;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+import java.util.Date;
+import java.util.UUID;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderResponse {
-    private Long id;
+    UUID id;
+    UserResponse buyer;
+    UserResponse seller;
+    SellerStatus sellerStatus;
+    OrderStatus orderStatus;
+    ListingResponse listing;
+    Date createdAt;
+    Date expiresAt;
 }

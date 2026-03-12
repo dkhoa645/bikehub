@@ -8,7 +8,9 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -19,8 +21,8 @@ import java.util.List;
 @Table(name = "Orders")
 public class Order {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-     Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    UUID id;
     @ManyToOne
     @JoinColumn(name = "buyer_id", nullable = false)
      User buyer;
@@ -32,9 +34,9 @@ public class Order {
     @Enumerated(EnumType.STRING)
      OrderStatus orderStatus;
     @JsonManagedReference
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-     List<OrderItem> items;
-     BigDecimal total_amount;
-     LocalDateTime created_at;
-     LocalDateTime expiresAt;
+    @ManyToOne
+     Listing listing;
+     BigDecimal totalAmount;
+     Date createdAt;
+     Date expiresAt;
 }

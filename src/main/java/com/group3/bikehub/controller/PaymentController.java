@@ -1,8 +1,7 @@
 package com.group3.bikehub.controller;
 
 import com.group3.bikehub.dto.request.ApiResponse;
-import com.group3.bikehub.dto.request.CreateListingPaymentRequest;
-import com.group3.bikehub.dto.request.CreateOrderPaymentRequest;
+import com.group3.bikehub.dto.request.OrderCreationRequest;
 import com.group3.bikehub.dto.request.PaymentCreationRequest;
 import com.group3.bikehub.dto.response.PaymentCreationResponse;
 import com.group3.bikehub.dto.response.PaymentResponse;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/payment")
@@ -25,11 +25,10 @@ public class PaymentController {
     PaymentService paymentService;
 
     @PostMapping("/order")
-    public ApiResponse<Map<String, Object>> createOrderPayment(
-            @RequestBody CreateOrderPaymentRequest request) {
-        return ApiResponse.<Map<String, Object>>builder()
-                .message("Payment created successfully")
-                .result(paymentService.createOrderPayment(request))
+    public ApiResponse<PaymentCreationResponse> createOrderPayment(
+            @RequestBody OrderCreationRequest orderCreationRequest) {
+        return ApiResponse.<PaymentCreationResponse>builder()
+                .result(paymentService.createOrderPayment(orderCreationRequest))
                 .build();
     }
 

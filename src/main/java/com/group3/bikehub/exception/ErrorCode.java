@@ -45,7 +45,7 @@ public enum ErrorCode {
     SCORE_ALREADY(1034, "Score already", HttpStatus.BAD_REQUEST),
     FILE_MIN(1035, "Max 4 images", HttpStatus.BAD_REQUEST),
     CURRENT_PASSWORD(1036, "Your current password is invalid ", HttpStatus.BAD_REQUEST),
-
+    ORDER_NOT_FOUND(1037,"Order not found", HttpStatus.NOT_FOUND),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

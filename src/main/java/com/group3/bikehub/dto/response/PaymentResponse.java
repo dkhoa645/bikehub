@@ -1,5 +1,6 @@
 package com.group3.bikehub.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.group3.bikehub.entity.Enum.PaymentStatus;
 import com.group3.bikehub.entity.Enum.PaymentType;
 import lombok.*;
@@ -22,7 +23,9 @@ public class PaymentResponse {
     PaymentStatus status;
     String transactionRef;
     Long payosOrderCode;
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     Date paidAt;
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     Date createAt;
 
 }

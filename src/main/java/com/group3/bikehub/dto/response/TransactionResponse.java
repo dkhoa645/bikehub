@@ -1,5 +1,6 @@
 package com.group3.bikehub.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.group3.bikehub.entity.Enum.TransactionStatus;
 import com.group3.bikehub.entity.Enum.TransactionType;
 import com.group3.bikehub.entity.User;
@@ -22,5 +23,6 @@ public class TransactionResponse {
     BigDecimal amount;
     TransactionStatus status;
     TransactionType type;
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     Date createdAt;
 }

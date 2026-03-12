@@ -10,6 +10,7 @@ import com.group3.bikehub.entity.Enum.OrderStatus;
 import com.group3.bikehub.entity.Enum.SellerStatus;
 import com.group3.bikehub.exception.AppException;
 import com.group3.bikehub.exception.ErrorCode;
+import com.group3.bikehub.mapper.OrderMapper;
 import com.group3.bikehub.repository.ListingRepository;
 import com.group3.bikehub.repository.OrderItemRepository;
 import com.group3.bikehub.repository.OrderRepository;
@@ -23,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -30,98 +33,119 @@ import java.util.Optional;
 public class OrderService {
     
     OrderRepository orderRepository;
-    
-    CurrentUserService curentUserService;
-    
-    ListingRepository listingRepository;
-    
-    OrderItemRepository orderItemRepository;
+    CurrentUserService currentUserService;
+    OrderMapper orderMapper;
 
-    public OrderResponse placeOrder(PlaceOrderRequest request) {
-        User user = curentUserService.getCurrentUser();
-        Optional<Listing> listing = listingRepository.findById(request.getListingId());
+    //    public OrderResponse placeOrder(PlaceOrderRequest request) {
+//        User user = curentUserService.getCurrentUser();
+//        Optional<Listing> listing = listingRepository.findById(request.getListingId());
+//
+//        if (listing.isEmpty()) {
+//            throw new AppException(ErrorCode.LISTING_NOT_FOUND);
+//        }
+//
+//        if (!listing.get().getStatus().equals(ListingStatus.LIVE)) {
+//            throw new AppException(ErrorCode.LISTING_NOT_FOUND);
+//        }
+//
+//        Order order = new Order();
+//        order.setBuyer(user);
+//        order.setSeller(listing.get().getSeller());
+//        order.setTotal_amount(listing.orElseThrow().getPrice());
+//        order.setCreated_at(LocalDateTime.now());
+//        order.setExpiresAt(LocalDateTime.now().plusMinutes(1));
+//
+//        OrderItem orderItem = new OrderItem();
+//        orderItem.setListing(listing.get());
+//        orderItem.setDescription(request.getDescription());
+//        orderItem.setOrder(order);
+//        order.setOrderStatus(OrderStatus.PENDING);
+//        listing.get().setStatus(ListingStatus.RESERVED);
+//
+//        orderRepository.save(order);
+//        orderItemRepository.save(orderItem);
+//        OrderResponse orderResponse = new OrderResponse();
+//        orderResponse.setId(order.getId());
+//        return orderResponse;
+//
+//    }
+//    @Scheduled(fixedRate = 60000)
+//    @Transactional
+//    public void autoExpireOrders() {
+//
+//        List<Order> expiredOrders =
+//                orderRepository.findByOrderStatusAndExpiresAtBefore(
+//                        OrderStatus.PENDING,
+//                        LocalDateTime.now()
+//                );
+//
+//        for (Order order : expiredOrders) {
+//
+//            // đổi trạng thái order
+//            order.setOrderStatus(OrderStatus.CANCELLED);
+//
+//            // trả listing về LIVE
+//            Listing listing = order.getItems()
+//                    .get(0)
+//                    .getListing();
+//
+//            if (listing.getStatus() == ListingStatus.RESERVED) {
+//                listing.setStatus(ListingStatus.LIVE);
+//            }
+//        }
+//    }
+//     public void handleOrderPayment(Payment payment){
+//        Long orderId = Long.valueOf(payment.getReferenceId());
+//        Order order = orderRepository.findOrderById(orderId);
+//        order.setOrderStatus(OrderStatus.PAID);
+//        orderRepository.save(order);
+//     }
 
-        if (listing.isEmpty()) {
-            throw new AppException(ErrorCode.LISTING_NOT_FOUND);
-        }
-
-        if (!listing.get().getStatus().equals(ListingStatus.LIVE)) {
-            throw new AppException(ErrorCode.LISTING_NOT_FOUND);
-        }
-
-        Order order = new Order();
-        order.setBuyer(user);
-        order.setSeller(listing.get().getSeller());
-        order.setTotal_amount(listing.orElseThrow().getPrice());
-        order.setCreated_at(LocalDateTime.now());
-        order.setExpiresAt(LocalDateTime.now().plusMinutes(1));
-
-        OrderItem orderItem = new OrderItem();
-        orderItem.setListing(listing.get());
-        orderItem.setDescription(request.getDescription());
-        orderItem.setOrder(order);
-        order.setOrderStatus(OrderStatus.PENDING);
-        listing.get().setStatus(ListingStatus.RESERVED);
-
-        orderRepository.save(order);
-        orderItemRepository.save(orderItem);
-        OrderResponse orderResponse = new OrderResponse();
-        orderResponse.setId(order.getId());
-        return orderResponse;
-        
-    }
-    @Scheduled(fixedRate = 60000)
-    @Transactional
-    public void autoExpireOrders() {
-
-        List<Order> expiredOrders =
-                orderRepository.findByOrderStatusAndExpiresAtBefore(
-                        OrderStatus.PENDING,
-                        LocalDateTime.now()
-                );
-
-        for (Order order : expiredOrders) {
-
-            // đổi trạng thái order
-            order.setOrderStatus(OrderStatus.CANCELLED);
-
-            // trả listing về LIVE
-            Listing listing = order.getItems()
-                    .get(0)
-                    .getListing();
-
-            if (listing.getStatus() == ListingStatus.RESERVED) {
-                listing.setStatus(ListingStatus.LIVE);
-            }
-        }
-    }
-     public void handleOrderPayment(Payment payment){
-        Long orderId = Long.valueOf(payment.getReferenceId());
-        Order order = orderRepository.findOrderById(orderId);
-        order.setOrderStatus(OrderStatus.PAID);
-        orderRepository.save(order);
-     }
-
-    public void acceptOrder(AcceptOrderRequest request) {
-        Order order = orderRepository.findOrderById(request.getOrderId());
-        if (!order.getOrderStatus().equals(OrderStatus.PAID)) {
-            throw new AppException(ErrorCode.ORDER_UNPAID);
-
-        }
-        if (request.isAccepted()){
-            order.setSellerStatus(SellerStatus.ACCEPTED);
-            orderRepository.save(order);
-        }  else{
-            order.setSellerStatus(SellerStatus.CANCELLED);
-            order.setOrderStatus(OrderStatus.CANCELLED);
-            order.getItems().get(0).getListing().setStatus(ListingStatus.LIVE);
-            orderRepository.save(order);
-        }
-
-
+    public List<OrderResponse> getMyOrders() {
+         User user = currentUserService.getCurrentUser();
+         List<Order> orders = orderRepository.findBySeller(user);
+         if(orders.isEmpty()){
+             orders = orderRepository.findByBuyer(user);
+         }
+         return orders.stream()
+                 .map(orderMapper::toResponse)
+                 .toList();
     }
 
-}
+    public List<OrderResponse> getAllOrders() {
+         return orderRepository.findAll()
+                 .stream()
+                 .map(orderMapper::toResponse)
+                 .toList();
+    }
+
+    public OrderResponse getOrder(UUID id) {
+         Order order = orderRepository.findOrderById(id)
+                 .orElseThrow(()-> new AppException(ErrorCode.ORDER_NOT_FOUND));
+         return orderMapper.toResponse(order);
+    }
+
+
+//    public void acceptOrder(AcceptOrderRequest request) {
+//        Order order = orderRepository.findOrderById(request.getOrderId());
+//        if (!order.getOrderStatus().equals(OrderStatus.PAID)) {
+//            throw new AppException(ErrorCode.ORDER_UNPAID);
+//
+//        }
+//        if (request.isAccepted()){
+//            order.setSellerStatus(SellerStatus.ACCEPTED);
+//            orderRepository.save(order);
+//        }  else{
+//            order.setSellerStatus(SellerStatus.CANCELLED);
+//            order.setOrderStatus(OrderStatus.CANCELLED);
+//            order.getItems().get(0).getListing().setStatus(ListingStatus.LIVE);
+//            orderRepository.save(order);
+//        }
+
+
+    }
+
+
 
 
 

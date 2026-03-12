@@ -1,7 +1,7 @@
 package com.group3.bikehub.service;
 
 
-import com.group3.bikehub.dto.request.CreateOrderPaymentRequest;
+import com.group3.bikehub.dto.request.OrderCreationRequest;
 import com.group3.bikehub.dto.request.PaymentCreationRequest;
 import com.group3.bikehub.dto.response.PaymentCreationResponse;
 import com.group3.bikehub.dto.response.PaymentResponse;
@@ -27,7 +27,8 @@ import vn.payos.model.v2.paymentRequests.CreatePaymentLinkResponse;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
@@ -47,6 +48,8 @@ public class PaymentService {
 
     SubscriptionRepository subscriptionRepository;
 
+    ListingRepository listingRepository;
+
     PayOS payOS;
 
     @Value("${com.payos.PAYOS_CHECKSUM_KEY}")
@@ -57,36 +60,58 @@ public class PaymentService {
 
     PaymentMapper paymentMapper;
 
-    public Map<String, Object> createOrderPayment(CreateOrderPaymentRequest request) {
-        Order order = orderRepository.findOrderById(request.getOrder_id());
+    public PaymentCreationResponse createOrderPayment(OrderCreationRequest orderCreationRequest) {
+
+        Listing listing = listingRepository.findById(orderCreationRequest.getListingId())
+                .orElseThrow(()-> new AppException(ErrorCode.LISTING_NOT_FOUND));
+
         User buyer = currentUserService.getCurrentUser();
-        if (!buyer.getId().equals(order.getBuyer().getId())) {
-            throw new AppException(ErrorCode.INVALID_SELLER_ID);
-        }
-        if (!order.getOrderStatus().equals(OrderStatus.PENDING) ) {
-            throw new AppException(ErrorCode.ORDER_CANCELED);
-        }
+
         String randomSuffix = String.format("%04d", random.nextInt(10000));
-        long orderCode = Long.parseLong(order.getId() + randomSuffix);
+        long orderCode = Long.parseLong(20 + randomSuffix);
+
+        //Check listing được đặt chưa và chuyển trạng thái sang RESERVE
+
+
+
         CreatePaymentLinkRequest paymentData = CreatePaymentLinkRequest.builder()
                 .orderCode(orderCode)
-                .amount(order.getTotal_amount().longValue())
-                .description(request.getDescription())
-                .returnUrl("test")
-                .cancelUrl("test")
+                .amount(2000L)
+//                .amount(listing.getPrice().longValue())
+                .description("")
+                .returnUrl("https://helpesign.misa.vn/wp-content/uploads/2020/06/image-22.png")
+                .cancelUrl("https://helpesign.misa.vn/wp-content/uploads/2020/06/image-22.png")
                 .build();
         CreatePaymentLinkResponse paymentResult = payOS.paymentRequests().create(paymentData);
-        Payment payment = new Payment();
-        payment.setReferenceId(String.valueOf(order.getId()));
-        payment.setType(PaymentType.ORDER);
-        payment.setPayosOrderCode(orderCode);
-        paymentRepository.save(payment);
-        return Map.of(
-                "message", "Tạo đơn hàng thành công. Vui lòng thanh toán .",
-                "OrderID", order.getId(),
-                "paymentUrl", paymentResult.getCheckoutUrl()
-        );
 
+        Order order = orderRepository.save(
+                Order.builder()
+                .buyer(buyer)
+                .seller(listing.getSeller())
+                .listing(listing)
+                .totalAmount(listing.getPrice())
+                .createdAt(new Date())
+                .expiresAt(Date.from(Instant.now().plus(5, ChronoUnit.MINUTES)))
+                .sellerStatus(SellerStatus.PENDING)
+                .orderStatus(OrderStatus.PENDING)
+                .build());
+
+
+        Payment payment = Payment.builder()
+                .referenceId(String.valueOf(order.getId()))
+                .type(PaymentType.ORDER)
+                .payosOrderCode(orderCode)
+                .amount(listing.getPrice())
+                .status(PaymentStatus.PENDING)
+                .user(buyer)
+                .createAt(new Date())
+                .build();
+
+        paymentRepository.save(payment);
+
+        return PaymentCreationResponse.builder()
+                .paymentUrl(paymentResult.getCheckoutUrl())
+                .build();
     }
 
     public void handleWebHook(String orderCode){
@@ -97,7 +122,7 @@ public class PaymentService {
         paymentRepository.save(payment);
 
         if (payment.getType().equals(PaymentType.ORDER)) {
-            orderService.handleOrderPayment(payment);
+//            orderService.handleOrderPayment(payment);
         }else if (payment.getType().equals(PaymentType.SUBSCRIPTION)) {
             subscriptionService.handleSubscriptionPayment(payment);
         }
@@ -127,7 +152,6 @@ public class PaymentService {
                     sb.append("&");
                 }
             }
-
             String dataToSign = sb.toString();
 
             // 3️⃣ HMAC SHA256
@@ -185,8 +209,8 @@ public class PaymentService {
                 .orderCode(orderCode)
                 .amount(2000L)
                 .description(" ")
-                .returnUrl("https://helpesign.misa.vn/wp-content/uploads/2020/06/image-22.png")
-                .cancelUrl("https://helpesign.misa.vn/wp-content/uploads/2020/06/image-22.png")
+                .returnUrl("http://localhost:5173/payment/result")
+                .cancelUrl("http://localhost:5173/payment/result")
                 .build();
 
         CreatePaymentLinkResponse paymentResult = payOS.paymentRequests().create(paymentData);
