@@ -1,5 +1,6 @@
 package com.group3.bikehub.dto.response;
 
+import com.group3.bikehub.entity.Enum.BankCode;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -15,4 +16,6 @@ public class AddressResponse {
     String nameContact;
     String phoneContact;
     String addressLine;
+    String accountNumber;
+    BankCode bankCode;
 }

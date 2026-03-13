@@ -22,12 +22,21 @@ public class OrderController {
 
     OrderService orderService;
 
-//    @PostMapping("/order/create")
-//    public ApiResponse<OrderResponse> create(@RequestBody PlaceOrderRequest request) {
-//        return ApiResponse.<OrderResponse>builder()
-//                .result(orderService.placeOrder(request))
-//                .build();
-//    }
+    @PutMapping("/{id}/confirm")
+    ApiResponse<Void> confirmOrder(@PathVariable UUID id){
+        orderService.confirmOrder(id);
+        return ApiResponse.<Void>builder()
+                .message("Confirm Order Successful!!")
+                .build();
+    }
+
+    @PutMapping("/{id}/reject")
+    ApiResponse<Void> rejectOrder(@PathVariable UUID id){
+        orderService.rejectOrder(id);
+        return ApiResponse.<Void>builder()
+                .message("Reject Order Successful!!")
+                .build();
+    }
 
     @GetMapping("/my-order")
     ApiResponse<List<OrderResponse>> getMyOrder(){
@@ -35,6 +44,8 @@ public class OrderController {
                 .result(orderService.getMyOrders())
                 .build();
     }
+
+
 
     @GetMapping()
     ApiResponse<List<OrderResponse>> getAllOrder(){

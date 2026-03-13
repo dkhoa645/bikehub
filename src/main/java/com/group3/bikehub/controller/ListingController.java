@@ -59,9 +59,16 @@ public class ListingController {
                 .build();
     }
 
-    @GetMapping("/{id}")
-    ApiResponse<ListingResponse> getListingById(@PathVariable UUID id){
+    @GetMapping("/seller/{listingId}")
+    ApiResponse<ListingResponse> getSellerListingById(@PathVariable UUID listingId){
         return ApiResponse.<ListingResponse>builder()
+                .result(listingService.getBySellerId(listingId))
+                .build();
+    }
+
+    @GetMapping("/{id}")
+    ApiResponse<ListingSellResponse> getListingById(@PathVariable UUID id){
+        return ApiResponse.<ListingSellResponse>builder()
                 .result(listingService.getById(id))
                 .build();
     }

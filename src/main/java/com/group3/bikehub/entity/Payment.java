@@ -3,6 +3,7 @@ package com.group3.bikehub.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.group3.bikehub.entity.Enum.PaymentStatus;
 import com.group3.bikehub.entity.Enum.PaymentType;
+import com.group3.bikehub.entity.Enum.ReferenceType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,6 +27,8 @@ public class Payment {
 
     @Enumerated(EnumType.STRING)
     PaymentType type;
+    @Enumerated(EnumType.STRING)
+    ReferenceType referenceType;
     String referenceId;
     BigDecimal amount;
 

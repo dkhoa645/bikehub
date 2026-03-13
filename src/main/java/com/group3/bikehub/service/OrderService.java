@@ -1,31 +1,24 @@
 package com.group3.bikehub.service;
 
 
-import com.group3.bikehub.dto.request.AcceptOrderRequest;
-import com.group3.bikehub.dto.request.PlaceOrderRequest;
 import com.group3.bikehub.dto.response.OrderResponse;
 import com.group3.bikehub.entity.*;
-import com.group3.bikehub.entity.Enum.ListingStatus;
-import com.group3.bikehub.entity.Enum.OrderStatus;
-import com.group3.bikehub.entity.Enum.SellerStatus;
+import com.group3.bikehub.entity.Enum.*;
 import com.group3.bikehub.exception.AppException;
 import com.group3.bikehub.exception.ErrorCode;
 import com.group3.bikehub.mapper.OrderMapper;
-import com.group3.bikehub.repository.ListingRepository;
-import com.group3.bikehub.repository.OrderItemRepository;
 import com.group3.bikehub.repository.OrderRepository;
+import com.group3.bikehub.repository.PaymentRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.payos.PayOS;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +28,9 @@ public class OrderService {
     OrderRepository orderRepository;
     CurrentUserService currentUserService;
     OrderMapper orderMapper;
+    PaymentService paymentService;
+    PaymentRepository paymentRepository;
+
 
     //    public OrderResponse placeOrder(PlaceOrderRequest request) {
 //        User user = curentUserService.getCurrentUser();
@@ -69,37 +65,8 @@ public class OrderService {
 //        return orderResponse;
 //
 //    }
-//    @Scheduled(fixedRate = 60000)
-//    @Transactional
-//    public void autoExpireOrders() {
-//
-//        List<Order> expiredOrders =
-//                orderRepository.findByOrderStatusAndExpiresAtBefore(
-//                        OrderStatus.PENDING,
-//                        LocalDateTime.now()
-//                );
-//
-//        for (Order order : expiredOrders) {
-//
-//            // đổi trạng thái order
-//            order.setOrderStatus(OrderStatus.CANCELLED);
-//
-//            // trả listing về LIVE
-//            Listing listing = order.getItems()
-//                    .get(0)
-//                    .getListing();
-//
-//            if (listing.getStatus() == ListingStatus.RESERVED) {
-//                listing.setStatus(ListingStatus.LIVE);
-//            }
-//        }
-//    }
-//     public void handleOrderPayment(Payment payment){
-//        Long orderId = Long.valueOf(payment.getReferenceId());
-//        Order order = orderRepository.findOrderById(orderId);
-//        order.setOrderStatus(OrderStatus.PAID);
-//        orderRepository.save(order);
-//     }
+
+
 
     public List<OrderResponse> getMyOrders() {
          User user = currentUserService.getCurrentUser();
@@ -125,25 +92,57 @@ public class OrderService {
          return orderMapper.toResponse(order);
     }
 
+    public void confirmOrder(UUID id) {
+         User user = currentUserService.getCurrentUser();
+         Order order = orderRepository.findOrderById(id)
+                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+         if(!order.getSeller().equals(user)){
+             throw new AppException(ErrorCode.UNAUTHORIZED);
+         }
+        if(!order.getSellerStatus().equals(SellerStatus.PENDING)){
+            throw new AppException(ErrorCode.ORDER_ALREADY_RESOLVED);
+        }
+         if(!order.getOrderStatus().equals(OrderStatus.PAID)){
+             throw new AppException(ErrorCode.ORDER_UNPAID);
+         }
+         order.setSellerStatus(SellerStatus.ACCEPTED);
+         order.setOrderStatus(OrderStatus.IN_TRANSIT);
 
-//    public void acceptOrder(AcceptOrderRequest request) {
-//        Order order = orderRepository.findOrderById(request.getOrderId());
-//        if (!order.getOrderStatus().equals(OrderStatus.PAID)) {
-//            throw new AppException(ErrorCode.ORDER_UNPAID);
-//
-//        }
-//        if (request.isAccepted()){
-//            order.setSellerStatus(SellerStatus.ACCEPTED);
-//            orderRepository.save(order);
-//        }  else{
-//            order.setSellerStatus(SellerStatus.CANCELLED);
-//            order.setOrderStatus(OrderStatus.CANCELLED);
-//            order.getItems().get(0).getListing().setStatus(ListingStatus.LIVE);
-//            orderRepository.save(order);
-//        }
-
-
+         List<OrderLog>  orderLogs = new ArrayList<>();
+         orderLogs.add(OrderLog.builder()
+                         .createdAt(Date.from(Instant.now()))
+                         .status(OrderStatus.IN_TRANSIT)
+                         .order(order)
+                 .build());
+         order.setLogs(orderLogs);
+         orderRepository.save(order);
     }
+
+    @Transactional
+    public void rejectOrder(UUID id) {
+        User user = currentUserService.getCurrentUser();
+        Order order = orderRepository.findOrderById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        if(!order.getSeller().equals(user)){
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+        if(!order.getSellerStatus().equals(SellerStatus.PENDING)){
+            throw new AppException(ErrorCode.ORDER_ALREADY_RESOLVED);
+        }
+        if(!order.getOrderStatus().equals(OrderStatus.PAID)){
+            throw new AppException(ErrorCode.ORDER_UNPAID);
+        }
+        order.setSellerStatus(SellerStatus.REJECTED);
+        order.setOrderStatus(OrderStatus.CONFIRMED);
+        order.setExpiresAt(null);
+
+        orderRepository.save(order);
+    }
+
+
+
+
+}
 
 
 

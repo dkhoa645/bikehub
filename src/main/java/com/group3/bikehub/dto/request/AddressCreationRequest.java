@@ -1,5 +1,6 @@
 package com.group3.bikehub.dto.request;
 
+import com.group3.bikehub.entity.Enum.BankCode;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -12,4 +13,6 @@ public class AddressCreationRequest {
     String nameContact;
     String phoneContact;
     String addressLine;
+    String accountNumber;
+    BankCode bankCode;
 }

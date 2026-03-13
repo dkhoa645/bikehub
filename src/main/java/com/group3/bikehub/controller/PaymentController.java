@@ -34,8 +34,7 @@ public class PaymentController {
 
     @PostMapping("/subscription")
     ApiResponse<PaymentCreationResponse> createSubscriptionPayment(
-            @RequestBody PaymentCreationRequest paymentCreationRequest
-    ){
+            @RequestBody PaymentCreationRequest paymentCreationRequest){
         return ApiResponse.<PaymentCreationResponse>builder()
                 .result(paymentService.createSubscriptionPayment(paymentCreationRequest))
                 .build();

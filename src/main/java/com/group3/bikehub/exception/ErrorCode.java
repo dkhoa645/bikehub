@@ -46,6 +46,11 @@ public enum ErrorCode {
     FILE_MIN(1035, "Max 4 images", HttpStatus.BAD_REQUEST),
     CURRENT_PASSWORD(1036, "Your current password is invalid ", HttpStatus.BAD_REQUEST),
     ORDER_NOT_FOUND(1037,"Order not found", HttpStatus.NOT_FOUND),
+    FAVORITE_DUPLICATE(1038, "Listing already in Favorite", HttpStatus.BAD_REQUEST),
+    LISTING_RESERVE(1039, "Listing is reserved", HttpStatus.BAD_REQUEST),
+    ORDER_SPAMMING(1040, "Buyer spam order payment 5 time. Try tomorrow ", HttpStatus.BAD_REQUEST),
+    ORDER_ALREADY_RESOLVED(1041, "Your Order has already resolved", HttpStatus.BAD_REQUEST),
+    PAYOUT(1042, "Payout failed", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

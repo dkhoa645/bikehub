@@ -40,8 +40,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity, JwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {
         httpSecurity.authorizeHttpRequests(
-                request ->  request.requestMatchers(PUBLIC_ENDPOINTS)
-                        .permitAll()
+                request -> request
+                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/listing/**").permitAll()
                         .anyRequest()
                         .authenticated());
 

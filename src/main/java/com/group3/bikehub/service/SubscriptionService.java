@@ -28,9 +28,6 @@ public class SubscriptionService {
     SubscriptionMapper subscriptionMapper;
     ListingRepository listingRepository;
     PlanRepository planRepository;
-    TransactionRepository transactionRepository;
-    UserRepository userRepository;
-
 
     public SubscriptionResponse createSubscription(SubscriptionCreationRequest subscriptionCreationRequest) {
         Listing listing = listingRepository.findById(subscriptionCreationRequest.getListingId())
@@ -70,17 +67,6 @@ public class SubscriptionService {
             expiryDate = Date.from(startDate.toInstant().plus(days, ChronoUnit.DAYS));
         }
 
-        transactionRepository.save(
-                Transaction.builder()
-                        .fromUser(payment.getUser())
-                        .toUser(userRepository.findByUsername("admin").orElse(null))
-                        .referenceType(ReferenceType.SUBSCRIPTION)
-                        .referenceId(UUID.fromString(payment.getReferenceId()))
-                        .status(TransactionStatus.SUCCESS)
-                        .type(TransactionType.PAYMENT)
-                        .amount(payment.getAmount())
-                        .createdAt(new Date())
-                        .build());
 
         subscription.setCreatedDate(createDate);
         subscription.setStartDate(startDate);

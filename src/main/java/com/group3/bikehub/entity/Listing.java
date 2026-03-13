@@ -62,4 +62,7 @@ public class Listing {
 
     @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
     List<Subscription> subscriptions;
+
+    @OneToMany(mappedBy = "listing")
+    List<Favorite> favorites;
 }

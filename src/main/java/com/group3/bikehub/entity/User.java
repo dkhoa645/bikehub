@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -34,5 +35,8 @@ public class User {
     Address address;
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     Kyc kycProfile;
+
+    @OneToMany(mappedBy = "user")
+    List<Favorite> favorites;
 
 }

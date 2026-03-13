@@ -14,18 +14,25 @@ import com.group3.bikehub.repository.ListingRepository;
 import com.group3.bikehub.repository.OrderRepository;
 import com.group3.bikehub.repository.PaymentRepository;
 import com.group3.bikehub.repository.SubscriptionRepository;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import vn.payos.PayOS;
+import vn.payos.model.v1.payouts.Payout;
+import vn.payos.model.v1.payouts.batch.PayoutBatchItem;
+import vn.payos.model.v1.payouts.batch.PayoutBatchRequest;
 import vn.payos.model.v2.paymentRequests.CreatePaymentLinkRequest;
 import vn.payos.model.v2.paymentRequests.CreatePaymentLinkResponse;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -34,22 +41,15 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
 public class PaymentService {
 
     OrderRepository orderRepository;
-
     CurrentUserService currentUserService;
-
-    OrderService orderService;
-
     PaymentRepository paymentRepository;
-
     Random random = new Random();
-
     SubscriptionRepository subscriptionRepository;
-
     ListingRepository listingRepository;
-
     PayOS payOS;
 
     @Value("${com.payos.PAYOS_CHECKSUM_KEY}")
@@ -60,6 +60,7 @@ public class PaymentService {
 
     PaymentMapper paymentMapper;
 
+    @Transactional
     public PaymentCreationResponse createOrderPayment(OrderCreationRequest orderCreationRequest) {
 
         Listing listing = listingRepository.findById(orderCreationRequest.getListingId())
@@ -67,41 +68,36 @@ public class PaymentService {
 
         User buyer = currentUserService.getCurrentUser();
 
-        String randomSuffix = String.format("%04d", random.nextInt(10000));
-        long orderCode = Long.parseLong(20 + randomSuffix);
+        //Chống spam 5 lần
+        int spam = orderRepository.countExpiredOrdersByUser(buyer.getId(), OrderStatus.EXPIRED);
+        if(spam>= 5) throw new AppException(ErrorCode.ORDER_SPAMMING);
 
         //Check listing được đặt chưa và chuyển trạng thái sang RESERVE
+        int update = listingRepository.resolveListing(orderCreationRequest.getListingId(), ListingStatus.LIVE);
+        if(update==0){
+            throw new AppException(ErrorCode.LISTING_RESERVE);
+        }
 
+        CreatePaymentLinkResponse paymentLink = generatePaymentLink(2000L, "Dat coc don hang");
 
-
-        CreatePaymentLinkRequest paymentData = CreatePaymentLinkRequest.builder()
-                .orderCode(orderCode)
-                .amount(2000L)
-//                .amount(listing.getPrice().longValue())
-                .description("")
-                .returnUrl("https://helpesign.misa.vn/wp-content/uploads/2020/06/image-22.png")
-                .cancelUrl("https://helpesign.misa.vn/wp-content/uploads/2020/06/image-22.png")
-                .build();
-        CreatePaymentLinkResponse paymentResult = payOS.paymentRequests().create(paymentData);
-
-        Order order = orderRepository.save(
-                Order.builder()
+        Order order = orderRepository.save(Order.builder()
                 .buyer(buyer)
                 .seller(listing.getSeller())
                 .listing(listing)
                 .totalAmount(listing.getPrice())
+                .depositAmount(listing.getPrice().multiply(new BigDecimal("0.10")))
                 .createdAt(new Date())
                 .expiresAt(Date.from(Instant.now().plus(5, ChronoUnit.MINUTES)))
                 .sellerStatus(SellerStatus.PENDING)
                 .orderStatus(OrderStatus.PENDING)
                 .build());
 
-
         Payment payment = Payment.builder()
                 .referenceId(String.valueOf(order.getId()))
-                .type(PaymentType.ORDER)
-                .payosOrderCode(orderCode)
-                .amount(listing.getPrice())
+                .type(PaymentType.PAYMENT)
+                .referenceType(ReferenceType.ORDER)
+                .payosOrderCode(paymentLink.getOrderCode())
+                .amount(listing.getPrice().multiply(new BigDecimal("0.10")))
                 .status(PaymentStatus.PENDING)
                 .user(buyer)
                 .createAt(new Date())
@@ -110,23 +106,52 @@ public class PaymentService {
         paymentRepository.save(payment);
 
         return PaymentCreationResponse.builder()
-                .paymentUrl(paymentResult.getCheckoutUrl())
+                .paymentUrl(paymentLink.getCheckoutUrl())
                 .build();
     }
+
 
     public void handleWebHook(String orderCode){
         Long payosOrderId = Long.parseLong(orderCode);
         Payment payment = paymentRepository.findByPayosOrderCode(payosOrderId);
-        payment.setStatus(PaymentStatus.PAID);
+        payment.setStatus(PaymentStatus.SUCCESS);
         payment.setPaidAt(new Date());
         paymentRepository.save(payment);
 
-        if (payment.getType().equals(PaymentType.ORDER)) {
-//            orderService.handleOrderPayment(payment);
-        }else if (payment.getType().equals(PaymentType.SUBSCRIPTION)) {
+        if (payment.getReferenceType().equals(ReferenceType.ORDER)) {
+            handleOrderPayment(payment);
+        }else if (payment.getReferenceType().equals(ReferenceType.SUBSCRIPTION)) {
             subscriptionService.handleSubscriptionPayment(payment);
         }
 
+    }
+
+    public void handleOrderPayment(Payment payment){
+        UUID orderId = UUID.fromString(payment.getReferenceId());
+        Order order = orderRepository.findOrderById(orderId)
+                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        order.setOrderStatus(OrderStatus.PAID);
+        order.setExpiresAt(Date.from(Instant.now().plus(1, ChronoUnit.DAYS)));
+        orderRepository.save(order);
+        payment.setStatus(PaymentStatus.SUCCESS);
+    }
+
+    private Long generateOrderCode(){
+        String randomSuffix = String.format("%04d", random.nextInt(10000));
+        return Long.parseLong(20 + randomSuffix);
+    }
+
+    public CreatePaymentLinkResponse generatePaymentLink(Long amount, String description) {
+        long orderCode = generateOrderCode();
+        CreatePaymentLinkRequest paymentRequest = CreatePaymentLinkRequest.builder()
+                .orderCode(orderCode)
+                .amount(amount)
+                .description(description)
+                .returnUrl("http://localhost:5173/payment/result")
+                .cancelUrl("http://localhost:5173/payment/result")
+                .build();
+
+        return payOS.paymentRequests().create(paymentRequest);
     }
 
 
@@ -191,13 +216,13 @@ public class PaymentService {
             throw new AppException(ErrorCode.LISTING_STATUS);
         }
 
-        String randomSuffix = String.format("%04d", random.nextInt(10000));
-        long orderCode = Long.parseLong(20 + randomSuffix);
+        CreatePaymentLinkResponse paymentLink = generatePaymentLink(2000L , "Tien mua goi");
 
         Payment payment = new Payment();
         payment.setReferenceId(String.valueOf(subscription.getId()));
-        payment.setType(PaymentType.SUBSCRIPTION);
-        payment.setPayosOrderCode(orderCode);
+        payment.setType(PaymentType.PAYMENT);
+        payment.setReferenceType(ReferenceType.SUBSCRIPTION);
+        payment.setPayosOrderCode(paymentLink.getOrderCode());
         payment.setAmount(subscription.getPlan().getPrice());
         payment.setStatus(PaymentStatus.PENDING);
         payment.setUser(user);
@@ -205,19 +230,8 @@ public class PaymentService {
         paymentRepository.save(payment);
 
 
-        CreatePaymentLinkRequest paymentData = CreatePaymentLinkRequest.builder()
-                .orderCode(orderCode)
-                .amount(2000L)
-                .description(" ")
-                .returnUrl("http://localhost:5173/payment/result")
-                .cancelUrl("http://localhost:5173/payment/result")
-                .build();
-
-        CreatePaymentLinkResponse paymentResult = payOS.paymentRequests().create(paymentData);
-
-
         return PaymentCreationResponse.builder()
-                .paymentUrl(paymentResult.getCheckoutUrl())
+                .paymentUrl(paymentLink.getCheckoutUrl())
                 .build();
 
     }
@@ -236,4 +250,81 @@ public class PaymentService {
                 .toList();
 
     }
+
+    public Payout createPayoutBatch(String batchReferenceId, Address address, String description) {
+        PayoutBatchRequest payoutRequest = PayoutBatchRequest.builder()
+                .referenceId(batchReferenceId)
+                .validateDestination(false)
+                .payout(PayoutBatchItem.builder()
+                        .referenceId(batchReferenceId)
+                        .amount(2000L)
+                        .description(description)
+                        .toBin(address.getBankCode().getCode())
+                        .toAccountNumber(address.getAccountNumber())
+                        .build())
+                .build();
+        return payOS.payouts().batch().create(payoutRequest);
+    }
+
+    @Scheduled(fixedRate = 60000)
+    @Transactional
+    public void expireOrders() {
+        List<Order> orders = orderRepository
+                .findByOrderStatusInAndExpiresAtBefore(
+                        List.of(OrderStatus.PENDING, OrderStatus.PAID),
+                        new Date()
+                );
+
+        for (Order order : orders) {
+            if(order.getOrderStatus().equals(OrderStatus.PAID)) {
+                order.setSellerStatus(SellerStatus.REJECTED);
+                order.setOrderStatus(OrderStatus.CONFIRMED);
+            }else {
+                order.setOrderStatus(OrderStatus.EXPIRED);
+            }
+            Listing listing = order.getListing();
+            listing.setStatus(ListingStatus.LIVE);
+            listingRepository.save(listing);
+        }
+    }
+
+    @Scheduled(fixedRate = 60000)
+    @Transactional
+    public void refundOrders() {
+        List<Order> orders = orderRepository.findByOrderStatusAndSellerStatus(
+                OrderStatus.CONFIRMED, SellerStatus.REJECTED
+        );
+
+        for (Order order : orders) {
+            //Refund tien cho buyer
+            if(order.getOrderStatus() == OrderStatus.REFUND){
+                continue;
+            }
+
+            String referenceId = PaymentType.REFUND + "_" +order.getId();
+
+            try {
+                createPayoutBatch(
+                        referenceId,
+                        order.getBuyer().getAddress(),
+                        "Hoan tien cho nguoi dung");
+                order.setOrderStatus(OrderStatus.REFUND);
+                paymentRepository.save(Payment.builder()
+                        .user(order.getBuyer())
+                        .status(PaymentStatus.SUCCESS)
+                        .amount(order.getDepositAmount())
+                        .referenceType(ReferenceType.ORDER)
+                        .referenceId(referenceId)
+                        .type(PaymentType.REFUND)
+                        .build());
+
+            }catch(Exception e){
+                log.error("Refund failed for order {}", order.getId());
+                throw new AppException(ErrorCode.PAYOUT);
+            }
+        }
+    }
+
+
+
 }

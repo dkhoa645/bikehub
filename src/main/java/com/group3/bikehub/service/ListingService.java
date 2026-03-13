@@ -14,6 +14,7 @@ import com.group3.bikehub.exception.ErrorCode;
 import com.group3.bikehub.mapper.InspectionMapper;
 import com.group3.bikehub.mapper.ListingMapper;
 import com.group3.bikehub.repository.BrandRepository;
+import com.group3.bikehub.repository.FavoriteRepository;
 import com.group3.bikehub.repository.ListingImagineRepository;
 import com.group3.bikehub.repository.ListingRepository;
 import jakarta.transaction.Transactional;
@@ -33,6 +34,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+
 public class ListingService {
     ListingRepository listingRepository;
     ListingMapper listingMapper;
@@ -40,7 +42,7 @@ public class ListingService {
     CurrentUserService currentUserService;
     CloudinaryService cloudinaryService;
     ListingImagineRepository  listingImagineRepository;
-
+    FavoriteRepository favoriteRepository;
 
 
     @Transactional
@@ -116,12 +118,16 @@ public class ListingService {
 
         var pageData = listingRepository.findActiveListings(pageable,ListingStatus.LIVE,new Date());
 
+
+
         return PageResponse.<ListingSellResponse>builder()
                 .currentPage(page)
                 .totalElements(pageData.getTotalElements())
                 .pageSize(pageData.getSize())
                 .totalPage(pageData.getTotalPages())
-                .data(pageData.getContent().stream().map(listingMapper::toListingSellResponse).toList())
+                .data(pageData.getContent().stream()
+                        .map(listingMapper::toListingSellResponse)
+                        .toList())
                 .build();
     }
 
@@ -131,10 +137,27 @@ public class ListingService {
                 .toList();
     }
 
-    public ListingResponse getById(UUID id) {
+    public ListingResponse getBySellerId(UUID id) {
         return listingMapper.toListingResponse(
                 listingRepository.findById(id)
                         .orElseThrow(()-> new AppException(ErrorCode.IMAGE_DUPLICATE))
         );
+    }
+
+    public ListingSellResponse getById(UUID id) {
+        User user = currentUserService.getCurrentUser();
+        List<Favorite>  favorites = favoriteRepository.findByUser(user);
+
+        Listing listing = listingRepository.findById(id)
+                .orElseThrow(()-> new AppException(ErrorCode.LISTING_NOT_FOUND));
+
+        ListingSellResponse listingSellResponse = listingMapper.toListingSellResponse(listing);
+
+        favorites.stream().forEach(each -> {
+            if(each.getListing().equals(listing)){
+                listingSellResponse.setFavorite(true);
+            }});
+
+        return listingSellResponse;
     }
 }

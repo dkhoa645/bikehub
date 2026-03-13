@@ -14,4 +14,5 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     List<Payment> findByUserOrderByPaidAt(User user);
 
+    Optional<Payment> findByReferenceId(String referenceId);
 }

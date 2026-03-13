@@ -18,25 +18,28 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "Orders")
+@Table(name = "orders")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
     @ManyToOne
     @JoinColumn(name = "buyer_id", nullable = false)
-     User buyer;
+    User buyer;
     @ManyToOne
     @JoinColumn(name = "seller_id", nullable = false)
-     User seller;
+    User seller;
     @Enumerated(EnumType.STRING)
-     SellerStatus sellerStatus;
+    SellerStatus sellerStatus;
     @Enumerated(EnumType.STRING)
-     OrderStatus orderStatus;
+    OrderStatus orderStatus;
     @JsonManagedReference
     @ManyToOne
-     Listing listing;
-     BigDecimal totalAmount;
-     Date createdAt;
-     Date expiresAt;
+    Listing listing;
+    BigDecimal depositAmount;
+    BigDecimal totalAmount;
+    Date createdAt;
+    Date expiresAt;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    List<OrderLog> logs;
 }

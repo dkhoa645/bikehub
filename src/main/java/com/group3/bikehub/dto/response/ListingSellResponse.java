@@ -26,5 +26,6 @@ public class ListingSellResponse {
     BigDecimal price;
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     Date createdAt;
+    boolean isFavorite;
     List<ListingImageResponse> images;
 }
