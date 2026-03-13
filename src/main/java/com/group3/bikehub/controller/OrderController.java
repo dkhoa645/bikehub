@@ -1,6 +1,7 @@
 package com.group3.bikehub.controller;
 
 import com.group3.bikehub.dto.request.ApiResponse;
+import com.group3.bikehub.dto.request.DeliveredConfirmRequest;
 import com.group3.bikehub.dto.request.PlaceOrderRequest;
 import com.group3.bikehub.dto.response.OrderResponse;
 import com.group3.bikehub.service.OrderService;
@@ -30,6 +31,15 @@ public class OrderController {
                 .build();
     }
 
+    @PutMapping("/{id}/delivered")
+    ApiResponse<OrderResponse> deliverOrder(
+            @PathVariable UUID id,
+            @ModelAttribute DeliveredConfirmRequest deliveredConfirmRequest){
+        return ApiResponse.<OrderResponse>builder()
+                .result(orderService.deliveredOrder(id, deliveredConfirmRequest))
+                .build();
+    }
+
     @PutMapping("/{id}/reject")
     ApiResponse<Void> rejectOrder(@PathVariable UUID id){
         orderService.rejectOrder(id);
@@ -44,7 +54,6 @@ public class OrderController {
                 .result(orderService.getMyOrders())
                 .build();
     }
-
 
 
     @GetMapping()

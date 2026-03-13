@@ -51,6 +51,8 @@ public enum ErrorCode {
     ORDER_SPAMMING(1040, "Buyer spam order payment 5 time. Try tomorrow ", HttpStatus.BAD_REQUEST),
     ORDER_ALREADY_RESOLVED(1041, "Your Order has already resolved", HttpStatus.BAD_REQUEST),
     PAYOUT(1042, "Payout failed", HttpStatus.BAD_REQUEST),
+    ORDER_ACCEPT(1043,"Order have to be accepted", HttpStatus.BAD_REQUEST),
+    ORDER_IN_TRANSIT(1044,"Order have to be in transit", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

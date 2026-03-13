@@ -1,6 +1,7 @@
 package com.group3.bikehub.service;
 
 
+import com.group3.bikehub.dto.request.DeliveredConfirmRequest;
 import com.group3.bikehub.dto.response.OrderResponse;
 import com.group3.bikehub.entity.*;
 import com.group3.bikehub.entity.Enum.*;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.payos.PayOS;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -28,43 +30,8 @@ public class OrderService {
     OrderRepository orderRepository;
     CurrentUserService currentUserService;
     OrderMapper orderMapper;
-    PaymentService paymentService;
-    PaymentRepository paymentRepository;
-
-
-    //    public OrderResponse placeOrder(PlaceOrderRequest request) {
-//        User user = curentUserService.getCurrentUser();
-//        Optional<Listing> listing = listingRepository.findById(request.getListingId());
-//
-//        if (listing.isEmpty()) {
-//            throw new AppException(ErrorCode.LISTING_NOT_FOUND);
-//        }
-//
-//        if (!listing.get().getStatus().equals(ListingStatus.LIVE)) {
-//            throw new AppException(ErrorCode.LISTING_NOT_FOUND);
-//        }
-//
-//        Order order = new Order();
-//        order.setBuyer(user);
-//        order.setSeller(listing.get().getSeller());
-//        order.setTotal_amount(listing.orElseThrow().getPrice());
-//        order.setCreated_at(LocalDateTime.now());
-//        order.setExpiresAt(LocalDateTime.now().plusMinutes(1));
-//
-//        OrderItem orderItem = new OrderItem();
-//        orderItem.setListing(listing.get());
-//        orderItem.setDescription(request.getDescription());
-//        orderItem.setOrder(order);
-//        order.setOrderStatus(OrderStatus.PENDING);
-//        listing.get().setStatus(ListingStatus.RESERVED);
-//
-//        orderRepository.save(order);
-//        orderItemRepository.save(orderItem);
-//        OrderResponse orderResponse = new OrderResponse();
-//        orderResponse.setId(order.getId());
-//        return orderResponse;
-//
-//    }
+    CloudinaryService cloudinaryService;
+    
 
 
 
@@ -140,8 +107,39 @@ public class OrderService {
     }
 
 
+    public OrderResponse deliveredOrder(UUID id, DeliveredConfirmRequest deliveredConfirmRequest) {
+        User user = currentUserService.getCurrentUser();
+        Order order = orderRepository.findOrderById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        if(!order.getSeller().equals(user)){
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+        if(!order.getSellerStatus().equals(SellerStatus.ACCEPTED)){
+            throw new AppException(ErrorCode.ORDER_ACCEPT);
+        }
+        if(!order.getOrderStatus().equals(OrderStatus.IN_TRANSIT)){
+            throw new AppException(ErrorCode.ORDER_IN_TRANSIT);
+        }
 
+        order.setOrderStatus(OrderStatus.DELIVERED);
+        order.setExpiresAt(Date.from(Instant.now().plus(5, ChronoUnit.DAYS)));
+        try {
+            OrderLog orderLog = OrderLog.builder()
+                    .order(order)
+                    .createdAt(Date.from(Instant.now()))
+                    .status(OrderStatus.DELIVERED)
+                    .image((String)cloudinaryService
+                            .uploadFile(deliveredConfirmRequest.getFile(), "delivery")
+                            .get("secure_url"))
+                    .build();
+            order.getLogs().add(orderLog);
+            order = orderRepository.save(order);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
+        return  orderMapper.toResponse(order);
+    }
 }
 
 
