@@ -23,4 +23,5 @@ public class OrderLog {
     @Enumerated(EnumType.STRING)
     OrderStatus status;
     Date createdAt;
+    String url;
 }

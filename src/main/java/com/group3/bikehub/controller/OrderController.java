@@ -22,7 +22,7 @@ public class OrderController {
 
     OrderService orderService;
 
-    @PutMapping("/{id}/confirm")
+    @PutMapping("/{id}/accept")
     ApiResponse<Void> confirmOrder(@PathVariable UUID id){
         orderService.confirmOrder(id);
         return ApiResponse.<Void>builder()
