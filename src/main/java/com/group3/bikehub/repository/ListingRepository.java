@@ -37,7 +37,7 @@ public interface ListingRepository extends JpaRepository<Listing,UUID> {
     @Modifying
     @Query("""
         UPDATE Listing l
-        SET l.status = 'RESOLVED'
+        SET l.status = 'RESERVED'
         WHERE l.id = :listingId
         AND l.status = :currentStatus
         """)

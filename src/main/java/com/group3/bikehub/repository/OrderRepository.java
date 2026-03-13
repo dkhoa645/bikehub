@@ -32,7 +32,7 @@ public interface OrderRepository extends Repository<Order, UUID> {
     AND o.orderStatus = :status
     AND DATE(o.createdAt) = CURRENT_DATE
 """)
-    int countExpiredOrdersByUser(UUID user, OrderStatus status);
+    int countExpiredOrdersByUser(UUID userId, OrderStatus status);
 
     List<Order> findByOrderStatusAndSellerStatusAndExpiresAtBefore(OrderStatus orderStatus, SellerStatus sellerStatus, Date expiresAtBefore);
 

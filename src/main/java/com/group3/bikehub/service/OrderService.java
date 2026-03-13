@@ -74,7 +74,7 @@ public class OrderService {
          }
          order.setSellerStatus(SellerStatus.ACCEPTED);
          order.setOrderStatus(OrderStatus.IN_TRANSIT);
-
+         order.setExpiresAt(Date.from(Instant.now().plus(5, ChronoUnit.DAYS)));
          List<OrderLog>  orderLogs = new ArrayList<>();
          orderLogs.add(OrderLog.builder()
                          .createdAt(Date.from(Instant.now()))
