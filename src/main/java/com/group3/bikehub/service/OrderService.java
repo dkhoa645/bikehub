@@ -31,7 +31,7 @@ public class OrderService {
     CurrentUserService currentUserService;
     OrderMapper orderMapper;
     CloudinaryService cloudinaryService;
-    
+
 
 
 
@@ -139,6 +139,29 @@ public class OrderService {
         }
 
         return  orderMapper.toResponse(order);
+    }
+
+    public OrderResponse claimOrder(UUID id) {
+        Order order =  orderRepository.findOrderById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        User user = currentUserService.getCurrentUser();
+        if(!order.getBuyer().equals(user)){
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+        if(!order.getOrderStatus().equals(OrderStatus.DELIVERED)){
+            throw new AppException(ErrorCode.ORDER_DELIVERD);
+        }
+
+        order.setOrderStatus(OrderStatus.COMPLETE);
+        order.getListing().setStatus(ListingStatus.SOLD);
+        OrderLog orderLog = OrderLog.builder()
+                .order(order)
+                .status(OrderStatus.COMPLETE)
+                .createdAt(Date.from(Instant.now()))
+                .build();
+        order.getLogs().add(orderLog);
+        order = orderRepository.save(order);
+        return orderMapper.toResponse(order);
     }
 }
 

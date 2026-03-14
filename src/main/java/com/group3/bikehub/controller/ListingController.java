@@ -72,4 +72,12 @@ public class ListingController {
                 .result(listingService.getById(id))
                 .build();
     }
+
+    @DeleteMapping("/{id}")
+    ApiResponse<Void> deleteListingById(@PathVariable UUID id){
+        listingService.deleteListing(id);
+        return ApiResponse.<Void>builder()
+                .message("Deleted Successfully!")
+                .build();
+    }
 }

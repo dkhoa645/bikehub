@@ -160,4 +160,12 @@ public class ListingService {
 
         return listingSellResponse;
     }
+
+    public void deleteListing(UUID id) {
+        Listing listing = listingRepository.findById(id)
+                .orElseThrow(()-> new AppException(ErrorCode.LISTING_NOT_FOUND));
+        listing.setStatus(ListingStatus.DELETED);
+        listing.setExpiryAt(new Date());
+        listingRepository.save(listing);
+    }
 }

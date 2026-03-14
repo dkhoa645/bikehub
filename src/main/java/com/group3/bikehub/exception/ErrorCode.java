@@ -53,6 +53,8 @@ public enum ErrorCode {
     PAYOUT(1042, "Payout failed", HttpStatus.BAD_REQUEST),
     ORDER_ACCEPT(1043,"Order have to be accepted", HttpStatus.BAD_REQUEST),
     ORDER_IN_TRANSIT(1044,"Order have to be in transit", HttpStatus.BAD_REQUEST),
+    FILE_NOT_NULL(1045, "Image can not be null", HttpStatus.BAD_REQUEST),
+    ORDER_DELIVERD(1046,"Order must be deliverd", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

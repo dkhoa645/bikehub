@@ -71,5 +71,12 @@ public class OrderController {
                 .build();
     }
 
+    @PutMapping("/{id}/claim")
+    ApiResponse<OrderResponse> claimOrder(@PathVariable UUID id){
+        return ApiResponse.<OrderResponse>builder()
+                .result(orderService.claimOrder(id))
+                .build();
+    }
+
 
 }
