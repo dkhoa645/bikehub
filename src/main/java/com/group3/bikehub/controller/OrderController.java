@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,7 +32,7 @@ public class OrderController {
                 .build();
     }
 
-    @PutMapping("/{id}/delivered")
+    @PutMapping(value ="/{id}/delivered",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ApiResponse<OrderResponse> deliverOrder(
             @PathVariable UUID id,
             @ModelAttribute DeliveredConfirmRequest deliveredConfirmRequest){
