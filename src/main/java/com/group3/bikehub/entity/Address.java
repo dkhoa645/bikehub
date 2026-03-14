@@ -24,6 +24,7 @@ public class Address {
     String phoneContact;
     String nameContact;
     String accountNumber;
+    @Enumerated(EnumType.STRING)
     BankCode bankCode;
 
 

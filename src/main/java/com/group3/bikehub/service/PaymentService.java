@@ -55,6 +55,15 @@ public class PaymentService {
     @Value("${com.payos.PAYOS_CHECKSUM_KEY}")
     @NonFinal
     String CHECKSUM_KEY;
+    @Value("${com.payout.PAYOUT_CLIENT_ID}")
+    @NonFinal
+    String PAYOUT_CLIENT_ID;
+    @Value("${com.payout.PAYOUT_API_KEY}")
+    @NonFinal
+    String PAYOUT_API_KEY;
+    @Value("${com.payout.PAYOUT_CHECKSUM_KEY}")
+    @NonFinal
+    String PAYOUT_CHECKSUM_KEY;
 
     SubscriptionService subscriptionService;
 
@@ -252,6 +261,7 @@ public class PaymentService {
     }
 
     public Payout createPayoutBatch(String batchReferenceId, Address address, String description) {
+        PayOS payOs1 = new PayOS(PAYOUT_CLIENT_ID,PAYOUT_API_KEY,PAYOUT_CHECKSUM_KEY);
         PayoutBatchRequest payoutRequest = PayoutBatchRequest.builder()
                 .referenceId(batchReferenceId)
                 .validateDestination(false)
@@ -263,7 +273,7 @@ public class PaymentService {
                         .toAccountNumber(address.getAccountNumber())
                         .build())
                 .build();
-        return payOS.payouts().batch().create(payoutRequest);
+        return payOs1.payouts().batch().create(payoutRequest);
     }
 
     @Scheduled(fixedRate = 60000)
@@ -309,6 +319,7 @@ public class PaymentService {
                         order.getBuyer().getAddress(),
                         "Hoan tien cho nguoi dung");
                 order.setOrderStatus(OrderStatus.REFUND);
+                order.getListing().setStatus(ListingStatus.LIVE);
                 paymentRepository.save(Payment.builder()
                         .user(order.getBuyer())
                         .status(PaymentStatus.SUCCESS)
@@ -319,7 +330,7 @@ public class PaymentService {
                         .build());
 
             }catch(Exception e){
-                log.error("Refund failed for order {}", order.getId());
+                log.error("Refund failed for order {}", e);
                 throw new AppException(ErrorCode.PAYOUT);
             }
         }
