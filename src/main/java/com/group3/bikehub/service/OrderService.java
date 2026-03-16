@@ -99,6 +99,12 @@ public class OrderService {
         if(!order.getOrderStatus().equals(OrderStatus.PAID)){
             throw new AppException(ErrorCode.ORDER_UNPAID);
         }
+        OrderLog orderLog = OrderLog.builder()
+                .order(order)
+                .createdAt(new Date())
+                .status(OrderStatus.CONFIRMED)
+                .build();
+        order.getLogs().add(orderLog);
         order.setSellerStatus(SellerStatus.REJECTED);
         order.setOrderStatus(OrderStatus.CONFIRMED);
         order.setExpiresAt(null);

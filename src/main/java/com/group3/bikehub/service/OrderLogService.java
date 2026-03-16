@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,7 +29,9 @@ public class OrderLogService {
     public List<OrderLogResponse> getByListing(UUID orderId) {
         Order orders = orderRepository.findOrderById(orderId)
                 .orElseThrow(()-> new AppException(ErrorCode.ORDER_NOT_FOUND));
-        List<OrderLog> orderLogs = orders.getLogs();
+        List<OrderLog> orderLogs = orders.getLogs().stream()
+                .sorted(Comparator.comparing(OrderLog::getCreatedAt))
+                .toList();
         return orderLogs.stream()
                 .map(orderLogMapper::toResponse)
                 .toList();

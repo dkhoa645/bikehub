@@ -140,6 +140,11 @@ public class PaymentService {
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
         order.setOrderStatus(OrderStatus.PAID);
         order.setExpiresAt(Date.from(Instant.now().plus(1, ChronoUnit.DAYS)));
+        OrderLog orderLog = OrderLog.builder()
+                .order(order)
+                .createdAt(Date.from(Instant.now()))
+                .build();
+        order.getLogs().add(orderLog);
         orderRepository.save(order);
         payment.setStatus(PaymentStatus.SUCCESS);
     }

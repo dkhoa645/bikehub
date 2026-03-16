@@ -4,9 +4,11 @@ import com.group3.bikehub.dto.response.OrderResponse;
 import com.group3.bikehub.entity.Enum.OrderStatus;
 import com.group3.bikehub.entity.Enum.SellerStatus;
 import com.group3.bikehub.entity.Order;
+import com.group3.bikehub.entity.OrderLog;
 import com.group3.bikehub.entity.User;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
+
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -37,4 +39,5 @@ public interface OrderRepository extends Repository<Order, UUID> {
     List<Order> findByOrderStatusAndSellerStatusAndExpiresAtBefore(OrderStatus orderStatus, SellerStatus sellerStatus, Date expiresAtBefore);
 
     List<Order> findByOrderStatusAndSellerStatus(OrderStatus orderStatus, SellerStatus sellerStatus);
+
 }
