@@ -24,7 +24,7 @@ import java.util.UUID;
 public class OrderLogController {
     OrderLogService orderLogService;
 
-    @GetMapping("/{orderId}")
+    @GetMapping("/order/{orderId}")
     ApiResponse<List<OrderLogResponse>> getOrderLog(@PathVariable UUID orderId) {
         return ApiResponse.<List<OrderLogResponse>>builder()
                 .result(orderLogService.getByListing(orderId))
