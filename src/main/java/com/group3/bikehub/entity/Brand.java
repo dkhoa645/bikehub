@@ -21,6 +21,7 @@ public class Brand {
     Long id;
     @Column(nullable = false, unique = true)
     String name;
+    String normalizeName;
     @OneToMany(mappedBy = "brand")
     List<Listing> listings;
 }

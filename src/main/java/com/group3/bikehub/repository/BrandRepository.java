@@ -12,5 +12,9 @@ import java.util.Optional;
 public interface BrandRepository extends JpaRepository<Brand, Long> {
     Optional<Brand> findByName(String name);
 
-    Optional<Brand> findById(Long id); 
+    Optional<Brand> findById(Long id);
+
+    boolean existsByName(String name);
+
+    boolean existsByNormalizeName(String normalizeName);
 }

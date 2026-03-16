@@ -33,13 +33,22 @@ public class BrandService {
     }
 
     public BrandResponse addBrand(BrandCreationRequest request) {
-        return brandMapper.toBrandResponse(
-                brandRepository.save(brandMapper.toBrand(request)));
+        String normalizeName = request.getName().trim().toLowerCase();
+        if(brandRepository.existsByNormalizeName((normalizeName))){
+            throw new AppException(ErrorCode.BRAND_EXIST);
+        }
+        Brand brand = brandMapper.toBrand(request);
+        brand.setNormalizeName(normalizeName);
+        return brandMapper.toBrandResponse(brandRepository.save(brand));
     }
 
     public BrandResponse updateBrand(BrandUpdateRequest request) {
         Brand brand = brandRepository.findById(request.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.BRAND_NOT_FOUND));
+        String normalizeName = request.getName().trim().toLowerCase();
+        if(brandRepository.existsByNormalizeName(normalizeName))
+            throw new AppException(ErrorCode.BRAND_EXIST);
+        brand.setNormalizeName(normalizeName);
         brand.setName(request.getName());
         return brandMapper.toBrandResponse(brandRepository.save(brand));
     }
