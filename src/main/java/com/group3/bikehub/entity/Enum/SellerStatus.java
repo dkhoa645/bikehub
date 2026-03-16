@@ -4,5 +4,6 @@ public enum SellerStatus {
     PENDING,
     ACCEPTED,
     CANCELLED,
-    REJECTED
+    REJECTED,
+    PAID
 }

@@ -54,7 +54,8 @@ public class ListingService {
 
         if(!list.isEmpty()){
             list.forEach(each -> {
-                if(!each.getStatus().equals(ListingStatus.SOLD)){
+                if(!each.getStatus().equals(ListingStatus.SOLD) &&
+                        !each.getStatus().equals(ListingStatus.DELETED) ){
                     throw new AppException(ErrorCode.LISTING_SOLD);
                 }
             });

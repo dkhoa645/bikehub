@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import vn.payos.PayOS;
-import vn.payos.model.v1.payouts.Payout;
 import vn.payos.model.v1.payouts.batch.PayoutBatchItem;
 import vn.payos.model.v1.payouts.batch.PayoutBatchRequest;
 import vn.payos.model.v2.paymentRequests.CreatePaymentLinkRequest;
@@ -260,7 +259,7 @@ public class PaymentService {
 
     }
 
-    public Payout createPayoutBatch(String batchReferenceId, Address address, String description) {
+    public void createPayoutBatch(String batchReferenceId, Address address, String description) {
         PayOS payOs1 = new PayOS(PAYOUT_CLIENT_ID,PAYOUT_API_KEY,PAYOUT_CHECKSUM_KEY);
         PayoutBatchRequest payoutRequest = PayoutBatchRequest.builder()
                 .referenceId(batchReferenceId)
@@ -273,69 +272,139 @@ public class PaymentService {
                         .toAccountNumber(address.getAccountNumber())
                         .build())
                 .build();
-        return payOs1.payouts().batch().create(payoutRequest);
+        payOs1.payouts().batch().create(payoutRequest);
     }
 
     @Scheduled(fixedRate = 60000)
     @Transactional
     public void expireOrders() {
-        List<Order> orders = orderRepository
-                .findByOrderStatusInAndExpiresAtBefore(
-                        List.of(OrderStatus.PENDING, OrderStatus.PAID),
-                        new Date()
-                );
+        List<Order> orders = getExpiredOrders();
+        for(Order order : orders){
+            try {
+                handleExpiredOrders(order);
+            } catch (Exception e) {
+                log.error("Expire order failed for order {}", order.getId(), e);
+            }
+        }
+    }
 
-        for (Order order : orders) {
+    private List<Order> getExpiredOrders(){
+        return orderRepository.findByOrderStatusInAndExpiresAtBefore(
+                List.of(OrderStatus.PENDING, OrderStatus.PAID, OrderStatus.DELIVERED),
+                new Date());
+    }
+
+    public void handleExpiredOrders(Order order){
             if(order.getOrderStatus().equals(OrderStatus.PAID)) {
                 order.setSellerStatus(SellerStatus.REJECTED);
                 order.setOrderStatus(OrderStatus.CONFIRMED);
-            }else {
+                order.setExpiresAt(null);
+                setListingToLive(order);
+            }else if (order.getOrderStatus().equals(OrderStatus.PENDING)) {
                 order.setOrderStatus(OrderStatus.EXPIRED);
+                order.setExpiresAt(null);
+                setListingToLive(order);
+            }else if(order.getOrderStatus().equals(OrderStatus.DELIVERED)){
+                order.setOrderStatus(OrderStatus.COMPLETE);
+                order.setExpiresAt(null);
+                order.getListing().setStatus(ListingStatus.SOLD);
+                OrderLog orderLog = OrderLog.builder()
+                        .order(order)
+                        .status(OrderStatus.COMPLETE)
+                        .createdAt(Date.from(Instant.now()))
+                        .build();
+                order.getLogs().add(orderLog);
+                orderRepository.save(order);
             }
-            Listing listing = order.getListing();
-            listing.setStatus(ListingStatus.LIVE);
-            listingRepository.save(listing);
-        }
     }
+
+    private void setListingToLive(Order order) {
+        Listing listing = order.getListing();
+        listing.setStatus(ListingStatus.LIVE);
+        listingRepository.save(listing);
+    }
+
 
     @Scheduled(fixedRate = 60000)
     @Transactional
     public void refundOrders() {
-        List<Order> orders = orderRepository.findByOrderStatusAndSellerStatus(
-                OrderStatus.CONFIRMED, SellerStatus.REJECTED
-        );
-
+        List<Order> orders = getRefundableOrders();
         for (Order order : orders) {
-            //Refund tien cho buyer
-            if(order.getOrderStatus() == OrderStatus.REFUND){
-                continue;
-            }
-
-            String referenceId = PaymentType.REFUND + "_" +order.getId();
-
             try {
-                createPayoutBatch(
-                        referenceId,
-                        order.getBuyer().getAddress(),
-                        "Hoan tien cho nguoi dung");
-                order.setOrderStatus(OrderStatus.REFUND);
-                order.getListing().setStatus(ListingStatus.LIVE);
-                paymentRepository.save(Payment.builder()
-                        .user(order.getBuyer())
-                        .status(PaymentStatus.SUCCESS)
-                        .amount(order.getDepositAmount())
-                        .referenceType(ReferenceType.ORDER)
-                        .referenceId(referenceId)
-                        .type(PaymentType.REFUND)
-                        .build());
-
+                refundSingleOrder(order);
             }catch(Exception e){
-                log.error("Refund failed for order {}", e);
+                log.error("Refund failed for order ", e);
                 throw new AppException(ErrorCode.PAYOUT);
             }
         }
     }
 
+
+    private void refundSingleOrder(Order order) {
+        if (order.getOrderStatus() == OrderStatus.REFUND) {
+            return;
+        }
+            String referenceId = PaymentType.REFUND + "_" + order.getId();
+            createPayoutBatch(referenceId,
+                    order.getBuyer().getAddress(),
+                    "Hoan tien cho Buyer");
+            order.setOrderStatus(OrderStatus.REFUND);
+            order.getListing().setStatus(ListingStatus.LIVE);
+            paymentRepository.save(Payment.builder()
+                    .user(order.getBuyer())
+                    .status(PaymentStatus.SUCCESS)
+                    .amount(order.getDepositAmount())
+                    .referenceType(ReferenceType.ORDER)
+                    .referenceId(referenceId)
+                    .type(PaymentType.REFUND)
+                    .build());
+    }
+
+    private List<Order> getRefundableOrders(){
+        return orderRepository.findByOrderStatusAndSellerStatus(
+                OrderStatus.CONFIRMED, SellerStatus.REJECTED
+        );
+    }
+
+
+    @Scheduled(fixedRate = 60000)
+    @Transactional
+    public void completeOrders() {
+        List<Order> orders = getCompleteOrders();
+        for (Order order : orders) {
+            try {
+                completeOrder(order);
+            }catch(Exception e){
+                log.error("Refund failed for order ", e);
+                throw new AppException(ErrorCode.PAYOUT);
+            }
+        }
+    }
+
+    private void completeOrder(Order order) {
+        order.setSellerStatus(SellerStatus.PAID);
+        String referenceId = PaymentType.PAYOUT + "_" + order.getId();
+        createPayoutBatch(referenceId,
+                order.getSeller().getAddress(),
+                "Thanh toan tien coc");
+        Payment payment = Payment.builder()
+                .type(PaymentType.PAYOUT)
+                .status(PaymentStatus.SUCCESS)
+                .referenceId(referenceId)
+                .amount(order.getDepositAmount())
+                .paidAt(Date.from(Instant.now()))
+                .createAt(Date.from(Instant.now()))
+                .referenceType(ReferenceType.ORDER)
+                .referenceId(String.valueOf(order.getId()))
+                .user(order.getSeller())
+                .build();
+        paymentRepository.save(payment);
+    }
+
+    private List<Order> getCompleteOrders() {
+        return orderRepository.
+                findByOrderStatusAndSellerStatus(OrderStatus.COMPLETE, SellerStatus.ACCEPTED);
+    }
 
 
 }
