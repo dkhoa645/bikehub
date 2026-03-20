@@ -2,6 +2,7 @@ package com.group3.bikehub.repository;
 
 import com.group3.bikehub.entity.Enum.ListingStatus;
 import com.group3.bikehub.entity.Listing;
+import com.group3.bikehub.entity.ListingImage;
 import com.group3.bikehub.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +29,8 @@ public interface ListingRepository extends JpaRepository<Listing,UUID> {
         FROM Listing l
         WHERE l.status = :status
         AND l.expiryAt > :now
-            """)
+        AND (:brandId IS NULL OR l.brand.id = :brandId)
+        """)
     Page<Listing> findActiveListings(
             Pageable pageable,
             @Param("status") ListingStatus status,
@@ -44,4 +46,7 @@ public interface ListingRepository extends JpaRepository<Listing,UUID> {
     int resolveListing(UUID listingId, ListingStatus currentStatus);
 
     Page<Listing> findAll(Pageable pageable);
+
+
+    boolean existsByFrameNumber(String frameNumber);
 }

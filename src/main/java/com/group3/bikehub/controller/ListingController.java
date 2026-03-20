@@ -3,12 +3,14 @@ package com.group3.bikehub.controller;
 import com.group3.bikehub.dto.request.ApiResponse;
 import com.group3.bikehub.dto.request.InspectionCreationRequest;
 import com.group3.bikehub.dto.request.ListingCreationRequest;
+import com.group3.bikehub.dto.request.ListingUpdateRequest;
 import com.group3.bikehub.dto.response.ListingResponse;
 import com.group3.bikehub.dto.response.ListingSellResponse;
 import com.group3.bikehub.dto.response.PageResponse;
 import com.group3.bikehub.entity.InspectionLocation;
 import com.group3.bikehub.entity.ListingImage;
 import com.group3.bikehub.service.ListingService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -29,7 +31,7 @@ public class ListingController {
 
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ApiResponse<ListingResponse> addListing(@ModelAttribute  ListingCreationRequest listingRequest) throws IOException {
+    ApiResponse<ListingResponse> addListing(@ModelAttribute @Valid ListingCreationRequest listingRequest) throws IOException {
         return ApiResponse.<ListingResponse>builder()
                 .result(listingService.createListing(listingRequest))
                 .build();
@@ -78,6 +80,16 @@ public class ListingController {
         listingService.deleteListing(id);
         return ApiResponse.<Void>builder()
                 .message("Deleted Successfully!")
+                .build();
+    }
+
+
+    @PutMapping(value =  "/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ApiResponse<ListingResponse> updateListing(
+            @PathVariable UUID id,
+            @ModelAttribute @Valid ListingUpdateRequest request){
+        return ApiResponse.<ListingResponse>builder()
+                .result(listingService.updateListing(id,request))
                 .build();
     }
 }

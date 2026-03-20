@@ -7,6 +7,7 @@ import com.group3.bikehub.dto.request.BrandCreationRequest;
 import com.group3.bikehub.dto.response.AddressResponse;
 import com.group3.bikehub.dto.response.BrandResponse;
 import com.group3.bikehub.service.AddressService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -23,7 +24,7 @@ public class AddressController {
     AddressService addressService;
 
     @PostMapping()
-    ApiResponse<AddressResponse> addAddress(@RequestBody AddressCreationRequest request){
+    ApiResponse<AddressResponse> addAddress(@RequestBody @Valid AddressCreationRequest request){
         return ApiResponse.<AddressResponse>builder()
                 .result(addressService.create(request))
                 .build();
@@ -38,7 +39,7 @@ public class AddressController {
 
     @PutMapping("/{id}")
     ApiResponse<AddressResponse> changeMyAddress(
-            @RequestBody AddressUpdateRequest request,
+            @RequestBody @Valid AddressUpdateRequest request,
             @PathVariable UUID id){
         return ApiResponse.<AddressResponse>builder()
                 .result(addressService.updateMyAddress(request,id))

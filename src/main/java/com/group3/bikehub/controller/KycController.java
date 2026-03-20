@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
-@RestController
-@RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    @RestController
+    @RequiredArgsConstructor
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
     @RequestMapping("/kyc")
     public class KycController {
 
@@ -30,7 +30,9 @@ import java.util.List;
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<KycDraftResponse> upload(
             @ModelAttribute KycUploadRequest request) {
-        return ApiResponse.<KycDraftResponse>builder().result(kycService.upload(request)).build();
+        return ApiResponse.<KycDraftResponse>builder()
+                .result(kycService.upload(request))
+                .build();
     }
 
     @PostMapping("/confirm")

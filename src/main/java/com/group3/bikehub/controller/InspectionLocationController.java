@@ -6,6 +6,7 @@ import com.group3.bikehub.dto.request.LocationUpdateRequest;
 import com.group3.bikehub.dto.response.InspectionLocationResponse;
 
 import com.group3.bikehub.service.InspectionLocationService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -23,7 +24,7 @@ public class InspectionLocationController {
     InspectionLocationService inspectionLocationService;
 
     @PostMapping()
-    ApiResponse<InspectionLocationResponse> createLocation(@RequestBody LocationCreationRequest locationCreationRequest) {
+    ApiResponse<InspectionLocationResponse> createLocation(@RequestBody @Valid  LocationCreationRequest locationCreationRequest) {
         return ApiResponse.<InspectionLocationResponse>builder()
                 .result(inspectionLocationService.createInspectionLocation(locationCreationRequest))
                 .build();
@@ -53,7 +54,7 @@ public class InspectionLocationController {
     @PutMapping("/{id}")
     ApiResponse<InspectionLocationResponse> updateLocation(
             @PathVariable UUID id,
-            @RequestBody LocationUpdateRequest request
+            @RequestBody @Valid LocationUpdateRequest request
     ) {
         return ApiResponse.<InspectionLocationResponse>builder()
                 .result(inspectionLocationService.updateLocation(request,id))

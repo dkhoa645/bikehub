@@ -61,7 +61,7 @@ public class UserController {
     }
 
     @PutMapping("/password")
-    ApiResponse<Void> changePassword(@RequestBody PasswordChangeRequest passwordChangeRequest){
+    ApiResponse<Void> changePassword(@RequestBody @Valid PasswordChangeRequest passwordChangeRequest){
         userService.changePass(passwordChangeRequest);
         return ApiResponse.<Void>builder()
                 .message("Changed Password Successfully!")

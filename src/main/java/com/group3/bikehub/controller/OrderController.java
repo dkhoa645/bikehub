@@ -6,6 +6,7 @@ import com.group3.bikehub.dto.request.PlaceOrderRequest;
 import com.group3.bikehub.dto.response.OrderResponse;
 import com.group3.bikehub.service.OrderService;
 
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -35,7 +36,7 @@ public class OrderController {
     @PutMapping(value ="/{id}/delivered",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ApiResponse<OrderResponse> deliverOrder(
             @PathVariable UUID id,
-            @ModelAttribute DeliveredConfirmRequest deliveredConfirmRequest){
+            @ModelAttribute @Valid DeliveredConfirmRequest deliveredConfirmRequest){
         return ApiResponse.<OrderResponse>builder()
                 .result(orderService.deliveredOrder(id, deliveredConfirmRequest))
                 .build();

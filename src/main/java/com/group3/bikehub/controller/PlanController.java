@@ -5,6 +5,7 @@ import com.group3.bikehub.dto.request.PlanCreationRequest;
 import com.group3.bikehub.dto.request.PlanUpdateRequest;
 import com.group3.bikehub.dto.response.PlanResponse;
 import com.group3.bikehub.service.PlanService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,7 +21,7 @@ public class PlanController {
     PlanService planService;
 
     @PostMapping
-    ApiResponse<PlanResponse> createPLan(@RequestBody PlanCreationRequest request){
+    ApiResponse<PlanResponse> createPLan(@RequestBody @Valid PlanCreationRequest request){
         return ApiResponse.<PlanResponse>builder()
                 .result(planService.createPlan(request))
                 .build();
@@ -34,7 +35,6 @@ public class PlanController {
                 .build();
     }
 
-
     @DeleteMapping("/{id}")
     ApiResponse<Void> deleteList(@PathVariable Long id){
         planService.deleteList(id);
@@ -46,7 +46,7 @@ public class PlanController {
     @PutMapping("/{id}")
     ApiResponse<PlanResponse> updatePLan(
             @PathVariable Long id,
-            @RequestBody PlanUpdateRequest request){
+            @RequestBody @Valid PlanUpdateRequest request){
         return ApiResponse.<PlanResponse>builder()
                 .result(planService.updateList(id,request))
                 .build();

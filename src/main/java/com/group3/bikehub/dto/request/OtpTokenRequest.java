@@ -10,6 +10,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OtpTokenRequest {
-    @Email
+    @Email(message = "EMAIL_INVALID")
     String email;
 }

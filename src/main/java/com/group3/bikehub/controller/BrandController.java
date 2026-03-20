@@ -6,6 +6,7 @@ import com.group3.bikehub.dto.request.BrandCreationRequest;
 import com.group3.bikehub.dto.request.BrandUpdateRequest;
 import com.group3.bikehub.dto.response.BrandResponse;
 import com.group3.bikehub.service.BrandService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -30,14 +31,14 @@ public class BrandController {
     }
 
     @PostMapping()
-    ApiResponse<BrandResponse> addBrands(@RequestBody BrandCreationRequest request){
+    ApiResponse<BrandResponse> addBrands(@RequestBody @Valid BrandCreationRequest request){
         return ApiResponse.<BrandResponse>builder()
                 .result(brandService.addBrand(request))
                 .build();
     }
 
     @PutMapping()
-    ApiResponse<BrandResponse> updateBrands(@RequestBody BrandUpdateRequest request){
+    ApiResponse<BrandResponse> updateBrands(@RequestBody @Valid BrandUpdateRequest request){
         return ApiResponse.<BrandResponse>builder()
                 .result(brandService.updateBrand(request))
                 .build();
