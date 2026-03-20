@@ -160,8 +160,8 @@ public class PaymentService {
                 .orderCode(orderCode)
                 .amount(amount)
                 .description(description)
-                .returnUrl("http://localhost:5173/payment/result")
-                .cancelUrl("http://localhost:5173/payment/result")
+                .returnUrl("http://localhost:5173")
+                .cancelUrl("http://localhost:5173")
                 .build();
 
         return payOS.paymentRequests().create(paymentRequest);

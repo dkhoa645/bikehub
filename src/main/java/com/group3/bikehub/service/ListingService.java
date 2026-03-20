@@ -1,21 +1,18 @@
 package com.group3.bikehub.service;
 
-import ch.qos.logback.classic.spi.IThrowableProxy;
 import com.group3.bikehub.dto.request.ListingCreationRequest;
-import com.group3.bikehub.dto.response.ListingImageResponse;
+import com.group3.bikehub.dto.request.ListingUpdateRequest;
 import com.group3.bikehub.dto.response.ListingResponse;
 import com.group3.bikehub.dto.response.ListingSellResponse;
 import com.group3.bikehub.dto.response.PageResponse;
 import com.group3.bikehub.entity.*;
 import com.group3.bikehub.entity.Enum.ListingStatus;
-import com.group3.bikehub.entity.Enum.OrderStatus;
 import com.group3.bikehub.exception.AppException;
 import com.group3.bikehub.exception.ErrorCode;
-import com.group3.bikehub.mapper.InspectionMapper;
 import com.group3.bikehub.mapper.ListingMapper;
 import com.group3.bikehub.repository.BrandRepository;
 import com.group3.bikehub.repository.FavoriteRepository;
-import com.group3.bikehub.repository.ListingImagineRepository;
+import com.group3.bikehub.repository.ListingImageRepository;
 import com.group3.bikehub.repository.ListingRepository;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -30,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @RequiredArgsConstructor
@@ -41,12 +39,16 @@ public class ListingService {
     BrandRepository brandRepository;
     CurrentUserService currentUserService;
     CloudinaryService cloudinaryService;
-    ListingImagineRepository  listingImagineRepository;
+    ListingImageRepository listingImageRepository;
     FavoriteRepository favoriteRepository;
 
 
     @Transactional
     public ListingResponse createListing(ListingCreationRequest request) throws IOException {
+
+        if(!isValidFrameNumber(request.getFrameNumber())) {
+            throw new AppException(ErrorCode.INVALID_FRAME_NUMBER);
+        }
 
         Listing listing = listingMapper.toListing(request);
 
@@ -55,8 +57,9 @@ public class ListingService {
         if(!list.isEmpty()){
             list.forEach(each -> {
                 if(!each.getStatus().equals(ListingStatus.SOLD) &&
-                        !each.getStatus().equals(ListingStatus.DELETED) ){
-                    throw new AppException(ErrorCode.LISTING_SOLD);
+                        !each.getStatus().equals(ListingStatus.DELETED)&&
+                        !each.getStatus().equals(ListingStatus.EXPIRED) ){
+                    throw new AppException(ErrorCode.LISTING_EXIST);
                 }
             });
         }
@@ -87,7 +90,7 @@ public class ListingService {
         for(MultipartFile file : request.getImages()) {
             try {
                 Map res = cloudinaryService.uploadFile(file,"listing");
-                imageList.add(listingImagineRepository.save(ListingImage.builder()
+                imageList.add(listingImageRepository.save(ListingImage.builder()
                         .secureUrl((String)res.get("secure_url"))
                         .listing(listingSaved)
                         .imageOrder(order)
@@ -98,6 +101,14 @@ public class ListingService {
             }
         }
         return listingMapper.toListingResponse(listingSaved);
+    }
+
+
+    public boolean isValidFrameNumber(String frameNumber) {
+        if (frameNumber == null) return false;
+
+        String value = frameNumber.trim();
+        return value.matches("^[A-Za-z0-9]{6,30}$");
     }
 
     public List<ListingResponse> getMyListing() {
@@ -154,7 +165,7 @@ public class ListingService {
 
         ListingSellResponse listingSellResponse = listingMapper.toListingSellResponse(listing);
 
-        favorites.stream().forEach(each -> {
+        favorites.forEach(each -> {
             if(each.getListing().equals(listing)){
                 listingSellResponse.setFavorite(true);
             }});
@@ -168,5 +179,48 @@ public class ListingService {
         listing.setStatus(ListingStatus.DELETED);
         listing.setExpiryAt(new Date());
         listingRepository.save(listing);
+    }
+
+    public ListingResponse updateListing(UUID id, ListingUpdateRequest request) {
+        Brand brand = brandRepository.findByName(request.getBrandName())
+                .orElseThrow(() -> new AppException(ErrorCode.BRAND_NOT_FOUND));
+        Listing listing = listingRepository.findById(id)
+                .orElseThrow(()-> new AppException(ErrorCode.LISTING_NOT_FOUND));
+
+        listingMapper.updateListing(request, listing);
+
+        List<Listing> list = listingRepository.findByFrameNumber(request.getFrameNumber());
+
+        boolean existsInvalidListing = list.stream().anyMatch(each ->
+                !each.getStatus().equals(ListingStatus.SOLD) &&
+                        !each.getStatus().equals(ListingStatus.DELETED) &&
+                        !each.getStatus().equals(ListingStatus.EXPIRED)
+        );
+
+        if (existsInvalidListing) {
+            throw new AppException(ErrorCode.LISTING_EXIST);
+        }
+
+        int totalImages = request.getImages().size();
+        if (totalImages > 3 ) {
+            throw new AppException(ErrorCode.IMAGE_LIMIT);
+        }else {
+            List<ListingImage> toKeep = listing.getImages();
+            List<UUID> toDelete = new ArrayList<>();
+            request.getImages().forEach(image -> {
+                ListingImage listingImage = listingImageRepository.findBySecureUrl(image.getUrl())
+                        .orElse(null);
+                if(listingImage != null){
+                    listingImage.setImageOrder(image.getOrder());
+                }else{
+                    listingImage = ListingImage.builder()
+                            .imageOrder(image.getOrder())
+                            .secureUrl(image.getUrl())
+                            .build();
+                }
+                listingImageRepository.save(listingImage);
+            });
+        }
+        return listingMapper.toListingResponse(listingRepository.save(listing));
     }
 }

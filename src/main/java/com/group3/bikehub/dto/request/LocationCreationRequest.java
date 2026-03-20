@@ -1,6 +1,9 @@
 package com.group3.bikehub.dto.request;
 
 import com.group3.bikehub.entity.Enum.InspectionLocationType;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,8 +13,14 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LocationCreationRequest {
-
+    @NotBlank(message = "FIELD_BLANK")
     String contactName;
+    @Pattern(
+            regexp = "0[0-9]{9,10}",
+            message = "PHONE_INVALID"
+    )
     String contactPhone;
+    @NotBlank(message = "FIELD_BLANK")
+    @Size(min=5,max=2000,message = "ADDRESS_INVALID")
     String addressLine;
 }

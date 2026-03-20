@@ -1,6 +1,5 @@
 package com.group3.bikehub.dto.request;
 
-import com.group3.bikehub.dto.response.BrandResponse;
 import com.group3.bikehub.entity.Enum.BikeType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
@@ -10,14 +9,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ListingCreationRequest {
+public class ListingUpdateRequest {
     @Schema(description = "Brand được tạo bằng API brand", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank(message = "BRAND_BLANK")
     String brandName;
     @Schema(description = "Loại xe MTB_BIKE, ROAD_BIKE", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
@@ -25,7 +26,6 @@ public class ListingCreationRequest {
     @Size(min=1,max=100, message = "TITLE_MAX")
     @Schema(description = "Max 100 ki tu", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank
-    @Size(min=1,max=50, message = "TITLE_MAX")
     String title;
     @Schema(description = "Thời gian đã sử dụng (năm) min 0, max 10")
     @Max(value = 10, message = "DURATION_MAX")
@@ -34,7 +34,7 @@ public class ListingCreationRequest {
     @Schema(description = "FRAME_NUMBER ko được trùng, trừ khi đã SOLD",  requiredMode = Schema.RequiredMode.REQUIRED)
     String frameNumber;
     @NotBlank
-    @Size(max = 2000, message = "DESCRIPTION_MAX")
+    @Size(max = 1000, message = "DESCRIPTION_MAX")
     String description;
     @DecimalMin(value = "100000", message = "PRICE_MIN")
     @DecimalMax(value = "10000000", message = "PRICE_MAX")
@@ -42,7 +42,7 @@ public class ListingCreationRequest {
     @NotNull
     @Digits(integer = 10, fraction = 0)
     BigDecimal price;
-    @Size(min = 3, max = 5)
-    @Schema(description = "Tối thiểu 3, tối đa 5 ")
-    List<MultipartFile> images;
+    @Size(min=1,max=3)
+    @NotNull
+    List<ListingImageCreationRequest> images;
 }

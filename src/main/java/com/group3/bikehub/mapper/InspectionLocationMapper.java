@@ -5,14 +5,18 @@ import com.group3.bikehub.dto.request.LocationUpdateRequest;
 import com.group3.bikehub.dto.response.InspectionLocationResponse;
 import com.group3.bikehub.entity.Address;
 import com.group3.bikehub.entity.InspectionLocation;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(componentModel = "spring")
 public interface InspectionLocationMapper {
     InspectionLocationResponse toLocationCreationResponse(InspectionLocation inspectionLocation);
     InspectionLocation toLocation(LocationCreationRequest locationCreationRequest);
     InspectionLocation fromAddress (Address address);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateLocation(LocationUpdateRequest request, @MappingTarget InspectionLocation inspectionLocation);
 
 }

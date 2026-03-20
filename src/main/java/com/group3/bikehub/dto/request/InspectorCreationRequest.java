@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class InspectorCreationRequest {
-    @Email
+    @Email(message = "EMAIL_INVALID")
     String username;
     String password;
     String name;

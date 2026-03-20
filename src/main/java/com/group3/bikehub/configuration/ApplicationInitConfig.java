@@ -1,6 +1,8 @@
 package com.group3.bikehub.configuration;
 
+import com.group3.bikehub.entity.Enum.KycStatus;
 import com.group3.bikehub.entity.Enum.RoleEnum;
+import com.group3.bikehub.entity.Kyc;
 import com.group3.bikehub.entity.Role;
 import com.group3.bikehub.entity.User;
 import com.group3.bikehub.repository.RoleRepository;
@@ -50,6 +52,7 @@ public class ApplicationInitConfig {
                             .username("buyer")
                             .password(passwordEncoder.encode("string"))
                             .name("buyer")
+                            .kycProfile(Kyc.builder().status(KycStatus.VERIFIED).build())
                             .roles(Set.of(Role.builder().name("BUYER").build()))
                             .build();
                     userRepository.save(buyer);
@@ -59,6 +62,7 @@ public class ApplicationInitConfig {
                                 .username("seller")
                                 .password(passwordEncoder.encode("string"))
                                 .name("seller")
+                                .kycProfile(Kyc.builder().status(KycStatus.VERIFIED).build())
                                 .roles(Set.of(Role.builder().name("SELLER").build()))
                                 .build();
                         userRepository.save(seller);

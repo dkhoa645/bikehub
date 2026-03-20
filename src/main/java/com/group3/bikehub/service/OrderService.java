@@ -9,13 +9,11 @@ import com.group3.bikehub.exception.AppException;
 import com.group3.bikehub.exception.ErrorCode;
 import com.group3.bikehub.mapper.OrderMapper;
 import com.group3.bikehub.repository.OrderRepository;
-import com.group3.bikehub.repository.PaymentRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vn.payos.PayOS;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -155,7 +153,7 @@ public class OrderService {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
         if(!order.getOrderStatus().equals(OrderStatus.DELIVERED)){
-            throw new AppException(ErrorCode.ORDER_DELIVERD);
+            throw new AppException(ErrorCode.ORDER_DELIVERED);
         }
 
         order.setOrderStatus(OrderStatus.COMPLETE);

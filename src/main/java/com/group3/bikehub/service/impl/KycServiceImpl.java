@@ -11,10 +11,15 @@ import com.group3.bikehub.exception.ErrorCode;
 import com.group3.bikehub.mapper.KycMapper;
 import com.group3.bikehub.repository.KycRepository;
 import com.group3.bikehub.repository.UserRepository;
+import com.group3.bikehub.service.CurrentUserService;
 import com.group3.bikehub.service.GoogleVisionService;
 import com.group3.bikehub.service.KycService;
 import com.group3.bikehub.service.ParseTextService;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,21 +30,23 @@ import java.util.UUID;
 
 
 @Service
-@NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
 public class KycServiceImpl implements KycService {
-    @Autowired
+
     KycRepository kycRepository;
-    @Autowired
+
     KycMapper kycMapper;
-    @Autowired
+
     KycDraftStoreService kycDraftStoreService;
-    @Autowired
+
     UserRepository userRepository;
-    @Autowired
+
     GoogleVisionService googleVisionService;
-    @Autowired
+
     ParseTextService parseTextService;
 
+    CurrentUserService currentUserService;
 
     @Override
     public KycDraftResponse upload(KycUploadRequest request) {
@@ -125,6 +132,11 @@ public class KycServiceImpl implements KycService {
         return kycRepository.findAll().stream()
                 .map(kycMapper::toKycResponse)
                 .toList();
+    }
+
+    @Override
+    public boolean isKyc(User user) {
+        return  kycRepository.existsByUserAndStatus(user, KycStatus.VERIFIED);
     }
 
 

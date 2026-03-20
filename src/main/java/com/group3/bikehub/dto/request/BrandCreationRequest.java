@@ -1,6 +1,5 @@
 package com.group3.bikehub.dto.request;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BrandCreationRequest {
+    @NotBlank(message = "FIELD_BLANK")
     @Schema(description = "Không được trùng tên hãng")
     String name;
 }
