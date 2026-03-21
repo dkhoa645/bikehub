@@ -130,8 +130,6 @@ public class ListingService {
 
         var pageData = listingRepository.findActiveListings(pageable,ListingStatus.LIVE,new Date());
 
-
-
         return PageResponse.<ListingSellResponse>builder()
                 .currentPage(page)
                 .totalElements(pageData.getTotalElements())

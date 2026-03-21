@@ -29,7 +29,6 @@ public interface ListingRepository extends JpaRepository<Listing,UUID> {
         FROM Listing l
         WHERE l.status = :status
         AND l.expiryAt > :now
-        AND (:brandId IS NULL OR l.brand.id = :brandId)
         """)
     Page<Listing> findActiveListings(
             Pageable pageable,
