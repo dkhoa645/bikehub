@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -29,11 +30,17 @@ public interface ListingRepository extends JpaRepository<Listing,UUID> {
         FROM Listing l
         WHERE l.status = :status
         AND l.expiryAt > :now
+        AND (:brandId IS NULL OR l.brand.id = :brandId)
+        AND (:minPrice IS NULL OR l.price >= :minPrice)
+        AND (:maxPrice IS NULL OR l.price <= :maxPrice)
         """)
     Page<Listing> findActiveListings(
             Pageable pageable,
             @Param("status") ListingStatus status,
-            @Param("now") Date now);
+            @Param("now") Date now,
+            @Param("brandId")  Long brandId,
+            @Param("minPrice") BigDecimal minPrice,
+            @Param("maxPrice") BigDecimal maxPrice);
 
     @Modifying
     @Query("""

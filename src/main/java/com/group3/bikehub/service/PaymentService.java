@@ -142,6 +142,7 @@ public class PaymentService {
         order.setExpiresAt(Date.from(Instant.now().plus(1, ChronoUnit.DAYS)));
         OrderLog orderLog = OrderLog.builder()
                 .order(order)
+                .status(OrderStatus.PAID)
                 .createdAt(Date.from(Instant.now()))
                 .build();
         order.getLogs().add(orderLog);
@@ -361,6 +362,8 @@ public class PaymentService {
                     .amount(order.getDepositAmount())
                     .referenceType(ReferenceType.ORDER)
                     .referenceId(referenceId)
+                            .createAt(Date.from(Instant.now()))
+                            .paidAt(new Date())
                     .type(PaymentType.REFUND)
                     .build());
     }
@@ -385,6 +388,7 @@ public class PaymentService {
             }
         }
     }
+
 
     private void completeOrder(Order order) {
         order.setSellerStatus(SellerStatus.PAID);

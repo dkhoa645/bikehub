@@ -1,20 +1,22 @@
 package com.group3.bikehub.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Getter
+@Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class KycResponse {
-    private String idNumber;
-    private String fullName;
-    private String dateOfBirth;
-    private String gender;
-    private String nationality;
-    private String placeOfOrigin;
-    private String placeOfResidence;
-    private String expiryDate;
+    String idNumber;
+    String fullName;
+    String dateOfBirth;
+    String gender;
+    String nationality;
+    String placeOfOrigin;
+    String placeOfResidence;
+    String expiryDate;
 }

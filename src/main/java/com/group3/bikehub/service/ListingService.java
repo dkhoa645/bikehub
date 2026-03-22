@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -120,7 +121,9 @@ public class ListingService {
     }
 
 
-    public PageResponse<ListingSellResponse> getSellListing(int page, int size) {
+    public PageResponse<ListingSellResponse> getSellListing(
+            int page, int size, Long brandId,
+            BigDecimal minPrice, BigDecimal maxPrice) {
         Sort sort = Sort.by(
                 Sort.Order.desc("createdAt"),
                 Sort.Order.asc("priority")
@@ -128,7 +131,8 @@ public class ListingService {
 
         Pageable pageable = PageRequest.of(page-1, size, sort);
 
-        var pageData = listingRepository.findActiveListings(pageable,ListingStatus.LIVE,new Date());
+        var pageData = listingRepository.findActiveListings(
+                pageable,ListingStatus.LIVE,new Date(), brandId,minPrice,maxPrice);
 
         return PageResponse.<ListingSellResponse>builder()
                 .currentPage(page)

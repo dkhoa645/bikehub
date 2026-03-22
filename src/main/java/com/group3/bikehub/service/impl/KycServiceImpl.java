@@ -59,7 +59,6 @@ public class KycServiceImpl implements KycService {
                 kycResponse
         );
         return response;
-
     }
 
     public void save(String draftId) {

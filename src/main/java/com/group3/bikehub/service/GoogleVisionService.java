@@ -3,6 +3,10 @@ package com.group3.bikehub.service;
 import com.group3.bikehub.dto.request.KycRequest;
 import com.group3.bikehub.exception.AppException;
 import com.group3.bikehub.exception.ErrorCode;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -16,15 +20,18 @@ import java.util.Base64;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GoogleVisionService {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final RestTemplate restTemplate = new RestTemplate();
+    ObjectMapper objectMapper = new ObjectMapper();
+    RestTemplate restTemplate = new RestTemplate();
     @Value("${com.bikehub.googlevision.base-url}")
-    private String googleVisionBaseUrl;
-
+    @NonFinal
+    String googleVisionBaseUrl;
     @Value("${com.bikehub.googlevision.api-key}")
-    private String googleVisionApiKey;
+    @NonFinal
+    String googleVisionApiKey;
 
     public String ocr(MultipartFile image) {
         if (image == null || image.isEmpty()) {
@@ -34,11 +41,9 @@ public class GoogleVisionService {
             String base64Image = Base64.getEncoder()
                     .encodeToString(image.getBytes());
 
-            KycRequest request = new KycRequest(
-                    List.of(
-                            new KycRequest.Request(
-                                    new KycRequest.Image(base64Image),
-                                    List.of(new KycRequest.Feature("TEXT_DETECTION"))
+            KycRequest request = new KycRequest(List.of(new KycRequest.Request(
+                            new KycRequest.Image(base64Image),
+                            List.of(new KycRequest.Feature("TEXT_DETECTION"))
                             )
                     )
             );

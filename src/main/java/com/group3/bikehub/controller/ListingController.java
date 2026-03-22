@@ -19,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,10 +41,13 @@ public class ListingController {
     @GetMapping()
     ApiResponse<PageResponse<ListingSellResponse>> getAllListing(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-            @RequestParam(value = "size", required = false, defaultValue = "10")int size
+            @RequestParam(value = "size", required = false, defaultValue = "10")int size,
+            @RequestParam(value = "brandId", required = false) Long brandId,
+            @RequestParam(value = "minPrice", required = false)BigDecimal minPrice,
+            @RequestParam(value = "maxPrice", required = false)BigDecimal maxPrice
     ){
         return ApiResponse.<PageResponse<ListingSellResponse>>builder()
-                .result(listingService.getSellListing(page,size))
+                .result(listingService.getSellListing(page,size,brandId, minPrice,maxPrice))
                 .build();
     }
 

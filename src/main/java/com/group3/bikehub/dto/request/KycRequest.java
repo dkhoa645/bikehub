@@ -21,17 +21,17 @@ public class KycRequest {
         private List<Feature> features;
     }
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Image {
-        private String content;
-    }
+        @Data
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class Image {
+            private String content;
+        }
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Feature {
-        private String type;
-    }
+        @Data
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class Feature {
+            private String type;
+        }
 }

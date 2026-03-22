@@ -3,6 +3,7 @@ package com.group3.bikehub.dto.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.group3.bikehub.entity.Enum.PaymentStatus;
 import com.group3.bikehub.entity.Enum.PaymentType;
+import com.group3.bikehub.entity.Enum.ReferenceType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -18,6 +19,7 @@ import java.util.Date;
 public class PaymentResponse {
     Long paymentId;
     PaymentType type;
+    ReferenceType referenceType;
     String referenceId;
     BigDecimal amount;
     PaymentStatus status;
