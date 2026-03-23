@@ -1,8 +1,11 @@
 package com.group3.bikehub.service;
 
 
+import com.group3.bikehub.dto.request.ApiResponse;
 import com.group3.bikehub.dto.request.OrderCreationRequest;
 import com.group3.bikehub.dto.request.PaymentCreationRequest;
+import com.group3.bikehub.dto.request.PaymentFilterRequest;
+import com.group3.bikehub.dto.response.PageResponse;
 import com.group3.bikehub.dto.response.PaymentCreationResponse;
 import com.group3.bikehub.dto.response.PaymentResponse;
 import com.group3.bikehub.entity.*;
@@ -21,6 +24,9 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import vn.payos.PayOS;
@@ -416,4 +422,37 @@ public class PaymentService {
     }
 
 
+    public PageResponse<PaymentResponse> getPagePayment(PaymentFilterRequest request) {
+        Sort sort = Sort.by(
+                Sort.Order.desc("createAt")
+        );
+
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
+
+        var pageDate = paymentRepository.findAll(pageable, request.getStatus(), request.getStartDate(), request.getEndDate());
+
+        BigDecimal intermediary = paymentRepository.sumIntermediary(request.getStartDate()
+                , request.getEndDate(), request.getStatus());
+        BigDecimal sumRefund = paymentRepository.sumRefund(request.getStartDate()
+                , request.getEndDate(), request.getStatus());
+        BigDecimal sumSubcription =  paymentRepository.sumSubscription(request.getStartDate()
+                , request.getEndDate(), request.getStatus());
+
+        Map<String,Object> metadata = Map.of(
+                "intermediary", intermediary,
+                "refund", sumRefund,
+                "subscription", sumSubcription
+        );
+
+        return PageResponse.<PaymentResponse>builder()
+                .currentPage(request.getPage())
+                .totalElements(pageDate.getTotalElements())
+                .totalPage(pageDate.getTotalPages())
+                .pageSize(pageDate.getSize())
+                .data(pageDate.getContent().stream()
+                        .map(paymentMapper::toPaymentResponse)
+                        .toList())
+                .meta(metadata)
+                .build();
+    }
 }

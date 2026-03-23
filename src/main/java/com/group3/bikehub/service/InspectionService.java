@@ -4,6 +4,7 @@ import com.group3.bikehub.dto.request.InspectionAssignRequest;
 import com.group3.bikehub.dto.request.InspectionCreationRequest;
 import com.group3.bikehub.dto.request.InspectorAvailableRequest;
 import com.group3.bikehub.dto.response.InspectionResponse;
+import com.group3.bikehub.dto.response.PageResponse;
 import com.group3.bikehub.dto.response.UserResponse;
 import com.group3.bikehub.entity.*;
 import com.group3.bikehub.entity.Enum.InspectionLocationType;
@@ -19,6 +20,9 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.temporal.ChronoUnit;
@@ -142,5 +146,23 @@ public class InspectionService {
         return inspectionRepository.findAll().stream()
                 .map(inspectionMapper::toInspectionResponse)
                 .toList();
+    }
+
+    public PageResponse<InspectionResponse> getPageInspection(int page, int size) {
+        Sort sort = Sort.by(
+                Sort.Order.desc("createdAt"));
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        var pageData = inspectionRepository.findAll(pageable);
+
+        return PageResponse.<InspectionResponse>builder()
+                .currentPage(page)
+                .pageSize(pageData.getSize())
+                .totalElements(pageData.getTotalElements())
+                .totalPage(pageData.getTotalPages())
+                .data(pageData.getContent().stream()
+                        .map(inspectionMapper::toInspectionResponse)
+                        .toList())
+                .build();
     }
 }

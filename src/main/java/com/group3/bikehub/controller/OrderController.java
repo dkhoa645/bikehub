@@ -4,6 +4,7 @@ import com.group3.bikehub.dto.request.ApiResponse;
 import com.group3.bikehub.dto.request.DeliveredConfirmRequest;
 import com.group3.bikehub.dto.request.PlaceOrderRequest;
 import com.group3.bikehub.dto.response.OrderResponse;
+import com.group3.bikehub.dto.response.PageResponse;
 import com.group3.bikehub.service.OrderService;
 
 import jakarta.validation.Valid;
@@ -62,6 +63,16 @@ public class OrderController {
     ApiResponse<List<OrderResponse>> getAllOrder(){
         return ApiResponse.<List<OrderResponse>>builder()
                 .result(orderService.getAllOrders())
+                .build();
+    }
+
+    @GetMapping("/page")
+    ApiResponse<PageResponse<OrderResponse>> getAllOrder(
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10")int size
+    ){
+        return ApiResponse.<PageResponse<OrderResponse>>builder()
+                .result(orderService.getPageOrder(page,size))
                 .build();
     }
 

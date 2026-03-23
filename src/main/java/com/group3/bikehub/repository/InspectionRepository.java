@@ -4,6 +4,8 @@ import com.group3.bikehub.dto.response.InspectionResponse;
 import com.group3.bikehub.entity.Enum.InspectionStatus;
 import com.group3.bikehub.entity.Inspection;
 import com.group3.bikehub.entity.Listing;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -20,4 +22,6 @@ public interface InspectionRepository extends JpaRepository<Inspection, UUID> {
     List<Inspection> findByInspectorIdOrderByCreatedAt(UUID inspectorId);
 
     List<Inspection> findByStatusOrderByCreatedAt(InspectionStatus status);
+
+    Page<Inspection> findAll(Pageable pageable);
 }

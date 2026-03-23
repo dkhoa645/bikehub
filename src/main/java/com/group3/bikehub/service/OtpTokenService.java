@@ -48,8 +48,7 @@ public class OtpTokenService {
                 throw new AppException(ErrorCode.USER_EXISTED);
             }
         }
-        Date exp = new Date(Instant.now().plus(5, ChronoUnit.MINUTES)
-                .toEpochMilli());
+        Date exp = Date.from(Instant.now().plus(5, ChronoUnit.MINUTES));
 
         String otp = generateOtp();
 

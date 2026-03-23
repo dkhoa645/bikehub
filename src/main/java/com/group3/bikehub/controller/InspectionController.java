@@ -2,6 +2,7 @@ package com.group3.bikehub.controller;
 
 import com.group3.bikehub.dto.request.*;
 import com.group3.bikehub.dto.response.InspectionResponse;
+import com.group3.bikehub.dto.response.PageResponse;
 import com.group3.bikehub.dto.response.UserResponse;
 import com.group3.bikehub.service.InspectionScoreService;
 import com.group3.bikehub.service.InspectionService;
@@ -25,7 +26,7 @@ import java.util.UUID;
 public class InspectionController {
     InspectionService inspectionService;
     InspectionScoreService inspectionScoreService;
-    UserService userService;
+
 
     @PostMapping()
     ApiResponse<InspectionResponse> createInspection(@RequestBody InspectionCreationRequest request) {
@@ -45,6 +46,16 @@ public class InspectionController {
     ApiResponse<List<InspectionResponse>> getInspections() {
         return ApiResponse.<List<InspectionResponse>>builder()
                 .result(inspectionService.getAll())
+                .build();
+    }
+
+    @GetMapping("/page")
+    ApiResponse<PageResponse<InspectionResponse>> getPageInspections(
+            @RequestParam(value = "page", required = false, defaultValue = "1")int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10")int size
+    ) {
+        return ApiResponse.<PageResponse<InspectionResponse>>builder()
+                .result(inspectionService.getPageInspection(page,size))
                 .build();
     }
 

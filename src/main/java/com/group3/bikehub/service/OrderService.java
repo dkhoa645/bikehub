@@ -3,6 +3,7 @@ package com.group3.bikehub.service;
 
 import com.group3.bikehub.dto.request.DeliveredConfirmRequest;
 import com.group3.bikehub.dto.response.OrderResponse;
+import com.group3.bikehub.dto.response.PageResponse;
 import com.group3.bikehub.entity.*;
 import com.group3.bikehub.entity.Enum.*;
 import com.group3.bikehub.exception.AppException;
@@ -12,6 +13,9 @@ import com.group3.bikehub.repository.OrderRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -166,6 +170,22 @@ public class OrderService {
         order.getLogs().add(orderLog);
         order = orderRepository.save(order);
         return orderMapper.toResponse(order);
+    }
+
+    public PageResponse<OrderResponse> getPageOrder(int page, int size) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        Pageable pageable = PageRequest.of(page-1,size,sort);
+        var pageDate = orderRepository.findAll(pageable);
+
+        return PageResponse.<OrderResponse>builder()
+                .currentPage(page)
+                .totalElements(pageDate.getTotalElements())
+                .pageSize(pageDate.getSize())
+                .totalPage(pageDate.getTotalPages())
+                .data(pageDate.getContent().stream()
+                        .map(orderMapper::toResponse)
+                        .toList())
+                .build();
     }
 }
 

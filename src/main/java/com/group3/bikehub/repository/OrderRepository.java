@@ -6,6 +6,8 @@ import com.group3.bikehub.entity.Enum.SellerStatus;
 import com.group3.bikehub.entity.Order;
 import com.group3.bikehub.entity.OrderLog;
 import com.group3.bikehub.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 
@@ -40,4 +42,6 @@ public interface OrderRepository extends Repository<Order, UUID> {
 
     List<Order> findByOrderStatusAndSellerStatus(OrderStatus orderStatus, SellerStatus sellerStatus);
 
+
+    Page<Order> findAll(Pageable pageable);
 }

@@ -3,8 +3,7 @@ package com.group3.bikehub.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -19,4 +18,7 @@ public class PageResponse<T> {
 
     @Builder.Default
     List<T> data = Collections.emptyList();
+
+    @Builder.Default
+    Map<String, Object> meta = new HashMap<>();
 }
