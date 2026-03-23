@@ -19,7 +19,7 @@ public class WebConfig implements WebMvcConfigurer{
         config.setAllowedOrigins(List.of(
                 "http://localhost:5173",
                 "http://localhost:8080",
-                "https://bikehub-production-1c50.up.railway.app"
+                "https://bikehub-production-731a.up.railway.app"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
