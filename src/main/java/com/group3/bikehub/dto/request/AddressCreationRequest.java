@@ -26,6 +26,5 @@ public class AddressCreationRequest {
     @NotBlank(message = "FIELD_BLANK")
     @Pattern(regexp = "\\d{8,20}", message = "ACCOUNT_INVALID")
     String accountNumber;
-    @NotBlank(message = "FIELD_BLANK")
     BankCode bankCode;
 }

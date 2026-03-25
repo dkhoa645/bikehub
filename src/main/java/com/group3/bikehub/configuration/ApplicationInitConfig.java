@@ -52,7 +52,6 @@ public class ApplicationInitConfig {
                             .username("buyer")
                             .password(passwordEncoder.encode("string"))
                             .name("buyer")
-                            .kycProfile(Kyc.builder().status(KycStatus.VERIFIED).build())
                             .roles(Set.of(Role.builder().name("BUYER").build()))
                             .build();
                     userRepository.save(buyer);
@@ -62,7 +61,6 @@ public class ApplicationInitConfig {
                                 .username("seller")
                                 .password(passwordEncoder.encode("string"))
                                 .name("seller")
-                                .kycProfile(Kyc.builder().status(KycStatus.VERIFIED).build())
                                 .roles(Set.of(Role.builder().name("SELLER").build()))
                                 .build();
                         userRepository.save(seller);

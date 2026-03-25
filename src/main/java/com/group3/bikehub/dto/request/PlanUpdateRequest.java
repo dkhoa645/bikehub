@@ -21,7 +21,6 @@ public class PlanUpdateRequest {
     @NotNull
     @Digits(integer = 10, fraction = 0)
     BigDecimal price;
-    @NotBlank
     @Min(value = 1,message = "DURATION_DAY_MIN")
     Integer priority;
     @Min(value = 1,message = "DURATION_DAY_MIN")

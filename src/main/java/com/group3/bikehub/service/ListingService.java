@@ -47,6 +47,12 @@ public class ListingService {
     @Transactional
     public ListingResponse createListing(ListingCreationRequest request) throws IOException {
 
+        User user = currentUserService.getCurrentUser();
+
+        if(user.getAddress() == null){
+            throw new AppException(ErrorCode.ADDRESS_NOT_REGISTERED);
+        }
+
         if(!isValidFrameNumber(request.getFrameNumber())) {
             throw new AppException(ErrorCode.INVALID_FRAME_NUMBER);
         }
@@ -66,7 +72,7 @@ public class ListingService {
         }
         listing.setBrand(
                 brandRepository.findByName(request.getBrandName())
-                        .orElseThrow(()->new AppException(ErrorCode.USER_NOT_EXISTED)));
+                        .orElseThrow(()->new AppException(ErrorCode.BRAND_NOT_FOUND)));
 
         listing.setSeller(currentUserService.getCurrentUser());
 
