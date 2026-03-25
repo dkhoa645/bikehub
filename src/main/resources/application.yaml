@@ -6,9 +6,9 @@ spring:
   config:
     import: "optional:classpath:application-secret.properties"
   datasource:
-    url: jdbc:mysql://yamabiko.proxy.rlwy.net:11862/railway
+    url: jdbc:mysql://caboose.proxy.rlwy.net:55467/railway
     username: root
-    password: yGMnxJMsJSIjBqEEWGDTWORPYMWhQlpW
+    password: PyBEePLUcUACTkpHQdIVpmkVsUNswbdR
 #  datasource:
 #    url: jdbc:mysql://shinkansen.proxy.rlwy.net:41830/railway
 #    username: root
