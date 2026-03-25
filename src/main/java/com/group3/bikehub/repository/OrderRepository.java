@@ -22,10 +22,10 @@ public interface OrderRepository extends Repository<Order, UUID> {
         Optional<Order> findOrderById(UUID id);
 
         List<Order> findByOrderStatusInAndExpiresAtBefore(List<OrderStatus> statuses, Date expiresAtBefore);
-        
-        List<Order> findBySeller(User seller);
 
-        List<Order> findByBuyer(User buyer);
+    List<Order> findBySellerOrderByCreatedAtDesc(User seller);
+
+        List<Order> findByBuyerOrderByCreatedAtDesc(User buyer);
 
         List<Order> findAll();
 
@@ -33,10 +33,11 @@ public interface OrderRepository extends Repository<Order, UUID> {
     SELECT COUNT(o)
     FROM Order o
     WHERE o.buyer.id = :userId
+    AND o.sellerStatus = :sellerStatus
     AND o.orderStatus = :status
     AND DATE(o.createdAt) = CURRENT_DATE
 """)
-    int countExpiredOrdersByUser(UUID userId, OrderStatus status);
+    int countExpiredOrdersByUser(UUID userId, OrderStatus status, SellerStatus sellerStatus);
 
     List<Order> findByOrderStatusAndSellerStatusAndExpiresAtBefore(OrderStatus orderStatus, SellerStatus sellerStatus, Date expiresAtBefore);
 

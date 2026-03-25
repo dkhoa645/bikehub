@@ -82,11 +82,16 @@ public class PaymentService {
 
         User buyer = currentUserService.getCurrentUser();
 
+        if(buyer.getAddress() == null){
+            throw new AppException(ErrorCode.ADDRESS_NOT_REGISTERED);
+        }
+
         //Chống spam 5 lần
-        int spam = orderRepository.countExpiredOrdersByUser(buyer.getId(), OrderStatus.EXPIRED);
-        if(spam>= 5) throw new AppException(ErrorCode.ORDER_SPAMMING);
+//        int spam = orderRepository.countExpiredOrdersByUser(buyer.getId(), OrderStatus.EXPIRED, SellerStatus.PENDING);
+//        if(spam>= 5) throw new AppException(ErrorCode.ORDER_SPAMMING);
 
         //Check listing được đặt chưa và chuyển trạng thái sang RESERVE
+
         int update = listingRepository.resolveListing(orderCreationRequest.getListingId(), ListingStatus.LIVE);
         if(update==0){
             throw new AppException(ErrorCode.LISTING_RESERVE);
@@ -145,7 +150,8 @@ public class PaymentService {
         Order order = orderRepository.findOrderById(orderId)
                 .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
         order.setOrderStatus(OrderStatus.PAID);
-        order.setExpiresAt(Date.from(Instant.now().plus(1, ChronoUnit.DAYS)));
+        order.setExpiresAt(new Date(Instant.now().plus(48, ChronoUnit.HOURS).toEpochMilli()));
+
         OrderLog orderLog = OrderLog.builder()
                 .order(order)
                 .status(OrderStatus.PAID)
@@ -337,19 +343,19 @@ public class PaymentService {
     }
 
 
-    @Scheduled(fixedRate = 60000)
-    @Transactional
-    public void refundOrders() {
-        List<Order> orders = getRefundableOrders();
-        for (Order order : orders) {
-            try {
-                refundSingleOrder(order);
-            }catch(Exception e){
-                log.error("Refund failed for order ", e);
-                throw new AppException(ErrorCode.PAYOUT);
-            }
-        }
-    }
+//    @Scheduled(fixedRate = 60000)
+//    @Transactional
+//    public void refundOrders() {
+//        List<Order> orders = getRefundableOrders();
+//        for (Order order : orders) {
+//            try {
+//                refundSingleOrder(order);
+//            }catch(Exception e){
+//                log.error("Refund failed for order ", e);
+//                throw new AppException(ErrorCode.PAYOUT);
+//            }
+//        }
+//    }
 
 
     private void refundSingleOrder(Order order) {

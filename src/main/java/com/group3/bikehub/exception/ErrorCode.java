@@ -74,6 +74,7 @@ public enum ErrorCode {
     PRIORITY_MIN(1061, "Priority min is 1", HttpStatus.BAD_REQUEST),
     ORDER_DELIVERD(1046,"Order must be deliverd", HttpStatus.BAD_REQUEST),
     BRAND_EXIST(1047, "Brand already exists", HttpStatus.BAD_REQUEST),
+    ADDRESS_NOT_REGISTERED(1048,"User must register address to purchase", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

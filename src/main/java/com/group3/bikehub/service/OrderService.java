@@ -39,9 +39,9 @@ public class OrderService {
 
     public List<OrderResponse> getMyOrders() {
          User user = currentUserService.getCurrentUser();
-         List<Order> orders = orderRepository.findBySeller(user);
+         List<Order> orders = orderRepository.findBySellerOrderByCreatedAtDesc(user);
          if(orders.isEmpty()){
-             orders = orderRepository.findByBuyer(user);
+             orders = orderRepository.findByBuyerOrderByCreatedAtDesc(user);
          }
          return orders.stream()
                  .map(orderMapper::toResponse)
