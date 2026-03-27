@@ -24,7 +24,7 @@ public class ListingSellResponse {
     String frameNumber;
     ListingStatus status;
     BigDecimal price;
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm", timezone = "Asia/Ho_Chi_Minh")
     Date createdAt;
     boolean isFavorite;
     List<ListingImageResponse> images;

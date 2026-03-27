@@ -25,9 +25,9 @@ public class PaymentResponse {
     PaymentStatus status;
     String transactionRef;
     Long payosOrderCode;
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm", timezone = "Asia/Ho_Chi_Minh")
     Date paidAt;
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm", timezone = "Asia/Ho_Chi_Minh")
     Date createAt;
 
 }

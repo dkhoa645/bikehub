@@ -21,8 +21,8 @@ public class OrderResponse {
     SellerStatus sellerStatus;
     OrderStatus orderStatus;
     ListingResponse listing;
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm", timezone = "Asia/Ho_Chi_Minh")
     Date createdAt;
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm", timezone = "Asia/Ho_Chi_Minh")
     Date expiresAt;
 }

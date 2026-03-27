@@ -23,6 +23,6 @@ public class TransactionResponse {
     BigDecimal amount;
     TransactionStatus status;
     TransactionType type;
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm", timezone = "Asia/Ho_Chi_Minh")
     Date createdAt;
 }

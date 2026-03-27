@@ -18,7 +18,7 @@ import java.util.Date;
 public class OrderLogResponse {
     Long id;
     OrderStatus status;
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm", timezone = "Asia/Ho_Chi_Minh")
     Date createdAt;
     String image;
 }
