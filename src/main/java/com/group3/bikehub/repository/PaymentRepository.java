@@ -83,4 +83,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     BigDecimal sumSubscription(@Param("startDate") Date startDate,
                                @Param("endDate") Date endDate,
                                @Param("status") PaymentStatus status);
+
+    List<Payment> findByUserOrderByCreateAtDesc(User user);
 }

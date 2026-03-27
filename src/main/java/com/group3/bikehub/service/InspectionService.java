@@ -138,7 +138,8 @@ public class InspectionService {
 
 
     public InspectionResponse getInspectionById(UUID id) {
-        Inspection inspection = inspectionRepository.findById(id).orElse(null);
+        Inspection inspection = inspectionRepository.findById(id)
+                .orElseThrow(()-> new AppException(ErrorCode.INSPECTION_NOT_FOUND));
         return inspectionMapper.toInspectionResponse(inspection);
     }
 

@@ -110,8 +110,8 @@ public class InspectionController {
                 .build();
     }
 
-    @GetMapping("{id}")
-    ApiResponse<InspectionResponse> getInspectionById(@PathVariable UUID id) {
+    @GetMapping("/{id}")
+    ApiResponse<InspectionResponse> getInspectionById(@RequestParam UUID id) {
         return ApiResponse.<InspectionResponse>builder()
                 .result(inspectionService.getInspectionById(id))
                 .build();

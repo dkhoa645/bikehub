@@ -24,6 +24,7 @@ public class InspectionResponse {
     InspectionStatus status;
     UserResponse inspector;
     InspectionResult inspectionResult;
+    ListingResponse listing;
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     Date scheduledAt;
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm")

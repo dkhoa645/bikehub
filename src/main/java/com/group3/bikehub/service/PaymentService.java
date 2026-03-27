@@ -182,55 +182,6 @@ public class PaymentService {
 
 
 
-    public boolean isValidData(Map<String, Object> data, String receivedSignature) {
-        try {
-
-            // 1️⃣ Sort key alphabet
-            List<String> keys = new ArrayList<>(data.keySet());
-            Collections.sort(keys);
-
-            // 2️⃣ Build chuỗi key=value&key2=value2...
-            StringBuilder sb = new StringBuilder();
-
-            for (int i = 0; i < keys.size(); i++) {
-                String key = keys.get(i);
-                Object valueObj = data.get(key);
-                String value = valueObj == null ? "" : valueObj.toString();
-
-                sb.append(key).append("=").append(value);
-
-                if (i < keys.size() - 1) {
-                    sb.append("&");
-                }
-            }
-            String dataToSign = sb.toString();
-
-            // 3️⃣ HMAC SHA256
-            Mac mac = Mac.getInstance("HmacSHA256");
-            SecretKeySpec secretKeySpec =
-                    new SecretKeySpec(CHECKSUM_KEY.getBytes(StandardCharsets.UTF_8),
-                            "HmacSHA256");
-
-            mac.init(secretKeySpec);
-
-            byte[] hash = mac.doFinal(dataToSign.getBytes(StandardCharsets.UTF_8));
-
-            String generatedSignature = bytesToHex(hash);
-
-            return generatedSignature.equals(receivedSignature);
-
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    private String bytesToHex(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        for (byte b : bytes) {
-            sb.append(String.format("%02x", b));
-        }
-        return sb.toString();
-    }
 
     public PaymentCreationResponse createSubscriptionPayment(PaymentCreationRequest paymentCreationRequest) {
         Subscription subscription = subscriptionRepository.findById(paymentCreationRequest.getSubscriptionId())
@@ -270,7 +221,7 @@ public class PaymentService {
 
     public List<PaymentResponse> myPayment() {
         User user = currentUserService.getCurrentUser();
-        List<Payment> list = paymentRepository.findByUserOrderByPaidAt(user);
+        List<Payment> list = paymentRepository.findByUserOrderByCreateAtDesc(user);
         return list.stream()
                 .map(paymentMapper::toPaymentResponse)
                 .toList();
@@ -343,19 +294,19 @@ public class PaymentService {
     }
 
 
-    @Scheduled(fixedRate = 60000)
-    @Transactional
-    public void refundOrders() {
-        List<Order> orders = getRefundableOrders();
-        for (Order order : orders) {
-            try {
-                refundSingleOrder(order);
-            }catch(Exception e){
-                log.error("Refund failed for order ", e);
-                throw new AppException(ErrorCode.PAYOUT);
-            }
-        }
-    }
+//    @Scheduled(fixedRate = 60000)
+//    @Transactional
+//    public void refundOrders() {
+//        List<Order> orders = getRefundableOrders();
+//        for (Order order : orders) {
+//            try {
+//                refundSingleOrder(order);
+//            }catch(Exception e){
+//                log.error("Refund failed for order ", e);
+//                throw new AppException(ErrorCode.PAYOUT);
+//            }
+//        }
+//    }
 
 
     private void refundSingleOrder(Order order) {
@@ -387,19 +338,19 @@ public class PaymentService {
     }
 
 
-    @Scheduled(fixedRate = 60000)
-    @Transactional
-    public void completeOrders() {
-        List<Order> orders = getCompleteOrders();
-        for (Order order : orders) {
-            try {
-                completeOrder(order);
-            }catch(Exception e){
-                log.error("Refund failed for order ", e);
-                throw new AppException(ErrorCode.PAYOUT);
-            }
-        }
-    }
+//    @Scheduled(fixedRate = 60000)
+//    @Transactional
+//    public void completeOrders() {
+//        List<Order> orders = getCompleteOrders();
+//        for (Order order : orders) {
+//            try {
+//                completeOrder(order);
+//            }catch(Exception e){
+//                log.error("Complete failed for order ", e);
+//                throw new AppException(ErrorCode.PAYOUT);
+//            }
+//        }
+//    }
 
 
     private void completeOrder(Order order) {
