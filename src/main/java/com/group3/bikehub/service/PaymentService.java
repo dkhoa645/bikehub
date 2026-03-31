@@ -13,10 +13,7 @@ import com.group3.bikehub.entity.Enum.*;
 import com.group3.bikehub.exception.AppException;
 import com.group3.bikehub.exception.ErrorCode;
 import com.group3.bikehub.mapper.PaymentMapper;
-import com.group3.bikehub.repository.ListingRepository;
-import com.group3.bikehub.repository.OrderRepository;
-import com.group3.bikehub.repository.PaymentRepository;
-import com.group3.bikehub.repository.SubscriptionRepository;
+import com.group3.bikehub.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +53,7 @@ public class PaymentService {
     SubscriptionRepository subscriptionRepository;
     ListingRepository listingRepository;
     PayOS payOS;
-
+    OrderLocationRepository orderLocationRepository;
     @Value("${com.payos.PAYOS_CHECKSUM_KEY}")
     @NonFinal
     String CHECKSUM_KEY;
@@ -99,6 +96,12 @@ public class PaymentService {
 
         CreatePaymentLinkResponse paymentLink = generatePaymentLink(2000L, "Dat coc don hang");
 
+        OrderLocation orderLocation = orderLocationRepository.save(OrderLocation.builder()
+                .addressLine(buyer.getAddress().getAddressLine())
+                .nameContact(buyer.getAddress().getNameContact())
+                .phoneContact(buyer.getAddress().getPhoneContact())
+                .build());
+
         Order order = orderRepository.save(Order.builder()
                 .buyer(buyer)
                 .seller(listing.getSeller())
@@ -108,8 +111,11 @@ public class PaymentService {
                 .createdAt(new Date())
                 .expiresAt(Date.from(Instant.now().plus(5, ChronoUnit.MINUTES)))
                 .sellerStatus(SellerStatus.PENDING)
+                        .orderLocation(orderLocation)
                 .orderStatus(OrderStatus.PENDING)
                 .build());
+
+
 
         Payment payment = Payment.builder()
                 .referenceId(String.valueOf(order.getId()))
@@ -152,6 +158,8 @@ public class PaymentService {
         order.setOrderStatus(OrderStatus.PAID);
         order.setExpiresAt(new Date(Instant.now().plus(1, ChronoUnit.DAYS).toEpochMilli()));
 
+
+
         OrderLog orderLog = OrderLog.builder()
                 .order(order)
                 .status(OrderStatus.PAID)
@@ -159,7 +167,6 @@ public class PaymentService {
                 .build();
         order.getLogs().add(orderLog);
         orderRepository.save(order);
-        payment.setStatus(PaymentStatus.SUCCESS);
     }
 
     private Long generateOrderCode(){

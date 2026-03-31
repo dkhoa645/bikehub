@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,6 +32,7 @@ public class UserController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     ApiResponse<List<UserResponse>> getAllUser(){
         return ApiResponse.<List<UserResponse>>builder()
                 .result(userService.getAllUser())
@@ -38,6 +40,7 @@ public class UserController {
     }
 
     @PostMapping("/create-inspector")
+    @PreAuthorize("hasRole('ADMIN')")
     ApiResponse<UserResponse> createInspector(
             @RequestBody @Valid InspectorCreationRequest inspectorCreationRequest){
         return ApiResponse.<UserResponse>builder()
@@ -46,6 +49,7 @@ public class UserController {
     }
 
     @PostMapping()
+    @PreAuthorize("hasRole('ADMIN')")
     ApiResponse<UserResponse> createUser(@RequestBody UserCreationRequest userCreationRequest){
         return ApiResponse.<UserResponse>builder()
                 .result(userService.createUser(userCreationRequest))
@@ -53,6 +57,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     ApiResponse<Void> deleteUser(@PathVariable UUID id){
         userService.deleteUser(id);
         return ApiResponse.<Void>builder()

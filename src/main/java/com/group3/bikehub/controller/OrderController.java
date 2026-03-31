@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -60,6 +61,7 @@ public class OrderController {
 
 
     @GetMapping()
+    @PreAuthorize("hasRole('ADMIN')")
     ApiResponse<List<OrderResponse>> getAllOrder(){
         return ApiResponse.<List<OrderResponse>>builder()
                 .result(orderService.getAllOrders())
@@ -67,6 +69,7 @@ public class OrderController {
     }
 
     @GetMapping("/page")
+    @PreAuthorize("hasRole('ADMIN')")
     ApiResponse<PageResponse<OrderResponse>> getAllOrder(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "size", required = false, defaultValue = "10")int size

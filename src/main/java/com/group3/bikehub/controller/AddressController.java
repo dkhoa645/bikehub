@@ -24,6 +24,7 @@ public class AddressController {
     AddressService addressService;
 
     @PostMapping()
+
     ApiResponse<AddressResponse> addAddress(@RequestBody @Valid AddressCreationRequest request){
         return ApiResponse.<AddressResponse>builder()
                 .result(addressService.create(request))

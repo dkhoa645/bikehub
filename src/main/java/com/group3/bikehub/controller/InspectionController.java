@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -29,6 +30,7 @@ public class InspectionController {
 
 
     @PostMapping()
+    @PreAuthorize("hasRole('ADMIN')")
     ApiResponse<InspectionResponse> createInspection(@RequestBody InspectionCreationRequest request) {
         return ApiResponse.<InspectionResponse>builder()
                 .result(inspectionService.createInspection(request))
@@ -67,6 +69,7 @@ public class InspectionController {
     }
 
     @PutMapping("/assign-inspector")
+    @PreAuthorize("hasRole('ADMIN')")
     ApiResponse<InspectionResponse> updateInspection(@RequestBody InspectionAssignRequest inspectionAssignRequest) {
         return ApiResponse.<InspectionResponse>builder()
                 .result(inspectionService.assignInspector(inspectionAssignRequest))
@@ -74,6 +77,7 @@ public class InspectionController {
     }
 
     @GetMapping("/available-inspector")
+    @PreAuthorize("hasRole('ADMIN')")
     ApiResponse<List<UserResponse>> getInspectorByTime(
             @Parameter(
                     description = "Time to search available inspector",

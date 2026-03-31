@@ -16,7 +16,7 @@ public class AddressCreationRequest {
     @NotBlank(message = "FIELD_BLANK")
     String nameContact;
     @Pattern(
-            regexp = "0[0-9]{9,10}",
+            regexp = "0[0-9]{9}",
             message = "PHONE_INVALID"
     )
     String phoneContact;

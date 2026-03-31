@@ -3,6 +3,7 @@ package com.group3.bikehub.dto.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.group3.bikehub.entity.Enum.OrderStatus;
 import com.group3.bikehub.entity.Enum.SellerStatus;
+import jakarta.persistence.OneToOne;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -25,4 +26,5 @@ public class OrderResponse {
     Date createdAt;
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm", timezone = "Asia/Ho_Chi_Minh")
     Date expiresAt;
+    OrderLocationResponse orderLocation;
 }

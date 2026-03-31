@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class PlanController {
     PlanService planService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     ApiResponse<PlanResponse> createPLan(@RequestBody @Valid PlanCreationRequest request){
         return ApiResponse.<PlanResponse>builder()
                 .result(planService.createPlan(request))
@@ -36,6 +38,7 @@ public class PlanController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     ApiResponse<Void> deleteList(@PathVariable Long id){
         planService.deleteList(id);
         return ApiResponse.<Void>builder()
@@ -44,6 +47,7 @@ public class PlanController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     ApiResponse<PlanResponse> updatePLan(
             @PathVariable Long id,
             @RequestBody @Valid PlanUpdateRequest request){

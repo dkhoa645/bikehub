@@ -1,6 +1,7 @@
 package com.group3.bikehub.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.group3.bikehub.dto.response.OrderLocationResponse;
 import com.group3.bikehub.entity.Enum.OrderStatus;
 import com.group3.bikehub.entity.Enum.SellerStatus;
 import jakarta.persistence.*;
@@ -42,4 +43,6 @@ public class Order {
     Date expiresAt;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     List<OrderLog> logs;
+    @OneToOne(cascade =  CascadeType.ALL)
+    OrderLocation orderLocation;
 }
