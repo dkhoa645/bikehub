@@ -7,6 +7,7 @@ import com.group3.bikehub.entity.Listing;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -24,4 +25,17 @@ public interface InspectionRepository extends JpaRepository<Inspection, UUID> {
     List<Inspection> findByStatusOrderByCreatedAt(InspectionStatus status);
 
     Page<Inspection> findAll(Pageable pageable);
+
+    List<Inspection> findByInspectorIdOrderByCreatedAtDesc(UUID inspectorId);
+
+    @Query("""
+    SELECT i FROM Inspection i
+    ORDER BY 
+        CASE 
+            WHEN i.status = 'PENDING_ASSIGNED' THEN 1
+            ELSE 2
+        END,
+        i.scheduledAt ASC
+""")
+    List<Inspection> findPriorityInspections();
 }

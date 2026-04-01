@@ -5,6 +5,7 @@ import com.group3.bikehub.entity.Enum.PaymentType;
 import com.group3.bikehub.entity.Enum.ReferenceType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -21,8 +22,8 @@ public class PaymentFilterRequest {
     int size = 10;
 
     PaymentStatus status;
-
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
     Date startDate;
-
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
     Date endDate;
 }

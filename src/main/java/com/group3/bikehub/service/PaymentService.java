@@ -391,7 +391,7 @@ public class PaymentService {
                 Sort.Order.desc("createAt")
         );
 
-        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize()-1, sort);
 
         var pageDate = paymentRepository.findAll(pageable, request.getStatus(), request.getStartDate(), request.getEndDate());
 
@@ -399,13 +399,13 @@ public class PaymentService {
                 , request.getEndDate(), request.getStatus());
         BigDecimal sumRefund = paymentRepository.sumRefund(request.getStartDate()
                 , request.getEndDate(), request.getStatus());
-        BigDecimal sumSubcription =  paymentRepository.sumSubscription(request.getStartDate()
+        BigDecimal subscription =  paymentRepository.sumSubscription(request.getStartDate()
                 , request.getEndDate(), request.getStatus());
 
         Map<String,Object> metadata = Map.of(
                 "intermediary", intermediary,
                 "refund", sumRefund,
-                "subscription", sumSubcription
+                "subscription", subscription
         );
 
         return PageResponse.<PaymentResponse>builder()

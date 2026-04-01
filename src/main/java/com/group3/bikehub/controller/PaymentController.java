@@ -53,7 +53,6 @@ public class PaymentController {
     }
 
     @GetMapping("/page")
-    @PreAuthorize("hasRole('ADMIN')")
     ApiResponse<PageResponse<PaymentResponse>> pageablePayments(
             @ModelAttribute PaymentFilterRequest request
             ) {

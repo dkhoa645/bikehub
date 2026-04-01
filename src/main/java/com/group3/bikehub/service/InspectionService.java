@@ -93,7 +93,7 @@ public class InspectionService {
 
 
     public List<InspectionResponse> getAll() {
-        return inspectionRepository.findAll().stream()
+        return inspectionRepository.findPriorityInspections().stream()
                 .map(inspectionMapper::toInspectionResponse)
                 .toList();
     }
@@ -144,7 +144,8 @@ public class InspectionService {
     }
 
     public List<InspectionResponse> getMyInspection() {
-        return inspectionRepository.findAll().stream()
+        User inspector =  currentUserService.getCurrentUser();
+        return inspectionRepository.findByInspectorIdOrderByCreatedAtDesc(inspector.getId()).stream()
                 .map(inspectionMapper::toInspectionResponse)
                 .toList();
     }
