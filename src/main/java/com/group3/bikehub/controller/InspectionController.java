@@ -30,7 +30,6 @@ public class InspectionController {
 
 
     @PostMapping()
-    @PreAuthorize("hasRole('ADMIN')")
     ApiResponse<InspectionResponse> createInspection(@RequestBody InspectionCreationRequest request) {
         return ApiResponse.<InspectionResponse>builder()
                 .result(inspectionService.createInspection(request))
