@@ -60,7 +60,7 @@ public enum ErrorCode {
     INVALID_FRAME_NUMBER(1047, "Frame number does not contain special characters", HttpStatus.BAD_REQUEST),
     LISTING_IMAGE_NOT_FOUND(1048,"Image not found", HttpStatus.NOT_FOUND),
     IMAGE_LIMIT(1049, "Listing max image is 3", HttpStatus.BAD_REQUEST),
-    LISTING_EXIST(1050, "Listing already exists", HttpStatus.BAD_REQUEST),
+    LISTING_EXIST(1050, "Listing with frameNumber already exists", HttpStatus.BAD_REQUEST),
     BRAND_BLANK(1051, "Brand name cannot be blank", HttpStatus.BAD_REQUEST),
     DURATION_MAX(1052, "Duration max is 10", HttpStatus.BAD_REQUEST),
     DURATION_MIN(1053, "Duration min is 1", HttpStatus.BAD_REQUEST),

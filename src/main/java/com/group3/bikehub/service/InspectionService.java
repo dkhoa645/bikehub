@@ -101,7 +101,7 @@ public class InspectionService {
     public List<InspectionResponse> getMyAssign() {
         User  user = currentUserService.getCurrentUser();
 
-        List<Inspection> inspections = inspectionRepository.findByInspectorIdOrderByCreatedAt(user.getId());
+        List<Inspection> inspections = inspectionRepository.findByInspectorOrderByPriority(user.getId());
 
         return inspections.stream()
                 .map(inspectionMapper::toInspectionResponse)
