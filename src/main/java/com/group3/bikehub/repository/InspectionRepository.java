@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -27,6 +28,20 @@ public interface InspectionRepository extends JpaRepository<Inspection, UUID> {
     Page<Inspection> findAll(Pageable pageable);
 
     List<Inspection> findByInspectorIdOrderByCreatedAtDesc(UUID inspectorId);
+
+    @Query("""
+    SELECT i FROM Inspection i
+    WHERE i.inspector.id = :inspectorId
+    ORDER BY 
+        CASE 
+            WHEN i.status = 'IN_PROGRESS' THEN 0
+            ELSE 1
+        END,
+        i.scheduledAt ASC
+""")
+    List<Inspection> findByInspectorOrderByPriority(
+            @Param("inspectorId") UUID inspectorId
+    );
 
     @Query("""
     SELECT i FROM Inspection i
