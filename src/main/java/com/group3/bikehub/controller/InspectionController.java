@@ -85,8 +85,8 @@ public class InspectionController {
                     example = "2026-02-27T08:03:08.206Z"
             )
             @RequestParam
-            @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm")
-//            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+//            @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             Date scheduleAt) {
         return ApiResponse.<List<UserResponse>>builder()
                 .result(inspectionService.getAvailableInspector(scheduleAt))
