@@ -1,5 +1,6 @@
 package com.group3.bikehub.repository;
 
+import com.group3.bikehub.entity.Enum.InspectionStatus;
 import com.group3.bikehub.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -23,12 +24,12 @@ WHERE r.name = 'INSPECTOR'
 AND NOT EXISTS (
     SELECT i FROM Inspection i
     WHERE i.inspector = u
-    AND i.status = 'PENDING'
-    AND i.scheduledAt < :scheduleAt
-    AND i.expiredAt > :expiredAt
+    AND i.status = :status
+    AND i.scheduledAt < :expiredAt
+    AND i.expiredAt > :scheduleAt
 )
 """)
-    List<User> findAvailableInspectors(Date scheduleAt, Date expiredAt);
+    List<User> findAvailableInspectors(Date scheduleAt, Date expiredAt, InspectionStatus status);
 
     boolean existsByUsername(String username);
 }

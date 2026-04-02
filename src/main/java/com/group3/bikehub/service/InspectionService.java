@@ -25,6 +25,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
@@ -111,7 +114,6 @@ public class InspectionService {
     public InspectionResponse assignInspector(InspectionAssignRequest inspectionAssignRequest) {
         Inspection inspection = inspectionRepository.findById(inspectionAssignRequest.getInspectionId())
                 .orElseThrow(()-> new AppException(ErrorCode.INSPECTION_NOT_FOUND));
-        inspection.setStatus(InspectionStatus.PENDING_ASSIGNED);
 
         User inspector = userRepository.findById(inspectionAssignRequest.getInspectorId())
                 .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED));
@@ -129,12 +131,16 @@ public class InspectionService {
 
 
 
-    public List<UserResponse> getAvailableInspector(Date scheduleAt) {
+    public List<UserResponse> getAvailableInspector(Date scheduleAtRaw) {
+        Date scheduleAt = Date.from(scheduleAtRaw.toInstant().minus(7, ChronoUnit.HOURS));
+        System.out.println("scheduleAt = " + scheduleAt);
         Date expiryAt = Date.from(scheduleAt.toInstant().plus(2, ChronoUnit.HOURS));
-        return userRepository.findAvailableInspectors(scheduleAt, expiryAt).stream()
+        return userRepository.findAvailableInspectors(scheduleAt, expiryAt,InspectionStatus.IN_PROGRESS).stream()
                 .map(userMapper::toUserResponse)
                 .toList();
     }
+
+
 
 
     public InspectionResponse getInspectionById(UUID id) {
@@ -153,7 +159,7 @@ public class InspectionService {
     public PageResponse<InspectionResponse> getPageInspection(int page, int size) {
         Sort sort = Sort.by(
                 Sort.Order.desc("createdAt"));
-        Pageable pageable = PageRequest.of(page, size, sort);
+        Pageable pageable = PageRequest.of(page-1, size, sort);
 
         var pageData = inspectionRepository.findAll(pageable);
 
