@@ -136,7 +136,10 @@ public class UserService {
 
     public void changePass( PasswordChangeRequest passwordChangeRequest) {
         User user = currentUserService.getCurrentUser();
-        if(!user.getPassword().equals(passwordEncoder.encode(passwordChangeRequest.getCurrentPassword()))) {
+        if (!passwordEncoder.matches(
+                passwordChangeRequest.getCurrentPassword(),
+                user.getPassword()
+        )) {
             throw new AppException(ErrorCode.CURRENT_PASSWORD);
         }
         user.setPassword(passwordEncoder.encode(passwordChangeRequest.getCurrentPassword()));
