@@ -45,4 +45,6 @@ public interface OrderRepository extends Repository<Order, UUID> {
 
 
     Page<Order> findAll(Pageable pageable);
+
+    List<Order> findAllByOrderByCreatedAtDesc();
 }

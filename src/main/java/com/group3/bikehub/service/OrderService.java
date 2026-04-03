@@ -49,7 +49,7 @@ public class OrderService {
     }
 
     public List<OrderResponse> getAllOrders() {
-         return orderRepository.findAll()
+         return orderRepository.findAllByOrderByCreatedAtDesc()
                  .stream()
                  .map(orderMapper::toResponse)
                  .toList();
