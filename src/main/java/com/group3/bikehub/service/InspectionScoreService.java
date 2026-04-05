@@ -3,14 +3,12 @@ package com.group3.bikehub.service;
 import com.group3.bikehub.dto.request.ScoreCreationRequest;
 import com.group3.bikehub.dto.response.InspectionResponse;
 import com.group3.bikehub.entity.*;
-import com.group3.bikehub.entity.Enum.InspectionImageType;
-import com.group3.bikehub.entity.Enum.InspectionResult;
-import com.group3.bikehub.entity.Enum.InspectionStatus;
-import com.group3.bikehub.entity.Enum.ListingStatus;
+import com.group3.bikehub.entity.Enum.*;
 import com.group3.bikehub.exception.AppException;
 import com.group3.bikehub.exception.ErrorCode;
 import com.group3.bikehub.mapper.InspectionMapper;
 import com.group3.bikehub.repository.InspectionRepository;
+import com.group3.bikehub.repository.ListingRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,6 +29,7 @@ public class InspectionScoreService {
     CloudinaryService cloudinaryService;
     InspectionMapper inspectionMapper;
     CurrentUserService currentUserService;
+    ListingRepository listingRepository;
 
     public InspectionResponse createScore(UUID inspectionId, ScoreCreationRequest scoreCreationRequest) {
         Inspection inspection = inspectionRepository.findById(inspectionId)
@@ -52,9 +51,14 @@ public class InspectionScoreService {
         }
 
 
+        Subscription subscription = inspection.getListing().getSubscriptions().stream()
+                .filter(sub->{
+                    return sub.getStatus().equals(SubscriptionStatusEnum.ACTIVE);
+                })
+                .toList()
+                .getFirst();
 
-        Plan plan = inspection.getListing().getSubscriptions().getFirst().getPlan();
-
+        Plan plan = subscription.getPlan();
         Date expirationDate = Date.from(Instant.now().plus(plan.getDurationDays(), ChronoUnit.DAYS));
 
         inspection.setScore(scoreCreationRequest.getScore());
@@ -62,11 +66,14 @@ public class InspectionScoreService {
             inspection.setInspectionResult(InspectionResult.FAILED);
         } else {
             inspection.setStatus(InspectionStatus.COMPLETED);
-            inspection.getListing().setStatus(ListingStatus.LIVE);
             inspection.setInspectionResult(InspectionResult.PASSED);
-            inspection.getListing().setExpiryAt(expirationDate);
-            inspection.getListing().getSubscriptions().getFirst().setStartDate(new Date());
-            inspection.getListing().getSubscriptions().getFirst().setExpiredDate(expirationDate);
+            Listing listing = inspection.getListing();
+            listing.setStatus(ListingStatus.LIVE);
+            listing.setExpiryAt(expirationDate);
+            listing.setPriority(plan.getPriority());
+            subscription.setStartDate(Date.from(Instant.now()));
+            subscription.setExpiredDate(expirationDate);
+            listingRepository.save(listing);
         }
 
         List<InspectionImage> list = new ArrayList<>();

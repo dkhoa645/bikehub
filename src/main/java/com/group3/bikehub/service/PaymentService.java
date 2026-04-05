@@ -158,8 +158,6 @@ public class PaymentService {
         order.setOrderStatus(OrderStatus.PAID);
         order.setExpiresAt(new Date(Instant.now().plus(1, ChronoUnit.DAYS).toEpochMilli()));
 
-
-
         OrderLog orderLog = OrderLog.builder()
                 .order(order)
                 .status(OrderStatus.PAID)
@@ -196,9 +194,17 @@ public class PaymentService {
 
         User user = currentUserService.getCurrentUser();
 
-        if(!subscription.getListing().getStatus().equals(ListingStatus.DRAFT)){
+        Listing listing = subscription.getListing();
+
+        if(!listing.getStatus().equals(ListingStatus.DRAFT)){
             throw new AppException(ErrorCode.LISTING_STATUS);
         }
+
+        listing.getSubscriptions().forEach(sub -> {
+            if(sub.getStatus().equals(SubscriptionStatusEnum.ACTIVE)){
+                throw new AppException(ErrorCode.SUBSCRIPTION_NOT_FOUND);
+            }
+        });
 
         CreatePaymentLinkResponse paymentLink = generatePaymentLink(2000L , "Tien mua goi");
 

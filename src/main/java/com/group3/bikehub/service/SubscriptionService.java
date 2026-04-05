@@ -51,30 +51,10 @@ public class SubscriptionService {
     public void handleSubscriptionPayment(Payment payment) {
         Subscription subscription = subscriptionRepository.findById(UUID.fromString(payment.getReferenceId()))
                 .orElseThrow(()-> new AppException(ErrorCode.SUBSCRIPTION_NOT_FOUND));
-
-        int days = subscription.getPlan().getDurationDays();
-        int priority = subscription.getPlan().getPriority();
-
-
-        Date listingDate = subscription.getListing().getExpiryAt();
         Date createDate = new Date();
-        Date startDate = new Date();
-        Date expiryDate = new Date();
-        if(listingDate == null ||listingDate.before(new Date())) {
-            expiryDate = Date.from(Instant.now().plus(days, ChronoUnit.DAYS));
-        }else{
-            startDate = Date.from(listingDate.toInstant().plus(1, ChronoUnit.DAYS));
-            expiryDate = Date.from(startDate.toInstant().plus(days, ChronoUnit.DAYS));
-        }
-
-
         subscription.setCreatedDate(createDate);
-        subscription.setStartDate(startDate);
-        subscription.setExpiredDate(expiryDate);
         subscription.setStatus(SubscriptionStatusEnum.ACTIVE);
-        subscription.getListing().setExpiryAt(expiryDate);
         subscription.getListing().setStatus(ListingStatus.PAID);
-        subscription.getListing().setPriority(priority);
         subscriptionRepository.save(subscription);
     }
 
