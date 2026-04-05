@@ -51,9 +51,7 @@ public class InspectionScoreService {
             throw new AppException(ErrorCode.INSPECTION_EXPIRED);
         }
 
-        inspection.setStatus(InspectionStatus.COMPLETED);
 
-        inspection.getListing().setStatus(ListingStatus.LIVE);
 
         Plan plan = inspection.getListing().getSubscriptions().getFirst().getPlan();
 
@@ -63,6 +61,8 @@ public class InspectionScoreService {
         if (inspection.getScore() < 5) {
             inspection.setInspectionResult(InspectionResult.FAILED);
         } else {
+            inspection.setStatus(InspectionStatus.COMPLETED);
+            inspection.getListing().setStatus(ListingStatus.LIVE);
             inspection.setInspectionResult(InspectionResult.PASSED);
             inspection.getListing().setExpiryAt(expirationDate);
             inspection.getListing().getSubscriptions().getFirst().setStartDate(new Date());

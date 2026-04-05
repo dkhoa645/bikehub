@@ -42,8 +42,7 @@ public class Inspection {
     @JoinColumn(name = "inspection_location_id", nullable = false)
     InspectionLocation location;
 
-    Date scheduledAt;
-    Date expiredAt;
+
     @Enumerated(EnumType.STRING)
     InspectionStatus status;
 
@@ -54,7 +53,8 @@ public class Inspection {
 
     @Column(columnDefinition = "text")
     String comment;
-
+    Date scheduledAt;
+    Date expiredAt;
     Date createdAt;
 
     @OneToMany(cascade = CascadeType.ALL)
