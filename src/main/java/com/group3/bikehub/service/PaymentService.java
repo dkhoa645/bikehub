@@ -307,19 +307,19 @@ public class PaymentService {
     }
 
 
-    @Scheduled(fixedRate = 60000)
-    @Transactional
-    public void refundOrders() {
-        List<Order> orders = getRefundableOrders();
-        for (Order order : orders) {
-            try {
-                refundSingleOrder(order);
-            }catch(Exception e){
-                log.error("Refund failed for order ", e);
-                throw new AppException(ErrorCode.PAYOUT);
-            }
-        }
-    }
+//    @Scheduled(fixedRate = 60000)
+//    @Transactional
+//    public void refundOrders() {
+//        List<Order> orders = getRefundableOrders();
+//        for (Order order : orders) {
+//            try {
+//                refundSingleOrder(order);
+//            }catch(Exception e){
+//                log.error("Refund failed for order ", e);
+//                throw new AppException(ErrorCode.PAYOUT);
+//            }
+//        }
+//    }
 
 
     private void refundSingleOrder(Order order) {
@@ -351,19 +351,19 @@ public class PaymentService {
     }
 
 
-    @Scheduled(fixedRate = 60000)
-    @Transactional
-    public void completeOrders() {
-        List<Order> orders = getCompleteOrders();
-        for (Order order : orders) {
-            try {
-                completeOrder(order);
-            }catch(Exception e){
-                log.error("Complete failed for order ", e);
-                throw new AppException(ErrorCode.PAYOUT);
-            }
-        }
-    }
+//    @Scheduled(fixedRate = 60000)
+//    @Transactional
+//    public void completeOrders() {
+//        List<Order> orders = getCompleteOrders();
+//        for (Order order : orders) {
+//            try {
+//                completeOrder(order);
+//            }catch(Exception e){
+//                log.error("Complete failed for order ", e);
+//                throw new AppException(ErrorCode.PAYOUT);
+//            }
+//        }
+//    }
 
 
     private void completeOrder(Order order) {
