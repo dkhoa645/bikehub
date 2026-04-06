@@ -27,11 +27,11 @@ public class ListingCreationRequest {
     @NotBlank
     @Size(min=1,max=50, message = "TITLE_MAX")
     String title;
-    @Schema(description = "Thời gian đã sử dụng (năm) min 0, max 10")
-    @Max(value = 10, message = "DURATION_MAX")
-    @Min(value = 0, message = "DURATION_MAX")
-    Integer usageDuration;
-    @Schema(description = "FRAME_NUMBER ko được trùng, trừ khi đã SOLD",  requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Năm sản xuất min 2000, max 2026")
+    @Max(value = 2026, message = "DURATION_MAX")
+    @Min(value = 2000, message = "DURATION_MAX")
+    Integer manufactureYear;
+    @Schema(description = "FRAME_NUMBER ko được trùng, trừ khi đã SOLD")
     String frameNumber;
     @NotBlank
     @Size(max = 2000, message = "DESCRIPTION_MAX")

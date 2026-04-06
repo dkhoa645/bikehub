@@ -53,9 +53,11 @@ public class ListingService {
             throw new AppException(ErrorCode.ADDRESS_NOT_REGISTERED);
         }
 
-        if(!isValidFrameNumber(request.getFrameNumber())) {
-            throw new AppException(ErrorCode.INVALID_FRAME_NUMBER);
-        }
+        listingRepository.findAll().forEach(listing -> {
+            if(listing.getFrameNumber().equals(request.getFrameNumber())){
+                throw new AppException(ErrorCode.INVALID_FRAME_NUMBER);
+            }
+        });
 
         Listing listing = listingMapper.toListing(request);
 
@@ -70,6 +72,7 @@ public class ListingService {
                 }
             });
         }
+
         listing.setBrand(
                 brandRepository.findByName(request.getBrandName())
                         .orElseThrow(()->new AppException(ErrorCode.BRAND_NOT_FOUND)));
@@ -111,12 +114,7 @@ public class ListingService {
     }
 
 
-    public boolean isValidFrameNumber(String frameNumber) {
-        if (frameNumber == null) return false;
 
-        String value = frameNumber.trim();
-        return value.matches("^[A-Za-z0-9]{6,30}$");
-    }
 
     public List<ListingResponse> getMyListing() {
         User user = currentUserService.getCurrentUser();

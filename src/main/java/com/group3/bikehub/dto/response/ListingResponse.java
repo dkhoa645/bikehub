@@ -22,7 +22,7 @@ public class ListingResponse {
     BrandResponse brand;
     String title;
     String description;
-    Integer usageDuration;
+    Integer manufactureYear;
     String frameNumber;
     ListingStatus status;
     BigDecimal price;
@@ -32,4 +32,5 @@ public class ListingResponse {
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm", timezone = "Asia/Ho_Chi_Minh")
     Date expiryAt;
     List<SubscriptionResponse> subscriptions;
+    List<InspectionResponse> inspections;
 }

@@ -38,7 +38,10 @@ public class Listing {
     BikeType bikeType;
 
     String title;
-    Integer usageDuration;
+
+    Integer manufactureYear;
+
+    @Column(nullable = true)
     String frameNumber;
 
     @Column(columnDefinition = "text")
@@ -57,11 +60,15 @@ public class Listing {
 
     @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
     List<ListingImage> images;
+
     @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
     List<Order> orders;
 
     @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
     List<Subscription> subscriptions;
+
+    @OneToMany(mappedBy = "listing", cascade = CascadeType.ALL)
+    List<Inspection> inspections;
 
     @OneToMany(mappedBy = "listing")
     List<Favorite> favorites;

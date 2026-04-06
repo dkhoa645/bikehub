@@ -21,7 +21,7 @@ public class ListingSellResponse {
     BrandResponse brand;
     String title;
     String description;
-    Integer usageDuration;
+    Integer manufactureYear;
     String frameNumber;
     BikeType bikeType;
     ListingStatus status;

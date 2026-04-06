@@ -62,8 +62,8 @@ public enum ErrorCode {
     IMAGE_LIMIT(1049, "Listing max image is 3", HttpStatus.BAD_REQUEST),
     LISTING_EXIST(1050, "Listing with frameNumber already exists", HttpStatus.BAD_REQUEST),
     BRAND_BLANK(1051, "Brand name cannot be blank", HttpStatus.BAD_REQUEST),
-    DURATION_MAX(1052, "Duration max is 10", HttpStatus.BAD_REQUEST),
-    DURATION_MIN(1053, "Duration min is 1", HttpStatus.BAD_REQUEST),
+    DURATION_MAX(1052, "Manufacturer Year max is 2026", HttpStatus.BAD_REQUEST),
+    DURATION_MIN(1053, "Manufacturer Year min is 2000", HttpStatus.BAD_REQUEST),
     DESCRIPTION_MAX(1054, "Description max is 1000", HttpStatus.BAD_REQUEST),
     FIELD_BLANK(1055, "Field cannot be blank", HttpStatus.BAD_REQUEST),
     PHONE_INVALID(1056, "Phone number is invalid", HttpStatus.BAD_REQUEST),
@@ -77,6 +77,7 @@ public enum ErrorCode {
     ADDRESS_NOT_REGISTERED(1048,"User must register address to purchase", HttpStatus.BAD_REQUEST),
     INVALID_KEY(1049,"Invalid key" , HttpStatus.BAD_REQUEST ),
     SUBSCRIPTION_EXIST(1050, "Listing already register Subscription ", HttpStatus.BAD_REQUEST),
+    INSPECTOR_IN_PROCESS(1051,"Inspector is in another Inspection at that time", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

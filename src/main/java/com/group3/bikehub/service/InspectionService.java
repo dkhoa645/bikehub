@@ -117,6 +117,16 @@ public class InspectionService {
 
         User inspector = userRepository.findById(inspectionAssignRequest.getInspectorId())
                 .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        List<User> inspectors = userRepository.findAvailableInspectors(
+                inspection.getScheduledAt(),
+                Date.from(inspection.getScheduledAt().toInstant().plus(2, ChronoUnit.HOURS)),
+                InspectionStatus.IN_PROGRESS);
+
+        if(!inspectors.contains(inspector)) {
+            throw new AppException(ErrorCode.INSPECTION_NOT_FOUND);
+        }
+        inspection.getListing().setStatus(ListingStatus.SCHEDULED);
         inspection.setInspector(inspector);
         inspection.setStatus(InspectionStatus.IN_PROGRESS);
         return inspectionMapper.toInspectionResponse(inspectionRepository.save(inspection));

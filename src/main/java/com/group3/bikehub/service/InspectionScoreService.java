@@ -50,13 +50,15 @@ public class InspectionScoreService {
             throw new AppException(ErrorCode.INSPECTION_EXPIRED);
         }
 
-
-        Subscription subscription = inspection.getListing().getSubscriptions().stream()
+        List<Subscription> subscriptions = inspection.getListing().getSubscriptions();
+        Subscription subscription = subscriptions.stream()
                 .filter(sub->{
                     return sub.getStatus().equals(SubscriptionStatusEnum.ACTIVE);
                 })
                 .toList()
                 .getFirst();
+
+
 
         Plan plan = subscription.getPlan();
         Date expirationDate = Date.from(Instant.now().plus(plan.getDurationDays(), ChronoUnit.DAYS));
