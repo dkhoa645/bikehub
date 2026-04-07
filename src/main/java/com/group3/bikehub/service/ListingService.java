@@ -1,5 +1,6 @@
 package com.group3.bikehub.service;
 
+import ch.qos.logback.core.util.StringUtil;
 import com.group3.bikehub.dto.request.ListingCreationRequest;
 import com.group3.bikehub.dto.request.ListingUpdateRequest;
 import com.group3.bikehub.dto.response.ListingResponse;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -53,7 +55,7 @@ public class ListingService {
             throw new AppException(ErrorCode.ADDRESS_NOT_REGISTERED);
         }
 
-        if(!request.getFrameNumber().isBlank() ){
+        if(StringUtils.hasText(request.getFrameNumber())){
         listingRepository.findAll().forEach(listing -> {
             if(listing.getFrameNumber().equals(request.getFrameNumber())){
                 throw new AppException(ErrorCode.INVALID_FRAME_NUMBER);
