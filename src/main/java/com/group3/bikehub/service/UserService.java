@@ -86,17 +86,17 @@ public class UserService {
         </div>
 """.formatted(
                 inspectorCreationRequest.getName(),
-                inspectorCreationRequest.getUsername(),
+                inspectorCreationRequest.getEmail(),
                 inspectorCreationRequest.getPassword()
         );
 
-        if(userRepository.existsByUsername(inspectorCreationRequest.getUsername())){
+        if(userRepository.existsByUsername(inspectorCreationRequest.getEmail())){
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
         try {
             sendGridService.dispatchEmail(
-                    inspectorCreationRequest.getUsername(),
+                    inspectorCreationRequest.getEmail(),
                     subject,
                     body
             );
@@ -111,7 +111,7 @@ public class UserService {
         return userMapper.toUserResponse(
                 userRepository.save(
                 User.builder()
-                        .username(inspectorCreationRequest.getUsername())
+                        .username(inspectorCreationRequest.getEmail())
                         .password(passwordEncoder.encode(inspectorCreationRequest.getPassword()))
                         .roles(roles)
                         .name(inspectorCreationRequest.getName())
