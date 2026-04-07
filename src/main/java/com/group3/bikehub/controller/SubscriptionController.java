@@ -34,4 +34,12 @@ public class SubscriptionController {
                 .build();
     }
 
+    @PutMapping("/expired")
+    ApiResponse<Void> updateSubscription(){
+        subscriptionService.expiredSubs();
+        return ApiResponse.<Void>builder()
+                .message("Expired Subscription successful")
+                .build();
+    }
+
 }

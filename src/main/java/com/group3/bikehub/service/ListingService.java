@@ -53,11 +53,13 @@ public class ListingService {
             throw new AppException(ErrorCode.ADDRESS_NOT_REGISTERED);
         }
 
+        if(!request.getFrameNumber().isBlank() ){
         listingRepository.findAll().forEach(listing -> {
             if(listing.getFrameNumber().equals(request.getFrameNumber())){
                 throw new AppException(ErrorCode.INVALID_FRAME_NUMBER);
-            }
-        });
+                }
+            });
+        }
 
         Listing listing = listingMapper.toListing(request);
 

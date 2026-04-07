@@ -15,10 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -51,6 +48,20 @@ public class SubscriptionService {
     public void handleSubscriptionPayment(Payment payment) {
         Subscription subscription = subscriptionRepository.findById(UUID.fromString(payment.getReferenceId()))
                 .orElseThrow(()-> new AppException(ErrorCode.SUBSCRIPTION_NOT_FOUND));
+
+        List<Subscription> subs = subscriptionRepository.findByListing(subscription.getListing());
+
+        Optional<Subscription> activeSub = subs.stream()
+                .filter(s -> s.getStatus() == SubscriptionStatusEnum.ACTIVE)
+                .findFirst();
+
+        if (activeSub.isPresent()) {
+            subscription.setStatus(SubscriptionStatusEnum.CANCELLED);
+            subscription.setExpiredDate(new Date());
+            subscriptionRepository.save(subscription);
+            return;
+        }
+
         Date createDate = new Date();
         subscription.setCreatedDate(createDate);
         subscription.setStatus(SubscriptionStatusEnum.ACTIVE);
@@ -71,4 +82,21 @@ public class SubscriptionService {
         return subscriptionResponseList;
 
     }
+
+    public void expiredSubs() {
+        List<Subscription> subscriptions = subscriptionRepository.findByStatusAndExpiredDateBefore(
+                SubscriptionStatusEnum.ACTIVE,
+                new Date());
+        if(subscriptions.isEmpty()) {
+            return;
+        }
+        subscriptions.forEach(subscription -> {
+            subscription.setStatus(SubscriptionStatusEnum.EXPIRED);
+        });
+        subscriptionRepository.saveAll(subscriptions);
+    }
+
+
+
+
 }
