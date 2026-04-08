@@ -51,11 +51,11 @@ public class ListingService {
 
         User user = currentUserService.getCurrentUser();
 
-        if (request.getFrameNumber() != null && !request.getFrameNumber().isBlank()){
+        if(user.getAddress() == null){
             throw new AppException(ErrorCode.ADDRESS_NOT_REGISTERED);
         }
 
-        if(request.getFrameNumber() != null){
+        if(request.getFrameNumber() != null && !request.getFrameNumber().isBlank()){
         listingRepository.findAll().forEach(listing -> {
             if(listing.getFrameNumber().equals(request.getFrameNumber())){
                 throw new AppException(ErrorCode.INVALID_FRAME_NUMBER);
