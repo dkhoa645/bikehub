@@ -42,7 +42,7 @@ public class ListingCreationRequest {
     @NotNull
     @Digits(integer = 10, fraction = 0)
     BigDecimal price;
-    @Size(min = 3, max = 5)
-    @Schema(description = "Tối thiểu 3, tối đa 5 ")
+    @Size(min = 1, max = 3)
+    @Schema(description = "Tối thiểu 1, tối đa 3 ")
     List<MultipartFile> images;
 }

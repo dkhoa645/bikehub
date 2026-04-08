@@ -38,7 +38,7 @@ public class InspectionController {
                 .build();
     }
 
-    @GetMapping("/{listingId}")
+    @GetMapping("/listing/{listingId}")
     ApiResponse<InspectionResponse> getMyInspection(@PathVariable UUID listingId) {
         return ApiResponse.<InspectionResponse>builder()
                 .result(inspectionService.getInspection(listingId))
