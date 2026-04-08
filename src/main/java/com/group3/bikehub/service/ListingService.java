@@ -51,7 +51,7 @@ public class ListingService {
 
         User user = currentUserService.getCurrentUser();
 
-        if(user.getAddress() == null){
+        if (request.getFrameNumber() != null && !request.getFrameNumber().isBlank()){
             throw new AppException(ErrorCode.ADDRESS_NOT_REGISTERED);
         }
 
