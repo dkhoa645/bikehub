@@ -55,7 +55,16 @@ public class ListingService {
             throw new AppException(ErrorCode.ADDRESS_NOT_REGISTERED);
         }
 
-        if(request.getFrameNumber() != null && !request.getFrameNumber().isBlank()){
+        String frameNumber = request.getFrameNumber();
+
+        if (frameNumber != null) {
+            frameNumber = frameNumber.trim();
+            if (frameNumber.isEmpty()) {
+                frameNumber = null;
+            }
+        }
+
+        if(frameNumber != null && !request.getFrameNumber().isBlank()){
         listingRepository.findAll().forEach(listing -> {
             if(listing.getFrameNumber().equals(request.getFrameNumber())){
                 throw new AppException(ErrorCode.INVALID_FRAME_NUMBER);
