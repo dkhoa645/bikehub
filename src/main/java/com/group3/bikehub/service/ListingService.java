@@ -58,6 +58,7 @@ public class ListingService {
         String frameNumber = request.getFrameNumber();
 
         if (frameNumber != null) {
+            System.out.println("FRAME NUMBER NULL");
             frameNumber = frameNumber.trim();
             if (frameNumber.isEmpty()) {
                 frameNumber = null;
