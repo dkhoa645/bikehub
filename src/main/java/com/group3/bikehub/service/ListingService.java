@@ -55,7 +55,7 @@ public class ListingService {
             throw new AppException(ErrorCode.ADDRESS_NOT_REGISTERED);
         }
 
-        if(StringUtils.hasText(request.getFrameNumber())){
+        if(request.getFrameNumber() != null){
         listingRepository.findAll().forEach(listing -> {
             if(listing.getFrameNumber().equals(request.getFrameNumber())){
                 throw new AppException(ErrorCode.INVALID_FRAME_NUMBER);
