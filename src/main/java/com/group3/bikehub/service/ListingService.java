@@ -58,34 +58,29 @@ public class ListingService {
         String frameNumber = request.getFrameNumber();
 
         if (frameNumber != null) {
-            System.out.println("FRAME NUMBER NULL");
             frameNumber = frameNumber.trim();
-            if (frameNumber.isEmpty()) {
+            if (frameNumber.isEmpty() || frameNumber.isBlank()) {
                 frameNumber = null;
             }
         }
 
-        if(frameNumber != null && !request.getFrameNumber().isBlank()){
-        listingRepository.findAll().forEach(listing -> {
-            if(listing.getFrameNumber().equals(request.getFrameNumber())){
-                throw new AppException(ErrorCode.INVALID_FRAME_NUMBER);
-                }
-            });
+        if(frameNumber != null){
+            List<Listing> list = listingRepository.findByFrameNumber(request.getFrameNumber());
+
+            if(!list.isEmpty()){
+                list.forEach(each -> {
+                    if(!each.getStatus().equals(ListingStatus.SOLD) &&
+                            !each.getStatus().equals(ListingStatus.DELETED)&&
+                            !each.getStatus().equals(ListingStatus.EXPIRED) ){
+                        throw new AppException(ErrorCode.LISTING_EXIST);
+                    }
+                });
+            }
         }
 
         Listing listing = listingMapper.toListing(request);
 
-        List<Listing> list = listingRepository.findByFrameNumber(request.getFrameNumber());
 
-        if(!list.isEmpty()){
-            list.forEach(each -> {
-                if(!each.getStatus().equals(ListingStatus.SOLD) &&
-                        !each.getStatus().equals(ListingStatus.DELETED)&&
-                        !each.getStatus().equals(ListingStatus.EXPIRED) ){
-                    throw new AppException(ErrorCode.LISTING_EXIST);
-                }
-            });
-        }
 
         listing.setBrand(
                 brandRepository.findByName(request.getBrandName())
