@@ -206,7 +206,7 @@ public class PaymentService {
             }
         });
 
-        CreatePaymentLinkResponse paymentLink = generatePaymentLink(2000L , "Tien mua goi");
+        CreatePaymentLinkResponse paymentLink = generatePaymentLink(subscription.getPlan().getPrice().divide(BigDecimal.valueOf(1000L)).longValue() , "Tien mua goi");
 
         Payment payment = new Payment();
         payment.setReferenceId(String.valueOf(subscription.getId()));
