@@ -94,7 +94,7 @@ public class PaymentService {
             throw new AppException(ErrorCode.LISTING_RESERVE);
         }
 
-        CreatePaymentLinkResponse paymentLink = generatePaymentLink(listing.getPrice().divide(BigDecimal.valueOf(1000L)).longValue(), "Dat coc don hang");
+        CreatePaymentLinkResponse paymentLink = generatePaymentLink(listing.getPrice().multiply(new BigDecimal("0.010")).longValue(), "Dat coc don hang");
 
         OrderLocation orderLocation = orderLocationRepository.save(OrderLocation.builder()
                 .addressLine(buyer.getAddress().getAddressLine())
