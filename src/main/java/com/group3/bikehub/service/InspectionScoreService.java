@@ -66,6 +66,7 @@ public class InspectionScoreService {
         inspection.setScore(scoreCreationRequest.getScore());
         if (inspection.getScore() < 5) {
             inspection.setInspectionResult(InspectionResult.FAILED);
+            inspection.getListing().setStatus(ListingStatus.REJECT);
         } else {
             inspection.setStatus(InspectionStatus.COMPLETED);
             inspection.setInspectionResult(InspectionResult.PASSED);
