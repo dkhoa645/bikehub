@@ -94,7 +94,7 @@ public class PaymentService {
             throw new AppException(ErrorCode.LISTING_RESERVE);
         }
 
-        CreatePaymentLinkResponse paymentLink = generatePaymentLink(2000L, "Dat coc don hang");
+        CreatePaymentLinkResponse paymentLink = generatePaymentLink(listing.getPrice().divide(BigDecimal.valueOf(1000L)).longValue(), "Dat coc don hang");
 
         OrderLocation orderLocation = orderLocationRepository.save(OrderLocation.builder()
                 .addressLine(buyer.getAddress().getAddressLine())
@@ -206,7 +206,7 @@ public class PaymentService {
             }
         });
 
-        CreatePaymentLinkResponse paymentLink = generatePaymentLink(subscription.getPlan().getPrice().divide(BigDecimal.valueOf(1000L)).longValue() , "Tien mua goi");
+        CreatePaymentLinkResponse paymentLink = generatePaymentLink(2000L , "Tien mua goi");
 
         Payment payment = new Payment();
         payment.setReferenceId(String.valueOf(subscription.getId()));
